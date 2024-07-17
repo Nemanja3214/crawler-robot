@@ -15,7 +15,11 @@
         <box size="0.775 0.65 0.225"/>
       </geometry>
     </collision>
-    <!-- <xacro:box_inertia m="15" w="${base_width}" d="${base_length}" h="${base_height}" /> -->
+    <inertial>
+      <origin rpy="1.5707963267948966 0 1.5707963267948966" xyz="0 0 0"/>
+      <mass value="15"/>
+      <inertia ixx="0.8140625000000001" ixy="0.0" ixz="0.0" iyy="1.2789062500000001" iyz="0.0" izz="0.59140625"/>
+    </inertial>
   </link>
   <!-- Robot Footprint -->
   <!-- <link name="base_footprint"> -->
@@ -37,6 +41,16 @@
         <color rgba="0.5 0.5 0.5 1"/>
       </material>
     </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <box size="0.775 0.65 0.225"/>
+        <!-- <mesh filename="package://crab_description/meshes/thorax.STL" /> -->
+      </geometry>
+      <material name="grey">
+        <color rgba="0.5 0.5 0.5 1"/>
+      </material>
+    </collision>
     <inertial>
       <origin rpy="1.5707963267948966 0 1.5707963267948966" xyz="0 0 0"/>
       <mass value="1"/>
@@ -51,7 +65,12 @@
     <child link="leg_center_r1"/>
   </joint>
   <link name="leg_center_r1">
-		</link>
+    <inertial>
+      <origin rpy="1.5707963267948966 0 1.5707963267948966" xyz="0 0 0"/>
+      <mass value="1"/>
+      <inertia ixx="0.016927083333333332" ixy="0.0" ixz="0.0" iyy="0.017708333333333333" iyz="0.0" izz="0.0008854166666666668"/>
+    </inertial>
+  </link>
   <joint name="coxa_joint_r1" type="revolute">
     <origin rpy="0 0 -1.0471975511965976" xyz="0 0 0"/>
     <parent link="leg_center_r1"/>
@@ -70,6 +89,16 @@
         <color rgba="0.7 0.7 0 1"/>
       </material>
     </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0.04 -0.025 0"/>
+      <geometry>
+        <box size="0.16499999999999998 0.16499999999999998 0.16499999999999998"/>
+        <!-- <mesh filename="package://crab_description/meshes/coxa_${side}.STL" /> -->
+      </geometry>
+      <material name="">
+        <color rgba="0.7 0.7 0 1"/>
+      </material>
+    </collision>
     <inertial>
       <origin rpy="1.5707963267948966 0 1.5707963267948966" xyz="0 0 0"/>
       <mass value="1"/>
@@ -94,6 +123,16 @@
         <color rgba="0 0.7 0.7 1"/>
       </material>
     </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0.175 0 0"/>
+      <geometry>
+        <box size="0.35 0.075 0.02"/>
+        <!-- <mesh filename="package://crab_description/meshes/femur_${side}.STL" /> -->
+      </geometry>
+      <material name="">
+        <color rgba="0 0.7 0.7 1"/>
+      </material>
+    </collision>
     <inertial>
       <origin rpy="1.5707963267948966 0 1.5707963267948966" xyz="0 0 0"/>
       <mass value="1"/>
@@ -118,6 +157,16 @@
         <color rgba="0.7 0 0.7 1"/>
       </material>
     </visual>
+    <collision>
+      <origin rpy="0 0 0.06" xyz="0.19 0 0.1"/>
+      <geometry>
+        <box size="0.45 0.1 0.025"/>
+        <!-- <mesh filename="package://crab_description/meshes/tibia_${side}.STL" /> -->
+      </geometry>
+      <material name="">
+        <color rgba="0.7 0 0.7 1"/>
+      </material>
+    </collision>
     <inertial>
       <origin rpy="1.5707963267948966 0 1.5707963267948966" xyz="0 0 0"/>
       <mass value="1"/>
@@ -138,7 +187,12 @@
     <child link="leg_center_r2"/>
   </joint>
   <link name="leg_center_r2">
-		</link>
+    <inertial>
+      <origin rpy="1.5707963267948966 0 1.5707963267948966" xyz="0 0 0"/>
+      <mass value="1"/>
+      <inertia ixx="0.016927083333333332" ixy="0.0" ixz="0.0" iyy="0.017708333333333333" iyz="0.0" izz="0.0008854166666666668"/>
+    </inertial>
+  </link>
   <joint name="coxa_joint_r2" type="revolute">
     <origin rpy="0 0 -1.5707963267948966" xyz="0 0 0"/>
     <parent link="leg_center_r2"/>
@@ -157,6 +211,16 @@
         <color rgba="0.7 0.7 0 1"/>
       </material>
     </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0.04 -0.025 0"/>
+      <geometry>
+        <box size="0.16499999999999998 0.16499999999999998 0.16499999999999998"/>
+        <!-- <mesh filename="package://crab_description/meshes/coxa_${side}.STL" /> -->
+      </geometry>
+      <material name="">
+        <color rgba="0.7 0.7 0 1"/>
+      </material>
+    </collision>
     <inertial>
       <origin rpy="1.5707963267948966 0 1.5707963267948966" xyz="0 0 0"/>
       <mass value="1"/>
@@ -181,6 +245,16 @@
         <color rgba="0 0.7 0.7 1"/>
       </material>
     </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0.175 0 0"/>
+      <geometry>
+        <box size="0.35 0.075 0.02"/>
+        <!-- <mesh filename="package://crab_description/meshes/femur_${side}.STL" /> -->
+      </geometry>
+      <material name="">
+        <color rgba="0 0.7 0.7 1"/>
+      </material>
+    </collision>
     <inertial>
       <origin rpy="1.5707963267948966 0 1.5707963267948966" xyz="0 0 0"/>
       <mass value="1"/>
@@ -205,6 +279,16 @@
         <color rgba="0.7 0 0.7 1"/>
       </material>
     </visual>
+    <collision>
+      <origin rpy="0 0 0.06" xyz="0.19 0 0.1"/>
+      <geometry>
+        <box size="0.45 0.1 0.025"/>
+        <!-- <mesh filename="package://crab_description/meshes/tibia_${side}.STL" /> -->
+      </geometry>
+      <material name="">
+        <color rgba="0.7 0 0.7 1"/>
+      </material>
+    </collision>
     <inertial>
       <origin rpy="1.5707963267948966 0 1.5707963267948966" xyz="0 0 0"/>
       <mass value="1"/>
@@ -225,7 +309,12 @@
     <child link="leg_center_r3"/>
   </joint>
   <link name="leg_center_r3">
-		</link>
+    <inertial>
+      <origin rpy="1.5707963267948966 0 1.5707963267948966" xyz="0 0 0"/>
+      <mass value="1"/>
+      <inertia ixx="0.016927083333333332" ixy="0.0" ixz="0.0" iyy="0.017708333333333333" iyz="0.0" izz="0.0008854166666666668"/>
+    </inertial>
+  </link>
   <joint name="coxa_joint_r3" type="revolute">
     <origin rpy="0 0 -2.0943951023931953" xyz="0 0 0"/>
     <parent link="leg_center_r3"/>
@@ -244,6 +333,16 @@
         <color rgba="0.7 0.7 0 1"/>
       </material>
     </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0.04 -0.025 0"/>
+      <geometry>
+        <box size="0.16499999999999998 0.16499999999999998 0.16499999999999998"/>
+        <!-- <mesh filename="package://crab_description/meshes/coxa_${side}.STL" /> -->
+      </geometry>
+      <material name="">
+        <color rgba="0.7 0.7 0 1"/>
+      </material>
+    </collision>
     <inertial>
       <origin rpy="1.5707963267948966 0 1.5707963267948966" xyz="0 0 0"/>
       <mass value="1"/>
@@ -268,6 +367,16 @@
         <color rgba="0 0.7 0.7 1"/>
       </material>
     </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0.175 0 0"/>
+      <geometry>
+        <box size="0.35 0.075 0.02"/>
+        <!-- <mesh filename="package://crab_description/meshes/femur_${side}.STL" /> -->
+      </geometry>
+      <material name="">
+        <color rgba="0 0.7 0.7 1"/>
+      </material>
+    </collision>
     <inertial>
       <origin rpy="1.5707963267948966 0 1.5707963267948966" xyz="0 0 0"/>
       <mass value="1"/>
@@ -292,6 +401,16 @@
         <color rgba="0.7 0 0.7 1"/>
       </material>
     </visual>
+    <collision>
+      <origin rpy="0 0 0.06" xyz="0.19 0 0.1"/>
+      <geometry>
+        <box size="0.45 0.1 0.025"/>
+        <!-- <mesh filename="package://crab_description/meshes/tibia_${side}.STL" /> -->
+      </geometry>
+      <material name="">
+        <color rgba="0.7 0 0.7 1"/>
+      </material>
+    </collision>
     <inertial>
       <origin rpy="1.5707963267948966 0 1.5707963267948966" xyz="0 0 0"/>
       <mass value="1"/>
@@ -312,7 +431,12 @@
     <child link="leg_center_l1"/>
   </joint>
   <link name="leg_center_l1">
-		</link>
+    <inertial>
+      <origin rpy="1.5707963267948966 0 1.5707963267948966" xyz="0 0 0"/>
+      <mass value="1"/>
+      <inertia ixx="0.016927083333333332" ixy="0.0" ixz="0.0" iyy="0.017708333333333333" iyz="0.0" izz="0.0008854166666666668"/>
+    </inertial>
+  </link>
   <joint name="coxa_joint_l1" type="revolute">
     <origin rpy="0 0 1.0471975511965976" xyz="0 0 0"/>
     <parent link="leg_center_l1"/>
@@ -331,6 +455,16 @@
         <color rgba="0.7 0.7 0 1"/>
       </material>
     </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0.04 0.025 0"/>
+      <geometry>
+        <box size="0.16499999999999998 0.16499999999999998 0.16499999999999998"/>
+        <!-- <mesh filename="package://crab_description/meshes/coxa_${side}.STL" /> -->
+      </geometry>
+      <material name="">
+        <color rgba="0.7 0.7 0 1"/>
+      </material>
+    </collision>
     <inertial>
       <origin rpy="1.5707963267948966 0 1.5707963267948966" xyz="0 0 0"/>
       <mass value="1"/>
@@ -355,6 +489,16 @@
         <color rgba="0 0.7 0.7 1"/>
       </material>
     </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0.175 0 0"/>
+      <geometry>
+        <box size="0.35 0.075 0.02"/>
+        <!-- <mesh filename="package://crab_description/meshes/femur_${side}.STL" /> -->
+      </geometry>
+      <material name="">
+        <color rgba="0 0.7 0.7 1"/>
+      </material>
+    </collision>
     <inertial>
       <origin rpy="1.5707963267948966 0 1.5707963267948966" xyz="0 0 0"/>
       <mass value="1"/>
@@ -379,6 +523,16 @@
         <color rgba="0.7 0 0.7 1"/>
       </material>
     </visual>
+    <collision>
+      <origin rpy="0 0 0.06" xyz="0.19 0 0.1"/>
+      <geometry>
+        <box size="0.45 0.1 0.025"/>
+        <!-- <mesh filename="package://crab_description/meshes/tibia_${side}.STL" /> -->
+      </geometry>
+      <material name="">
+        <color rgba="0.7 0 0.7 1"/>
+      </material>
+    </collision>
     <inertial>
       <origin rpy="1.5707963267948966 0 1.5707963267948966" xyz="0 0 0"/>
       <mass value="1"/>
@@ -399,7 +553,12 @@
     <child link="leg_center_l2"/>
   </joint>
   <link name="leg_center_l2">
-		</link>
+    <inertial>
+      <origin rpy="1.5707963267948966 0 1.5707963267948966" xyz="0 0 0"/>
+      <mass value="1"/>
+      <inertia ixx="0.016927083333333332" ixy="0.0" ixz="0.0" iyy="0.017708333333333333" iyz="0.0" izz="0.0008854166666666668"/>
+    </inertial>
+  </link>
   <joint name="coxa_joint_l2" type="revolute">
     <origin rpy="0 0 1.5707963267948966" xyz="0 0 0"/>
     <parent link="leg_center_l2"/>
@@ -418,6 +577,16 @@
         <color rgba="0.7 0.7 0 1"/>
       </material>
     </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0.04 0.025 0"/>
+      <geometry>
+        <box size="0.16499999999999998 0.16499999999999998 0.16499999999999998"/>
+        <!-- <mesh filename="package://crab_description/meshes/coxa_${side}.STL" /> -->
+      </geometry>
+      <material name="">
+        <color rgba="0.7 0.7 0 1"/>
+      </material>
+    </collision>
     <inertial>
       <origin rpy="1.5707963267948966 0 1.5707963267948966" xyz="0 0 0"/>
       <mass value="1"/>
@@ -442,6 +611,16 @@
         <color rgba="0 0.7 0.7 1"/>
       </material>
     </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0.175 0 0"/>
+      <geometry>
+        <box size="0.35 0.075 0.02"/>
+        <!-- <mesh filename="package://crab_description/meshes/femur_${side}.STL" /> -->
+      </geometry>
+      <material name="">
+        <color rgba="0 0.7 0.7 1"/>
+      </material>
+    </collision>
     <inertial>
       <origin rpy="1.5707963267948966 0 1.5707963267948966" xyz="0 0 0"/>
       <mass value="1"/>
@@ -466,6 +645,16 @@
         <color rgba="0.7 0 0.7 1"/>
       </material>
     </visual>
+    <collision>
+      <origin rpy="0 0 0.06" xyz="0.19 0 0.1"/>
+      <geometry>
+        <box size="0.45 0.1 0.025"/>
+        <!-- <mesh filename="package://crab_description/meshes/tibia_${side}.STL" /> -->
+      </geometry>
+      <material name="">
+        <color rgba="0.7 0 0.7 1"/>
+      </material>
+    </collision>
     <inertial>
       <origin rpy="1.5707963267948966 0 1.5707963267948966" xyz="0 0 0"/>
       <mass value="1"/>
@@ -486,7 +675,12 @@
     <child link="leg_center_l3"/>
   </joint>
   <link name="leg_center_l3">
-		</link>
+    <inertial>
+      <origin rpy="1.5707963267948966 0 1.5707963267948966" xyz="0 0 0"/>
+      <mass value="1"/>
+      <inertia ixx="0.016927083333333332" ixy="0.0" ixz="0.0" iyy="0.017708333333333333" iyz="0.0" izz="0.0008854166666666668"/>
+    </inertial>
+  </link>
   <joint name="coxa_joint_l3" type="revolute">
     <origin rpy="0 0 2.0943951023931953" xyz="0 0 0"/>
     <parent link="leg_center_l3"/>
@@ -505,6 +699,16 @@
         <color rgba="0.7 0.7 0 1"/>
       </material>
     </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0.04 0.025 0"/>
+      <geometry>
+        <box size="0.16499999999999998 0.16499999999999998 0.16499999999999998"/>
+        <!-- <mesh filename="package://crab_description/meshes/coxa_${side}.STL" /> -->
+      </geometry>
+      <material name="">
+        <color rgba="0.7 0.7 0 1"/>
+      </material>
+    </collision>
     <inertial>
       <origin rpy="1.5707963267948966 0 1.5707963267948966" xyz="0 0 0"/>
       <mass value="1"/>
@@ -529,6 +733,16 @@
         <color rgba="0 0.7 0.7 1"/>
       </material>
     </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0.175 0 0"/>
+      <geometry>
+        <box size="0.35 0.075 0.02"/>
+        <!-- <mesh filename="package://crab_description/meshes/femur_${side}.STL" /> -->
+      </geometry>
+      <material name="">
+        <color rgba="0 0.7 0.7 1"/>
+      </material>
+    </collision>
     <inertial>
       <origin rpy="1.5707963267948966 0 1.5707963267948966" xyz="0 0 0"/>
       <mass value="1"/>
@@ -553,6 +767,16 @@
         <color rgba="0.7 0 0.7 1"/>
       </material>
     </visual>
+    <collision>
+      <origin rpy="0 0 0.06" xyz="0.19 0 0.1"/>
+      <geometry>
+        <box size="0.45 0.1 0.025"/>
+        <!-- <mesh filename="package://crab_description/meshes/tibia_${side}.STL" /> -->
+      </geometry>
+      <material name="">
+        <color rgba="0.7 0 0.7 1"/>
+      </material>
+    </collision>
     <inertial>
       <origin rpy="1.5707963267948966 0 1.5707963267948966" xyz="0 0 0"/>
       <mass value="1"/>
