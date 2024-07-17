@@ -1,0 +1,206 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="crab">
+	<!-- Properties -->
+	<!-- <xacro:property name="base_width" value="0.31" />
+	<xacro:property name="base_length" value="0.42" />
+	<xacro:property name="base_height" value="0.18" /> -->
+
+	<xacro:property name="norm" value="20" />
+
+	<xacro:property name="base_width" value="${13/norm}" />
+	<xacro:property name="base_length" value="${15.5/norm}" />
+	<xacro:property name="base_height" value="${4.5/norm}" />
+
+	<!-- Define macros for inertia  -->
+	<xacro:macro name="box_inertia" params="m w h d">
+		<inertial>
+			<origin xyz="0 0 0" rpy="${pi/2} 0 ${pi/2}" />
+			<mass value="${m}" />
+			<inertia ixx="${(m/12) * (h*h + d*d)}" ixy="0.0" ixz="0.0" iyy="${(m/12) * (w*w + d*d)}"
+				iyz="0.0" izz="${(m/12) * (w*w + h*h)}" />
+		</inertial>
+	</xacro:macro>
+
+	<xacro:macro name="cylinder_inertia" params="m r h">
+		<inertial>
+			<origin xyz="0 0 0" rpy="${pi/2} 0 0" />
+			<mass value="${m}" />
+			<inertia ixx="${(m/12) * (3*r*r + h*h)}" ixy="0" ixz="0" iyy="${(m/12) * (3*r*r + h*h)}"
+				iyz="0" izz="${(m/2) * (r*r)}" />
+		</inertial>
+	</xacro:macro>
+
+	<xacro:macro name="sphere_inertia" params="m r">
+		<inertial>
+			<mass value="${m}" />
+			<inertia ixx="${(2/5) * m * (r*r)}" ixy="0.0" ixz="0.0" iyy="${(2/5) * m * (r*r)}"
+				iyz="0.0" izz="${(2/5) * m * (r*r)}" />
+		</inertial>
+	</xacro:macro>
+
+	<!-- Build the body frame -->
+	<link name="base_link">
+		<collision>
+			<geometry>
+				<box size="${base_length} ${base_width} ${base_height}" />
+			</geometry>
+		</collision>
+
+		<!-- <xacro:box_inertia m="15" w="${base_width}" d="${base_length}" h="${base_height}" /> -->
+	</link>
+
+	<!-- Robot Footprint -->
+	<!-- <link name="base_footprint"> -->
+		<!-- <xacro:box_inertia m="0" w="0" d="0" h="0" /> -->
+	<!-- </link> -->
+
+	<joint name="base_joint" type="fixed">
+		<parent link="base_link" />
+		<child link="thorax" />
+		<origin xyz="0 0 0" rpy="0 0 0" />
+	</joint>
+
+	<link name="thorax">
+		<visual>
+			<origin xyz="0 0 0" rpy="0 0 0" />
+			<geometry>
+				<box size="${15.5/20} ${13/20} ${4.5/20}" />
+				<!-- <mesh filename="package://crab_description/meshes/thorax.STL" /> -->
+			</geometry>
+			<material name="grey">
+				<color rgba="0.5 0.5 0.5 1" />
+			</material>
+		</visual>
+
+		<!-- <collision>
+			<geometry>
+				<box size="${base_length} ${base_width} ${base_height}" />
+			</geometry>
+		</collision> -->
+		<xacro:box_inertia m="1" w="${13/norm}" d="${4.5/norm}" h="${15.5/norm}" /> 
+	</link>
+
+	<!-- Pi parameter -->
+	<xacro:property name="pi" value="3.1415926535897931" />
+
+	<!-- Joint properties -->
+	<xacro:property name="joint_lower_limit" value="-${1.5}" />
+	<xacro:property name="joint_upper_limit" value="${1.5}" />
+	<xacro:property name="joint_effort" value="10000" />
+	<xacro:property name="joint_velocity" value="100" />
+
+	<!-- Leg macros -->
+	<xacro:macro name="leg" params="side num x y angle">
+
+		<!-- Build leg -->
+		<!-- joint to center of thorax -->
+		<joint name="leg_center_joint_${side}${num}" type="fixed">
+			<origin xyz="${x} ${y} 0" rpy="0 0 0" />
+			<parent link="thorax" />
+			<child link="leg_center_${side}${num}" />
+		</joint>
+
+		<link name="leg_center_${side}${num}" >
+		</link>
+
+		<joint name="coxa_joint_${side}${num}" type="revolute">
+			<origin xyz="0 0 0" rpy="0 0 ${angle}" />
+			<parent link="leg_center_${side}${num}" />
+			<child link="coxa_${side}${num}" />
+			<axis xyz="0 0 -1" />
+			<limit lower="${joint_lower_limit}" upper="${joint_upper_limit}"
+				effort="${joint_effort}" velocity="${joint_velocity}" />
+		</joint>
+
+		<link name="coxa_${side}${num}">
+			<visual>
+				<xacro:if value="${side == 'l'}">
+				<origin xyz="${0.8/norm} ${0.5/norm} 0" rpy="0 0 0" />
+			</xacro:if>
+			<xacro:if value="${side == 'r'}">
+				<origin xyz="${0.8/norm} -${0.5/norm} 0" rpy="0 0 0" />
+			</xacro:if>
+				<geometry>
+					<box size="${3.3/norm} ${3.3/norm} ${3.3/norm}" />
+					<!-- <mesh filename="package://crab_description/meshes/coxa_${side}.STL" /> -->
+				</geometry>
+				<material name="">
+					<color rgba="0.7 0.7 0 1" />
+				</material>
+			</visual>
+			<!-- <collision>
+				<geometry>
+					<box size="0.5 0.5 0.5" />
+				</geometry>
+			</collision> -->
+			<xacro:box_inertia m="1" w="${3.3/norm}" d="${3.3/norm}" h="${3.3/norm}" /> 
+		</link>
+
+		<joint name="femur_joint_${side}${num}" type="revolute">
+			<origin xyz="${1/norm} 0 -${1/norm}" rpy="-${pi/2} 0 0" />
+			<parent link="coxa_${side}${num}" />
+			<child link="femur_${side}${num}" />
+			<axis xyz="0 0 -1" />
+			<limit lower="${joint_lower_limit}" upper="${joint_upper_limit}"
+				effort="${joint_effort}" velocity="${joint_velocity}" />
+		</joint>
+
+		<link name="femur_${side}${num}">
+			<visual>
+				<origin xyz="${(7/2)/norm} 0 0" rpy="0 0 0" />
+				<geometry>
+					<box size="${7/norm} ${1.5/norm} ${0.4/norm}" />
+					<!-- <mesh filename="package://crab_description/meshes/femur_${side}.STL" /> -->
+				</geometry>
+				<material name="">
+					<color rgba="0 0.7 0.7 1" />
+				</material>
+			</visual>
+			<xacro:box_inertia m="1" w="${1.5/norm}" d="${7/norm}" h="${0.4/norm}" /> 
+		</link>
+
+		<joint name="tibia_joint_${side}${num}" type="revolute">
+			<origin xyz="${((7-0.4)/norm)} 0 0" rpy="${pi} 0 ${pi/2}" />
+			<parent link="femur_${side}${num}" />
+			<child link="tibia_${side}${num}" />
+			<axis xyz="0 0 1" />
+			<limit lower="${joint_lower_limit}" upper="${joint_upper_limit}"
+				effort="${joint_effort}" velocity="${joint_velocity}" />
+		</joint>
+
+		<link name="tibia_${side}${num}">
+			<visual>
+				<origin xyz="${((9-1.4)/2)/norm} 0 ${2/norm}" rpy="0 0 0.06" />
+				<geometry>
+					<box size="${9/norm} ${2/norm} ${0.5/norm}" />
+					<!-- <mesh filename="package://crab_description/meshes/tibia_${side}.STL" /> -->
+				</geometry>
+				<material name="">
+					<color rgba="0.7 0 0.7 1" />
+				</material>
+			</visual>
+			<!-- TODO CHECK INERTIA ORDER!!!! -->
+			<xacro:box_inertia m="1" w="${2/norm}" d="${9/norm}" h="${0.5/norm}" /> 
+		</link>
+
+		<joint name="tibia_foot_joint_${side}${num}" type="fixed">
+			<origin xyz="0.117 0 0" rpy="0 0 0" />
+			<parent link="tibia_${side}${num}" />
+			<child link="tibia_foot_${side}${num}" />
+		</joint>
+
+		<link name="tibia_foot_${side}${num}" />
+	</xacro:macro>
+
+	<xacro:property name="x_far_offset" value="${(15.5/2)/norm}" />
+	<xacro:property name="y_far_offset" value="${(13/2)/norm}" />
+
+	<!-- Build robot model -->
+	<xacro:leg side="r" num="1" x="${x_far_offset}" y="-${y_far_offset}" angle="-${pi/3}" />
+	<xacro:leg side="r" num="2" x="0" y="-${y_far_offset}" angle="-${pi/2}" />
+	<xacro:leg side="r" num="3" x="-${x_far_offset}" y="-${y_far_offset}" angle="-${pi*2/3}" />
+	<xacro:leg side="l" num="1" x="${x_far_offset}" y="${y_far_offset}" angle="${pi/3}" />
+	<xacro:leg side="l" num="2" x="0" y="${y_far_offset}" angle="${pi/2}" />
+	<xacro:leg side="l" num="3" x="-${x_far_offset}" y="${y_far_offset}" angle="${pi*2/3}" />
+
+</robot>
