@@ -1,0 +1,8 @@
+<launch>
+
+    <!-- Load the parameters for the algorithm -->
+    <rosparam command="load" file="$(find hexapod_training)/config/config.yaml" />
+
+    <!-- Launch the training system -->
+    <node pkg="hexapod_training" name="hexapod_gym" type="start_training.py" output="screen"/>
+</launch>
