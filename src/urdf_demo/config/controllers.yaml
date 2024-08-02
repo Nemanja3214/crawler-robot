@@ -1,0 +1,84 @@
+hexapod:
+  # Publish all joint states -----------------------------------
+  joint_state_controller:
+    type: joint_state_controller/JointStateController
+    publish_rate: 50  
+
+  coxa_joint_l1_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: coxa_joint_l1
+    pid: {p: 100.0, i: 0.01, d: 10.0}
+  
+  coxa_joint_l2_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: coxa_joint_l2
+    pid: {p: 100.0, i: 0.01, d: 10.0}
+  coxa_joint_l3_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: coxa_joint_l3
+    pid: {p: 100.0, i: 0.01, d: 10.0}
+
+  coxa_joint_r1_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: coxa_joint_r1
+    pid: {p: 100.0, i: 0.01, d: 10.0}
+  coxa_joint_r2_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: coxa_joint_r2
+    pid: {p: 100.0, i: 0.01, d: 10.0}
+  coxa_joint_r3_position_controller:
+    type: effort_controllers/JointPositionController
+    joint: coxa_joint_r3
+    pid: {p: 100.0, i: 0.01, d: 10.0}
+
+  tibia_joint_l1_position_controller:
+    type: "effort_controllers/JointPositionController"
+    joint: tibia_joint_l1
+    pid: {p: 100.0, i: 0.01, d: 10.0}
+  tibia_joint_l2_position_controller:
+    type: "effort_controllers/JointPositionController"
+    joint: tibia_joint_l2
+    pid: {p: 100.0, i: 0.01, d: 10.0}
+  tibia_joint_l3_position_controller:
+    type: "effort_controllers/JointPositionController"
+    joint: tibia_joint_l3
+    pid: {p: 100.0, i: 0.01, d: 10.0}
+
+  tibia_joint_r1_position_controller:
+    type: "effort_controllers/JointPositionController"
+    joint: tibia_joint_r1
+    pid: {p: 100.0, i: 0.01, d: 10.0}
+  tibia_joint_r2_position_controller:
+    type: "effort_controllers/JointPositionController"
+    joint: tibia_joint_r2
+    pid: {p: 100.0, i: 0.01, d: 10.0}
+  tibia_joint_r3_position_controller:
+    type: "effort_controllers/JointPositionController"
+    joint: tibia_joint_r3
+    pid: {p: 100.0, i: 0.01, d: 10.0}
+
+  femur_joint_l1_position_controller:
+    type: "effort_controllers/JointPositionController"
+    joint: femur_joint_l1
+    pid: {p: 100.0, i: 0.01, d: 10.0}
+  femur_joint_l2_position_controller:
+    type: "effort_controllers/JointPositionController"
+    joint: femur_joint_l2
+    pid: {p: 100.0, i: 0.01, d: 10.0}
+  femur_joint_l3_position_controller:
+    type: "effort_controllers/JointPositionController"
+    joint: femur_joint_l3
+    pid: {p: 100.0, i: 0.01, d: 10.0}
+
+  femur_joint_r1_position_controller:
+    type: "effort_controllers/JointPositionController"
+    joint: femur_joint_r1
+    pid: {p: 100.0, i: 0.01, d: 10.0}
+  femur_joint_r2_position_controller:
+    type: "effort_controllers/JointPositionController"
+    joint: femur_joint_r2
+    pid: {p: 100.0, i: 0.01, d: 10.0}
+  femur_joint_r3_position_controller:
+    type: "effort_controllers/JointPositionController"
+    joint: femur_joint_r3
+    pid: {p: 100.0, i: 0.01, d: 10.0}
