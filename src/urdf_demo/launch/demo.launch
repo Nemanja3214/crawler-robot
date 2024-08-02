@@ -19,33 +19,7 @@
 <!-- Spawn a robot into Gazebo -->
 <node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -model hexapod" />
   
-<!-- Get controller config -->
-    <!-- load the controllers -->
 
-<!-- <rosparam file="$(find urdf_demo)/config/controllers.yaml" command="load"/>
-  <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false"
-    output="screen" args="joint_state_controller"
-    /> -->
-<!-- 
-    coxa_joint_l2_position_controller 
-    coxa_joint_l3_position_controller 
-    coxa_joint_r1_position_controller 
-    coxa_joint_r2_position_controller 
-    coxa_joint_r3_position_controller 
-
-    tibia_joint_l1_position_controller 
-    tibia_joint_l2_position_controller 
-    tibia_joint_l3_position_controller 
-    tibia_joint_r1_position_controller 
-    tibia_joint_r2_position_controller 
-    tibia_joint_r3_position_controller 
-    
-    femur_joint_l1_position_controller 
-    femur_joint_l2_position_controller 
-    femur_joint_l3_position_controller 
-    femur_joint_r1_position_controller 
-    femur_joint_r2_position_controller 
-    femur_joint_r3_position_controller -->
 
 
     <node name="joint_state_publisher_gui" pkg="joint_state_publisher_gui" type="joint_state_publisher_gui" />
