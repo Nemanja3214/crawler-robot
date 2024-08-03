@@ -21,7 +21,7 @@ def talker():
                 elif part == parts[1]:
                     pos = 0
                 elif part == parts[2]:
-                    pos = 0
+                    pos = -1.4
                 publishers[-1].publish(pos)
                 rate.sleep()
 
