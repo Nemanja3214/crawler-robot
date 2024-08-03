@@ -52,3 +52,7 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
   file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/urdf_demo" TYPE FILE FILES "/home/nemanja/catkin_ws/src/urdf_demo/package.xml")
 endif()
 
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/lib/urdf_demo" TYPE PROGRAM FILES "/home/nemanja/catkin_ws/build/urdf_demo/catkin_generated/installspace/stand.py")
+endif()
+

@@ -108,6 +108,7 @@ catkin_package(
 #  LIBRARIES urdf_demo
 #  CATKIN_DEPENDS rospy
 #  DEPENDS system_lib
+
 )
 
 ###########
@@ -164,7 +165,9 @@ include_directories(
 #   scripts/my_python_script
 #   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 # )
-
+catkin_install_python(PROGRAMS src/stand.py
+        DESTINATION   ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
 ## Mark executables for installation
 ## See http://docs.ros.org/melodic/api/catkin/html/howto/format1/building_executables.html
 # install(TARGETS ${PROJECT_NAME}_node
