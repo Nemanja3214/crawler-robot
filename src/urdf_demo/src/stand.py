@@ -17,7 +17,7 @@ def talker():
                 publishers.append(rospy.Publisher(name, Float64, queue_size=10, latch=True))
                 pos = 0
                 if part == parts[0]:
-                    pos = 1.4
+                    pos = 0
                 elif part == parts[1]:
                     pos = 0
                 elif part == parts[2]:
