@@ -146,7 +146,7 @@ class HexapodState(object):
         # We use the IMU for orientation and linearacceleration detection
         rospy.Subscriber("/hexapod/imu/data", Imu, self.imu_callback)
         # We use it to get the contact force, to know if its in the air or stumping too hard.
-        rospy.Subscriber("/lowerleg_contactsensor_state", ContactsState, self.contact_callback)
+        rospy.Subscriber("/contactsensor_state", ContactsState, self.contact_callback)
         # We use it to get the joints positions and calculate the reward associated to it
         rospy.Subscriber("/hexapod/joint_states", JointState, self.joints_state_callback)
 
@@ -178,7 +178,7 @@ class HexapodState(object):
         contacts_data = None
         while contacts_data is None and not rospy.is_shutdown():
             try:
-                contacts_data = rospy.wait_for_message("/lowerleg_contactsensor_state", ContactsState, timeout=0.1)
+                contacts_data = rospy.wait_for_message("/contactsensor_state", ContactsState, timeout=0.1)
                 for state in contacts_data.states:
                     self.contact_force = state.total_wrench.force
                 rospy.logdebug("Current contacts_data READY")

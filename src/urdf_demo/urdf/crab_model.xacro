@@ -283,4 +283,56 @@
         </plugin>
 		<self_collide>1</self_collide>
     </gazebo>
+
+	  <!-- Contact Sensor -->
+    <gazebo reference="base_link">
+        <material>Gazebo/Blue</material>
+        <kp>1000.0</kp>
+        <kd>1000.0</kd>
+        <mu1>1000000.0</mu1>
+        <mu2>1000000.0</mu2>
+
+
+        <sensor name="contactsensor_sensor" type="contact">
+          <always_on>true</always_on>
+          <contact>
+            <collision>lowerleg_fixed_joint_lump__contactsensor_link_collision_1</collision>
+          </contact>
+          <plugin name="bumper0_plugin" filename="libgazebo_ros_bumper.so">
+            <bumperTopicName>contactsensor_state</bumperTopicName>
+            <frameName>contactsensor_link</frameName>
+          </plugin>
+        </sensor>
+
+    </gazebo>
+
+<!-- ODOM sensor -->
+	 <gazebo>
+        <plugin name="p3d_base_controller" filename="libgazebo_ros_p3d.so">
+            <alwaysOn>true</alwaysOn>
+            <!--<updateRate>50.0</updateRate>-->
+            <bodyName>base_link</bodyName>
+            <topicName>odom</topicName>
+            <gaussianNoise>0.01</gaussianNoise>
+            <frameName>world</frameName>
+            <xyzOffsets>0 0 0</xyzOffsets>
+            <rpyOffsets>0 0 0</rpyOffsets>
+        </plugin>
+    </gazebo>
+
+	<!-- IMU sensor -->
+	 <gazebo>
+        <plugin name="gazebo_ros_imu_controller" filename="libgazebo_ros_imu.so">
+          <robotNamespace>/hexapod</robotNamespace>
+          <topicName>imu/data</topicName>
+          <serviceName>imu/service</serviceName>
+          <bodyName>base_link</bodyName>
+          <gaussianNoise>0</gaussianNoise>
+          <rpyOffsets>0 0 0</rpyOffsets>
+          <!--<updateRate>50.0</updateRate>-->
+          <alwaysOn>true</alwaysOn>
+          <gaussianNoise>0</gaussianNoise>
+        </plugin>
+    </gazebo>
+
 </robot>
