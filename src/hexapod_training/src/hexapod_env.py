@@ -13,7 +13,7 @@ from gym.utils import seeding
 from gym.envs.registration import register
 from gazebo_connection import GazeboConnection
 from joint_publisher import JointPub
-from monoped_state import MonopedState
+from hexapod_state import HexapodState
 from controllers_connection import ControllersConnection
 
 #register the training environment in the gym as an available one
@@ -21,6 +21,9 @@ reg = register(
     id='Hexapod-v0',
     entry_point='hexapod_env:HexapodEnv'
     )
+
+def make_name(part, side, num):
+    return "/hexapod/" + part + "_joint_" + side + str(num) +"_position_controller/command"
 
 
 class HexapodEnv(gym.Env):
@@ -45,20 +48,12 @@ class HexapodEnv(gym.Env):
         self.desired_force = rospy.get_param("/desired_force")
         self.desired_yaw = rospy.get_param("/desired_yaw")
 
-        # self.list_of_observations = rospy.get_param("/list_of_observations")
+        self.list_of_observations = rospy.get_param("/list_of_observations")
 
-        haa_max = rospy.get_param("/joint_limits_array/haa_max")
-        haa_min = rospy.get_param("/joint_limits_array/haa_min")
-        hfe_max = rospy.get_param("/joint_limits_array/hfe_max")
-        hfe_min = rospy.get_param("/joint_limits_array/hfe_min")
-        kfe_max = rospy.get_param("/joint_limits_array/kfe_max")
-        kfe_min = rospy.get_param("/joint_limits_array/kfe_min")
-        self.joint_limits = {"haa_max": haa_max,
-                             "haa_min": haa_min,
-                             "hfe_max": hfe_max,
-                             "hfe_min": hfe_min,
-                             "kfe_max": kfe_max,
-                             "kfe_min": kfe_min
+        joint_max = rospy.get_param("/joint_limits_array/max")
+        joint_min = rospy.get_param("/joint_limits_array/min")
+        self.joint_limits = {"max": joint_max,
+                             "min": joint_min,
                              }
 
         self.discrete_division = rospy.get_param("/discrete_division")
@@ -73,23 +68,30 @@ class HexapodEnv(gym.Env):
         self.weight_r4 = rospy.get_param("/weight_r4")
         self.weight_r5 = rospy.get_param("/weight_r5")
 
-        haa_init_value = rospy.get_param("/init_joint_pose/haa")
-        hfe_init_value = rospy.get_param("/init_joint_pose/hfe")
-        kfe_init_value = rospy.get_param("/init_joint_pose/kfe")
-        self.init_joint_pose = [haa_init_value,hfe_init_value,kfe_init_value]
+        def make_name(part, side, num):
+            return "/init_joint_pose/" + part + "_" + side + str(num)
+
+        self.init_joint_pose = []
+        parts = ["tibia", "coxa", "femur"]
+        sides = ["l", "r"]
+        nums = [1, 2, 3]
+        for part in parts:
+            for side in sides:
+                for num in nums:
+                    name = make_name(part, side, num)
+                    val = rospy.get_param(name)
+                    self.init_joint_pose.append(val)
+  
 
         # Fill in the Done Episode Criteria list
         self.episode_done_criteria = rospy.get_param("/episode_done_criteria")
-
-        # Jump Increment Value in Radians
-        self.jump_increment = rospy.get_param("/jump_increment")
 
         # stablishes connection with simulator
         self.gazebo = GazeboConnection()
 
         self.controllers_object = ControllersConnection(namespace="hexapod")
 
-        self.monoped_state_object = MonopedState(   max_height=self.max_height,
+        self.hexapod_state_object = HexapodState(   max_height=self.max_height,
                                                     min_height=self.min_height,
                                                     abs_max_roll=self.max_incl,
                                                     abs_max_pitch=self.max_incl,
@@ -110,14 +112,13 @@ class HexapodEnv(gym.Env):
                                                     maximum_base_linear_acceleration=self.maximum_base_linear_acceleration,
                                                     maximum_base_angular_velocity=self.maximum_base_angular_velocity,
                                                     maximum_joint_effort=self.maximum_joint_effort,
-                                                    jump_increment=self.jump_increment
                                                 )
 
-        self.monoped_state_object.set_desired_world_point(self.desired_pose.position.x,
+        self.hexapod_state_object.set_desired_world_point(self.desired_pose.position.x,
                                                           self.desired_pose.position.y,
                                                           self.desired_pose.position.z)
 
-        self.monoped_joint_pubisher_object = JointPub()
+        self.hexapod_joint_pubisher_object = JointPub()
         
 
 
@@ -128,7 +129,7 @@ class HexapodEnv(gym.Env):
         5) Dont Move
         6) Perform One Jump
         """
-        self.action_space = spaces.Discrete(6)
+        self.action_space = spaces.Discrete(37)
         self.reward_range = (-np.inf, np.inf)
 
         self._seed()
@@ -137,6 +138,9 @@ class HexapodEnv(gym.Env):
     def _seed(self, seed=None):
         self.np_random, seed = seeding.np_random(seed)
         return [seed]
+    
+    def _render(self):
+        return None
         
     # Resets the state of the environment and returns an initial observation.
     def _reset(self):
@@ -155,27 +159,26 @@ class HexapodEnv(gym.Env):
         self.gazebo.change_gravity(0.0, 0.0, 0.0)
 
         # EXTRA: Reset JoinStateControlers because sim reset doesnt reset TFs, generating time problems
-        rospy.logdebug("reset_monoped_joint_controllers...")
-        self.controllers_object.reset_monoped_joint_controllers()
+        rospy.logdebug("reset_hexapod_joint_controllers...")
+        self.controllers_object.reset_hexapod_joint_controllers()
 
         # 3rd: resets the robot to initial conditions
         rospy.logdebug("set_init_pose init variable...>>>" + str(self.init_joint_pose))
         # We save that position as the current joint desired position
-        init_pos = self.monoped_state_object.init_joints_pose(self.init_joint_pose)
+        init_pos = self.hexapod_state_object.init_joints_pose(self.init_joint_pose)
 
         # 4th: We Set the init pose to the jump topic so that the jump control can update
         rospy.logdebug("Publish init_pose for Jump Control...>>>" + str(init_pos))
         # We check the jump publisher has connection
-        self.monoped_joint_pubisher_object.check_publishers_connection()
+        self.hexapod_joint_pubisher_object.check_publishers_connection()
         # We move the joints to position, no jump
-        do_jump = False
-        self.monoped_joint_pubisher_object.move_joints_jump(init_pos, do_jump)
+        self.hexapod_joint_pubisher_object.move_joints(init_pos)
 
         # 5th: Check all subscribers work.
         # Get the state of the Robot defined by its RPY orientation, distance from
         # desired point, contact force and JointState of the three joints
         rospy.logdebug("check_all_systems_ready...")
-        self.monoped_state_object.check_all_systems_ready()
+        self.hexapod_state_object.check_all_systems_ready()
 
         # 6th: We restore the gravity to original
         rospy.logdebug("Restore Gravity...")
@@ -187,7 +190,7 @@ class HexapodEnv(gym.Env):
 
         # 8th: Get the State Discrete Stringuified version of the observations
         rospy.logdebug("get_observations...")
-        observation = self.monoped_state_object.get_observations()
+        observation = self.hexapod_state_object.get_observations()
         state = self.get_state(observation)
 
         return state
@@ -198,11 +201,11 @@ class HexapodEnv(gym.Env):
         # we perform the corresponding movement of the robot
 
         # 1st, decide which action corresponds to which joint is incremented
-        next_action_position, do_jump = self.monoped_state_object.get_action_to_position(action)
+        next_action_position = self.hexapod_state_object.get_action_to_position(action)
 
         # We move it to that pos
         self.gazebo.unpauseSim()
-        self.monoped_joint_pubisher_object.move_joints_jump(next_action_position, do_jump)
+        self.hexapod_joint_pubisher_object.move_joints(next_action_position)
         # Then we send the command to the robot and let it go
         # for running_step seconds
         time.sleep(self.running_step)
@@ -212,10 +215,10 @@ class HexapodEnv(gym.Env):
         # the state and the rewards. This way we guarantee that they work
         # with the same exact data.
         # Generate State based on observations
-        observation = self.monoped_state_object.get_observations()
+        observation = self.hexapod_state_object.get_observations()
 
         # finally we get an evaluation based on what happened in the sim
-        reward,done = self.monoped_state_object.process_data()
+        reward,done = self.hexapod_state_object.process_data()
 
         # Get the State Discrete Stringuified version of the observations
         state = self.get_state(observation)
@@ -227,4 +230,4 @@ class HexapodEnv(gym.Env):
         We retrieve the Stringuified-Discrete version of the given observation
         :return: state
         """
-        return self.monoped_state_object.get_state_as_string(observation)
+        return self.hexapod_state_object.get_state_as_string(observation)

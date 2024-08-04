@@ -43,9 +43,9 @@ import math
         z: 1.0
     depths: [0.000138379966266991]
   -
-    info: "Debug:  i:(2/4)     my geom:monoped::lowerleg::lowerleg_contactsensor_link_collision_1\
+    info: "Debug:  i:(2/4)     my geom:hexapod::lowerleg::lowerleg_contactsensor_link_collision_1\
   \   other geom:ground_plane::link::collision         time:50.405000000\n"
-    collision1_name: "monoped::lowerleg::lowerleg_contactsensor_link_collision_1"
+    collision1_name: "hexapod::lowerleg::lowerleg_contactsensor_link_collision_1"
     collision2_name: "ground_plane::link::collision"
 
 """
@@ -87,10 +87,11 @@ gazebo_msgs/ContactState[] states
   float64[] depths
 """
 
-class MonopedState(object):
+class HexapodState(object):
 
-    def __init__(self, max_height, min_height, abs_max_roll, abs_max_pitch, list_of_observations, joint_limits, episode_done_criteria, joint_increment_value = 0.05, done_reward = -1000.0, alive_reward=10.0, desired_force=7.08, desired_yaw=0.0, weight_r1=1.0, weight_r2=1.0, weight_r3=1.0, weight_r4=1.0, weight_r5=1.0, discrete_division=10, maximum_base_linear_acceleration=3000.0, maximum_base_angular_velocity=20.0, maximum_joint_effort=10.0, jump_increment=0.7):
-        rospy.logdebug("Starting MonopedState Class object...")
+    def __init__(self, max_height, min_height, abs_max_roll, abs_max_pitch, list_of_observations, joint_limits, episode_done_criteria, joint_increment_value = 0.05, done_reward = -1000.0, alive_reward=10.0, desired_force=7.08, desired_yaw=0.0, weight_r1=1.0, weight_r2=1.0, weight_r3=1.0, weight_r4=1.0, weight_r5=1.0, discrete_division=10, maximum_base_linear_acceleration=3000.0, maximum_base_angular_velocity=20.0, maximum_joint_effort=10.0):
+        rospy.logdebug("Starting HexapodState Class object...")
+       
         self.desired_world_point = Vector3(0.0, 0.0, 0.0)
         self._min_height = min_height
         self._max_height = max_height
@@ -129,7 +130,6 @@ class MonopedState(object):
 
         self._discrete_division = discrete_division
 
-        self.jump_increment = jump_increment
         # We init the observation ranges and We create the bins now for all the observations
         self.init_bins()
 
@@ -144,11 +144,11 @@ class MonopedState(object):
         #  because in real robots this data is not trivial.
         rospy.Subscriber("/odom", Odometry, self.odom_callback)
         # We use the IMU for orientation and linearacceleration detection
-        rospy.Subscriber("/monoped/imu/data", Imu, self.imu_callback)
+        rospy.Subscriber("/hexapod/imu/data", Imu, self.imu_callback)
         # We use it to get the contact force, to know if its in the air or stumping too hard.
         rospy.Subscriber("/lowerleg_contactsensor_state", ContactsState, self.contact_callback)
         # We use it to get the joints positions and calculate the reward associated to it
-        rospy.Subscriber("/monoped/joint_states", JointState, self.joints_state_callback)
+        rospy.Subscriber("/hexapod/joint_states", JointState, self.joints_state_callback)
 
     def check_all_systems_ready(self):
         """
@@ -167,7 +167,7 @@ class MonopedState(object):
         imu_data = None
         while imu_data is None and not rospy.is_shutdown():
             try:
-                imu_data = rospy.wait_for_message("/monoped/imu/data", Imu, timeout=0.1)
+                imu_data = rospy.wait_for_message("/hexapod/imu/data", Imu, timeout=0.1)
                 self.base_orientation = imu_data.orientation
                 self.base_angular_velocity = imu_data.angular_velocity
                 self.base_linear_acceleration = imu_data.linear_acceleration
@@ -188,7 +188,7 @@ class MonopedState(object):
         joint_states_msg = None
         while joint_states_msg is None and not rospy.is_shutdown():
             try:
-                joint_states_msg = rospy.wait_for_message("/monoped/joint_states", JointState, timeout=0.1)
+                joint_states_msg = rospy.wait_for_message("/hexapod/joint_states", JointState, timeout=0.1)
                 self.joints_state = joint_states_msg
                 rospy.logdebug("Current joint_states READY")
             except Exception as e:
@@ -198,7 +198,7 @@ class MonopedState(object):
 
     def set_desired_world_point(self, x, y, z):
         """
-        Point where you want the Monoped to be
+        Point where you want the hexapod to be
         :return:
         """
         self.desired_world_point.x = x
@@ -284,12 +284,12 @@ class MonopedState(object):
     def joints_state_callback(self,msg):
         self.joints_state = msg
 
-    def monoped_height_ok(self):
+    def hexapod_height_ok(self):
 
         height_ok = self._min_height <= self.get_base_height() < self._max_height
         return height_ok
 
-    def monoped_orientation_ok(self):
+    def hexapod_orientation_ok(self):
 
         orientation_rpy = self.get_base_rpy()
         roll_ok = self._abs_max_roll > abs(orientation_rpy.x)
@@ -677,36 +677,134 @@ class MonopedState(object):
 
         rospy.logdebug("current joint pose>>>"+str(self.current_joint_pose))
         rospy.logdebug("Action Number>>>"+str(action))
-        # We dont want to jump unless the action jump is selected
-        do_jump = False
 
-        if action == 0: #Increment haa_joint
-            rospy.logdebug("Action Decided:Increment haa_joint>>>")
+# COXA
+        if action == 0: #Increment coxa_l1
+            rospy.logdebug("Action Decided:Increment coxa_l1_joint>>>")
             self.current_joint_pose[0] += self._joint_increment_value
-        elif action == 1: #Decrement haa_joint
-            rospy.logdebug("Action Decided:Decrement haa_joint>>>")
+        elif action == 1: #Decrement coxa_l1
+            rospy.logdebug("Action Decided:Decrement coxa_l1_joint>>>")
             self.current_joint_pose[0] -= self._joint_increment_value
-        elif action == 2: #Increment hfe_joint
-            rospy.logdebug("Action Decided:Increment hfe_joint>>>")
+        elif action == 2: #Increment coxa_l2
+            rospy.logdebug("Action Decided:Increment coxa_l2_joint>>>")
             self.current_joint_pose[1] += self._joint_increment_value
-        elif action == 3: #Decrement hfe_joint
-            rospy.logdebug("Action Decided:Decrement hfe_joint>>>")
+        elif action == 3: #Decrement coxa_l2
+            rospy.logdebug("Action Decided:Decrement coxa_l2_joint>>>")
             self.current_joint_pose[1] -= self._joint_increment_value
-        elif action == 4:  # Dont Move
+        elif action == 4: #Increment coxa_l3
+            rospy.logdebug("Action Decided:Increment coxa_l3_joint>>>")
+            self.current_joint_pose[2] += self._joint_increment_value
+        elif action == 5: #Decrement coxa_l3
+            rospy.logdebug("Action Decided:Decrement coxa_l3_joint>>>")
+            self.current_joint_pose[2] -= self._joint_increment_value
+        elif action == 6: #Increment coxa_r1
+            rospy.logdebug("Action Decided:Increment coxa_r1_joint>>>")
+            self.current_joint_pose[3] += self._joint_increment_value
+        elif action == 7: #Decrement coxa_r1
+            rospy.logdebug("Action Decided:Decrement coxa_r1_joint>>>")
+            self.current_joint_pose[3] -= self._joint_increment_value
+        elif action == 8: #Increment coxa_r2
+            rospy.logdebug("Action Decided:Increment coxa_r2_joint>>>")
+            self.current_joint_pose[4] += self._joint_increment_value
+        elif action == 9: #Decrement coxa_r2
+            rospy.logdebug("Action Decided:Decrement coxa_r2_joint>>>")
+            self.current_joint_pose[4] -= self._joint_increment_value
+        elif action == 10: #Decrement coxa_r3
+            rospy.logdebug("Action Decided:Decrement coxa_r3_joint>>>")
+            self.current_joint_pose[5] += self._joint_increment_value
+        elif action == 11: #Decrement coxa_r3
+            rospy.logdebug("Action Decided:Decrement coxa_r3_joint>>>")
+            self.current_joint_pose[5] -= self._joint_increment_value
+
+# TIBIA
+        if action == 12: #Increment tibia_l1
+            rospy.logdebug("Action Decided:Increment haa_joint>>>")
+            self.current_joint_pose[6] += self._joint_increment_value
+        elif action == 13: #Decrement tibia_l1
+            rospy.logdebug("Action Decided:Decrement haa_joint>>>")
+            self.current_joint_pose[6] -= self._joint_increment_value
+        elif action == 14: #Increment tibia_l2
+            rospy.logdebug("Action Decided:Increment hfe_joint>>>")
+            self.current_joint_pose[7] += self._joint_increment_value
+        elif action == 15: #Decrement tibia_l2
+            rospy.logdebug("Action Decided:Decrement hfe_joint>>>")
+            self.current_joint_pose[7] -= self._joint_increment_value
+        elif action == 16: #Increment tibia_l3
+            rospy.logdebug("Action Decided:Increment hfe_joint>>>")
+            self.current_joint_pose[8] += self._joint_increment_value
+        elif action == 17: #Decrement tibia_l3
+            rospy.logdebug("Action Decided:Decrement hfe_joint>>>")
+            self.current_joint_pose[8] -= self._joint_increment_value
+        elif action == 18: #Increment tibia_r1
+            rospy.logdebug("Action Decided:Increment hfe_joint>>>")
+            self.current_joint_pose[9] += self._joint_increment_value
+        elif action == 19: #Decrement tibia_r1
+            rospy.logdebug("Action Decided:Decrement hfe_joint>>>")
+            self.current_joint_pose[9] -= self._joint_increment_value
+        elif action == 20: #Increment tibia_r2
+            rospy.logdebug("Action Decided:Increment hfe_joint>>>")
+            self.current_joint_pose[10] += self._joint_increment_value
+        elif action == 21: #Decrement tibia_r2
+            rospy.logdebug("Action Decided:Decrement hfe_joint>>>")
+            self.current_joint_pose[10] -= self._joint_increment_value
+        elif action == 22: #Decrement tibia_r3
+            rospy.logdebug("Action Decided:Decrement hfe_joint>>>")
+            self.current_joint_pose[11] += self._joint_increment_value
+        elif action == 23: #Decrement tibia_r3
+            rospy.logdebug("Action Decided:Decrement hfe_joint>>>")
+            self.current_joint_pose[11] -= self._joint_increment_value
+
+# FEMUR
+        if action == 24: #Increment femur_l1
+            rospy.logdebug("Action Decided:Increment haa_joint>>>")
+            self.current_joint_pose[12] += self._joint_increment_value
+        elif action == 25: #Decrement femur_l1
+            rospy.logdebug("Action Decided:Decrement haa_joint>>>")
+            self.current_joint_pose[12] -= self._joint_increment_value
+        elif action == 26: #Increment femur_l2
+            rospy.logdebug("Action Decided:Increment hfe_joint>>>")
+            self.current_joint_pose[13] += self._joint_increment_value
+        elif action == 27: #Decrement femur_l2
+            rospy.logdebug("Action Decided:Decrement hfe_joint>>>")
+            self.current_joint_pose[13] -= self._joint_increment_value
+        elif action == 28: #Increment femur_l3
+            rospy.logdebug("Action Decided:Increment hfe_joint>>>")
+            self.current_joint_pose[14] += self._joint_increment_value
+        elif action == 29: #Decrement femur_l3
+            rospy.logdebug("Action Decided:Decrement hfe_joint>>>")
+            self.current_joint_pose[14] -= self._joint_increment_value
+        elif action == 30: #Increment femur_r1
+            rospy.logdebug("Action Decided:Increment hfe_joint>>>")
+            self.current_joint_pose[15] += self._joint_increment_value
+        elif action == 31: #Decrement femur_r1
+            rospy.logdebug("Action Decided:Decrement hfe_joint>>>")
+            self.current_joint_pose[15] -= self._joint_increment_value
+        elif action == 32: #Increment femur_r2
+            rospy.logdebug("Action Decided:Increment hfe_joint>>>")
+            self.current_joint_pose[16] += self._joint_increment_value
+        elif action == 33: #Decrement femur_r2
+            rospy.logdebug("Action Decided:Decrement hfe_joint>>>")
+            self.current_joint_pose[16] -= self._joint_increment_value
+        elif action == 34: #Decrement femur_r3
+            rospy.logdebug("Action Decided:Decrement hfe_joint>>>")
+            self.current_joint_pose[17] += self._joint_increment_value
+        elif action == 35: #Decrement femur_r3
+            rospy.logdebug("Action Decided:Decrement hfe_joint>>>")
+            self.current_joint_pose[17] -= self._joint_increment_value
+
+
+        elif action == 36:  # Dont Move
             rospy.logdebug("Action Decided:Dont Move>>>")
-        elif action == 5:  # Perform One Jump
-            rospy.logdebug("Action Decided:Perform One Jump>>>")
-            # We get the Value Used for the Knee charged position
-            do_jump = True
 
         # We set the Knee to be ready for jump, based on the init knee pose
+        # TODO check if needed
         self.current_joint_pose[2] = self.init_knee_value
 
         rospy.logdebug("action to move joint states>>>" + str(self.current_joint_pose))
 
         self.clamp_to_joint_limits()
 
-        return self.current_joint_pose, do_jump
+        return self.current_joint_pose
 
     def clamp_to_joint_limits(self):
         """
@@ -723,20 +821,24 @@ class MonopedState(object):
         """
 
         rospy.logdebug("Clamping current_joint_pose>>>" + str(self.current_joint_pose))
-        haa_joint_value = self.current_joint_pose[0]
-        hfe_joint_value = self.current_joint_pose[1]
-        kfe_joint_value = self.current_joint_pose[2]
+        for i, joint_value in enumerate(self.current_joint_pose):
+            self.current_joint_pose[i] = max(min(joint_value, self._joint_limits["max"]),
+                                         self._joint_limits["min"])
 
-        self.current_joint_pose[0] = max(min(haa_joint_value, self._joint_limits["haa_max"]),
-                                         self._joint_limits["haa_min"])
-        self.current_joint_pose[1] = max(min(hfe_joint_value, self._joint_limits["hfe_max"]),
-                                         self._joint_limits["hfe_min"])
+        # haa_joint_value = self.current_joint_pose[0]
+        # hfe_joint_value = self.current_joint_pose[1]
+        # kfe_joint_value = self.current_joint_pose[2]
+
+        # self.current_joint_pose[0] = max(min(haa_joint_value, self._joint_limits["haa_max"]),
+        #                                  self._joint_limits["haa_min"])
+        # self.current_joint_pose[1] = max(min(hfe_joint_value, self._joint_limits["hfe_max"]),
+        #                                  self._joint_limits["hfe_min"])
 
 
-        rospy.logdebug("kfe_min>>>" + str(self._joint_limits["kfe_min"]))
-        rospy.logdebug("kfe_max>>>" + str(self._joint_limits["kfe_max"]))
-        self.current_joint_pose[2] = max(min(kfe_joint_value, self._joint_limits["kfe_max"]),
-                                         self._joint_limits["kfe_min"])
+        # rospy.logdebug("kfe_min>>>" + str(self._joint_limits["kfe_min"]))
+        # rospy.logdebug("kfe_max>>>" + str(self._joint_limits["kfe_max"]))
+        # self.current_joint_pose[2] = max(min(kfe_joint_value, self._joint_limits["kfe_max"]),
+        #                                  self._joint_limits["kfe_min"])
 
         rospy.logdebug("DONE Clamping current_joint_pose>>>" + str(self.current_joint_pose))
 
@@ -748,22 +850,22 @@ class MonopedState(object):
         :return: reward, done
         """
 
-        if "monoped_minimum_height" in self._episode_done_criteria:
-            monoped_height_ok = self.monoped_height_ok()
+        if "hexapod_minimum_height" in self._episode_done_criteria:
+            hexapod_height_ok = self.hexapod_height_ok()
         else:
-            rospy.logdebug("monoped_height_ok NOT TAKEN INTO ACCOUNT")
-            monoped_height_ok = True
+            rospy.logdebug("hexapod_height_ok NOT TAKEN INTO ACCOUNT")
+            hexapod_height_ok = True
 
-        if "monoped_vertical_orientation" in self._episode_done_criteria:
-            monoped_orientation_ok = self.monoped_orientation_ok()
+        if "hexapod_vertical_orientation" in self._episode_done_criteria:
+            hexapod_orientation_ok = self.hexapod_orientation_ok()
         else:
-            rospy.logdebug("monoped_orientation_ok NOT TAKEN INTO ACCOUNT")
-            monoped_orientation_ok = True
+            rospy.logdebug("hexapod_orientation_ok NOT TAKEN INTO ACCOUNT")
+            hexapod_orientation_ok = True
 
-        rospy.logdebug("monoped_height_ok="+str(monoped_height_ok))
-        rospy.logdebug("monoped_orientation_ok=" + str(monoped_orientation_ok))
+        rospy.logdebug("hexapod_height_ok="+str(hexapod_height_ok))
+        rospy.logdebug("hexapod_orientation_ok=" + str(hexapod_orientation_ok))
 
-        done = not(monoped_height_ok and monoped_orientation_ok)
+        done = not(hexapod_height_ok and hexapod_orientation_ok)
         if done:
             rospy.logerr("It fell, so the reward has to be very low")
             total_reward = self._done_reward
@@ -782,7 +884,7 @@ class MonopedState(object):
 
 
 if __name__ == "__main__":
-    rospy.init_node('monoped_state_node', anonymous=True, log_level=rospy.DEBUG)
+    rospy.init_node('hexapod_state_node', anonymous=True, log_level=rospy.DEBUG)
     max_height = 3.0
     min_height = 0.5
     max_incl = 1.57
@@ -795,27 +897,23 @@ if __name__ == "__main__":
                             "base_linear_acceleration_x",
                             "base_linear_acceleration_y",
                             "base_linear_acceleration_z"]
-    joint_limits = {"haa_max": 1.6,
-                     "haa_min": -1.6,
-                     "hfe_max": 1.6,
-                     "hfe_min": -1.6,
-                     "kfe_max": 0.0,
-                     "kfe_min": -1.6
+    joint_limits = {"max": 1.5,
+                     "min": -1.5
                      }
-    episode_done_criteria = [ "monoped_minimum_height",
-                              "monoped_vertical_orientation"]
+    episode_done_criteria = [ "hexapod_minimum_height",
+                              "hexapod_vertical_orientation"]
     done_reward = -1000.0
     alive_reward = 100.0
     desired_force = 7.08
     desired_yaw = 0.0
     weight_r1 = 0.0 # Weight for joint positions ( joints in the zero is perfect )
     weight_r2 = 0.0 # Weight for joint efforts ( no efforts is perfect )
-    weight_r3 = 0.0 # Weight for contact force similar to desired ( weight of monoped )
+    weight_r3 = 0.0 # Weight for contact force similar to desired ( weight of hexapod )
     weight_r4 = 10.0 # Weight for orientation ( vertical is perfect )
     weight_r5 = 10.0 # Weight for distance from desired point ( on the point is perfect )
     discrete_division = 10
     maximum_base_linear_acceleration = 3000.0
-    monoped_state = MonopedState(   max_height=max_height,
+    hexapod_state = HexapodState(   max_height=max_height,
                                     min_height=min_height,
                                     abs_max_roll=max_incl,
                                     abs_max_pitch=max_incl,
@@ -835,4 +933,4 @@ if __name__ == "__main__":
                                     discrete_division=discrete_division,
                                     maximum_base_linear_acceleration=maximum_base_linear_acceleration
                                                 )
-    monoped_state.testing_loop()
+    hexapod_state.testing_loop()

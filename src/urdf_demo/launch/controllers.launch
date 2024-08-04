@@ -4,6 +4,7 @@
     <!-- load the controllers -->
   <node name="controller_spawner" pkg="controller_manager" ns="hexapod" type="spawner" respawn="false"
     output="screen" args="--timeout 120 joint_state_controller 
+    coxa_joint_l1_position_controller 
     coxa_joint_l2_position_controller 
     coxa_joint_l3_position_controller 
     coxa_joint_r1_position_controller 

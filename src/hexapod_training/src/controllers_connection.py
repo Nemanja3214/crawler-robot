@@ -70,9 +70,18 @@ class ControllersConnection():
         return reset_result
 
 # TODO CHANGE THIS
-    def reset_monoped_joint_controllers(self):
-        controllers_reset = ['joint_state_controller',
-                             'haa_joint_position_controller',
-                             'hfe_joint_position_controller',
-                             'kfe_joint_position_controller']
+    def reset_hexapod_joint_controllers(self):
+        def make_name(part, side, num):
+            return "/hexapod/" + part + "_joint_" + side + str(num) +"_position_controller/command"
+
+
+        parts = ["tibia", "coxa", "femur"]
+        sides = ["l", "r"]
+        nums = [1, 2, 3]
+        controllers_reset = ['joint_state_controller']
+        for part in parts:
+            for side in sides:
+                for num in nums:
+                    name = make_name(part, side, num)
+                    controllers_reset.append(name)
         self.reset_controllers(controllers_reset)

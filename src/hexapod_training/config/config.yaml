@@ -8,9 +8,9 @@ nsteps: 1000
 
 # Environment Parameters
 desired_pose:
-    x: 0.0
-    y: 0.0
-    z: 1.0
+  x: 0.0
+  y: 0.0
+  z: 1.0
 desired_force: 7.08 # In Newtons, normal contact force when stanting still with 9.81 gravity
 desired_yaw: 0.0 # Desired yaw in radians for the hopper to stay
 max_height: 3.0   # in meters
@@ -49,17 +49,28 @@ weight_r4: 0.0 # Weight for orientation ( vertical is perfect )
 weight_r5: 0.0 # Weight for distance from desired point ( on the point is perfect )
 
 init_joint_pose:
-  haa: 0.0
-  hfe: 0.0
-  kfe: -1.6
+  coxa_l1: 0.0
+  coxa_l2: 0.0
+  coxa_l3: 0.0
+  coxa_r1: 0.0
+  coxa_r2: 0.0
+  coxa_r3: 0.0
+  tibia_l1: 0.0
+  tibia_l2: 0.0
+  tibia_l3: 0.0
+  tibia_r1: 0.0
+  tibia_r2: 0.0
+  tibia_r3: 0.0
+  femur_l1: 0.0
+  femur_l2: 0.0
+  femur_l3: 0.0
+  femur_r1: 0.0
+  femur_r2: 0.0
+  femur_r3: 0.0
 
 joint_limits_array:
-  haa_max: 1.6
-  haa_min: -1.6
-  hfe_max: 1.6
-  hfe_min: -1.6
-  kfe_max: 0.0
-  kfe_min: -1.6
+  min: -1.5
+  max: 1.5
 
 episode_done_criteria:
   - monoped_minimum_height
