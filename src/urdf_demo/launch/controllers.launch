@@ -24,4 +24,5 @@
     femur_joint_r2_position_controller 
     femur_joint_r3_position_controller "
     />
+
 </launch>

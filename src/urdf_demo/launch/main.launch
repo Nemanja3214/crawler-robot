@@ -1,5 +1,5 @@
 <launch>
-<!-- <param name="tf_prefix" value="hexapod" /> -->
+<param name="tf_prefix" value="hexapod" />
   <param name="robot_description" command="$(find xacro)/xacro $(find urdf_demo)/urdf/crab_model.xacro" />
 
 
@@ -7,7 +7,7 @@
 
   <!-- We resume the logic in empty_world.launch, changing only the name of the world to be launched -->
   <include file="$(find gazebo_ros)/launch/empty_world.launch">
-    <arg name="world_name" value="worlds/emtpy_world.world"/> <!-- Note: the world_name is with respect to GAZEBO_RESOURCE_PATH environmental variable -->
+    <arg name="world_name" value="worlds/emtpy_world.world"/> 
     <arg name="paused" value="false"/>
     <arg name="use_sim_time" value="true"/>
     <arg name="gui" value="true"/>
@@ -17,19 +17,19 @@
 
 
 <!-- Spawn a robot into Gazebo -->
-<node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -model hexapod
- -J tibia_joint_l1 1.5" />
+<node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-param robot_description -urdf -model hexapod" />
   
-<!-- <node name="rviz" pkg="rviz" type="rviz" /> -->
+
 
 
 
     <!-- <node name="joint_state_publisher_gui" pkg="joint_state_publisher_gui" type="joint_state_publisher_gui" /> -->
   <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
     respawn="false" output="screen">
-    <!-- <remap from="/joint_states" to="/hexapod/joint_states" /> -->
+    <remap from="/joint_states" to="/hexapod/joint_states" />
   </node>
 
+ 
 <!-- NOT WORKING BECAUSE GAZEBO NEEDS TIME TO LOAD -->
   <!-- <include file="$(find urdf_demo)/launch/controllers.launch"/> -->
 </launch>
