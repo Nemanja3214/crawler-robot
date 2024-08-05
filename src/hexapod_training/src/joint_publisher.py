@@ -152,20 +152,20 @@ class JointPub(object):
     #     rospy.logdebug("Movement Done==>")
 
 
-    def start_loop(self, rate_value = 2.0):
-        rospy.logdebug("Start Loop")
-        pos1 = [0.0,0.0,1.6]
-        pos2 = [0.0,0.0,-1.6]
-        position = "pos1"
-        rate = rospy.Rate(rate_value)
-        while not rospy.is_shutdown():
-          if position == "pos1":
-            self.move_joints(pos1)
-            position = "pos2"
-          else:
-            self.move_joints(pos2)
-            position = "pos1"
-          rate.sleep()
+    # def start_loop(self, rate_value = 2.0):
+    #     rospy.logdebug("Start Loop")
+    #     pos1 = [0.0,0.0,1.6]
+    #     pos2 = [0.0,0.0,-1.6]
+    #     position = "pos1"
+    #     rate = rospy.Rate(rate_value)
+    #     while not rospy.is_shutdown():
+    #       if position == "pos1":
+    #         self.move_joints(pos1)
+    #         position = "pos2"
+    #       else:
+    #         self.move_joints(pos2)
+    #         position = "pos1"
+    #       rate.sleep()
 
     # def start_sinus_loop(self, rate_value = 2.0):
     #     rospy.logdebug("Start Loop")

@@ -10,7 +10,7 @@ nsteps: 1000
 desired_pose:
   x: 0.0
   y: 0.0
-  z: 1.0
+  z: 0.5
 desired_force: 7.08 # In Newtons, normal contact force when stanting still with 9.81 gravity
 desired_yaw: 0.0 # Desired yaw in radians for the hopper to stay
 max_height: 3.0   # in meters
@@ -33,10 +33,10 @@ list_of_observations: # Observations you want to use for the learning
   #- base_linear_acceleration_y
   #- base_linear_acceleration_z
   - contact_force
-  #- joint_states_haa
+  # - joint_states
   #- joint_states_hfe
   #- joint_states_kfe
-  #- joint_effort_haa
+  # - joint_effort
   #- joint_effort_hfe
   #- joint_effort_kfe
 

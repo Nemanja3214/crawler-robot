@@ -87,7 +87,7 @@
 				<box size="${base_length} ${base_width} ${base_height}" />
 			</geometry>
 		</collision> -->
-		<xacro:box_inertia m="0.1" w="${15.5/norm}" d="${13/norm}" h="${4.5/norm}" /> 
+		<xacro:box_inertia m="0.01" w="${15.5/norm}" d="${13/norm}" h="${4.5/norm}" /> 
 	</link>
 
 	<!-- Pi parameter -->
@@ -286,11 +286,11 @@
 
 	  <!-- Contact Sensor -->
     <gazebo reference="base_link">
-        <material>Gazebo/Blue</material>
+        <!-- <material>Gazebo/Blue</material>
         <kp>1000.0</kp>
         <kd>1000.0</kd>
         <mu1>1000000.0</mu1>
-        <mu2>1000000.0</mu2>
+        <mu2>1000000.0</mu2> -->
 
 
         <sensor name="contactsensor_sensor" type="contact">

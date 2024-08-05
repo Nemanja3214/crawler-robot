@@ -22,7 +22,8 @@ import hexapod_env
 
 if __name__ == '__main__':
     
-    rospy.init_node('hexapod_gym', anonymous=True, log_level=rospy.DEBUG)
+    rospy.init_node('hexapod_gym', anonymous=True, log_level=rospy.INFO)
+    # rospy.init_node('hexapod_gym', anonymous=True, log_level=rospy.DEBUG)
 
     # Create the Gym environment
     env = gym.make('Hexapod-v0')
@@ -35,8 +36,8 @@ if __name__ == '__main__':
     rospack = rospkg.RosPack()
     pkg_path = rospack.get_path('hexapod_training')
     outdir = pkg_path + '/training_results'
-    env = wrappers.Monitor(env, outdir, force=True)
-    rospy.logdebug("Monitor Wrapper started")
+    env = gym.wrappers.RecordEpisodeStatistics(env)
+    rospy.logdebug("Record Wrapper started")
     
     last_time_steps = numpy.ndarray(0)
 
@@ -84,7 +85,6 @@ if __name__ == '__main__':
             
             # Execute the action in the environment and get feedback
             rospy.logdebug("###################### Start Step...["+str(i)+"]")
-            rospy.logdebug("haa+,haa-,hfe+,hfe-,kfe+,kfe- >> [0,1,2,3,4,5]")
             rospy.logdebug("Action to Perform >> "+str(action))
             nextState, reward, done, info = env.step(action)
             rospy.logdebug("END Step...")
@@ -93,7 +93,7 @@ if __name__ == '__main__':
             if highest_reward < cumulated_reward:
                 highest_reward = cumulated_reward
 
-            rospy.logdebug("env.get_state...[distance_from_desired_point,base_roll,base_pitch,base_yaw,contact_force,joint_states_haa,joint_states_hfe,joint_states_kfe]==>" + str(nextState))
+            rospy.logdebug("Next state==>" + str(nextState))
 
             # Make the algorithm learn based on the results
             qlearn.learn(state, action, reward, nextState)

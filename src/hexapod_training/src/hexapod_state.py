@@ -459,13 +459,16 @@ class HexapodState(object):
         contact_force = self.get_contact_force_magnitude()
 
         joint_states = self.get_joint_states()
-        joint_states_haa = joint_states.position[0]
-        joint_states_hfe = joint_states.position[1]
-        joint_states_kfe = joint_states.position[2]
 
-        joint_effort_haa = joint_states.effort[0]
-        joint_effort_hfe = joint_states.effort[1]
-        joint_effort_kfe = joint_states.effort[2]
+        joint_state_positions = [position for position in joint_states.position]
+        efforts = [effort for effort in joint_states.effort]
+        # joint_states_haa = joint_states.position[0]
+        # joint_states_hfe = joint_states.position[1]
+        # joint_states_kfe = joint_states.position[2]
+
+        # joint_effort_haa = joint_states.effort[0]
+        # joint_effort_hfe = joint_states.effort[1]
+        # joint_effort_kfe = joint_states.effort[2]
 
         observation = []
         rospy.logdebug("List of Observations==>"+str(self._list_of_observations))
@@ -480,18 +483,22 @@ class HexapodState(object):
                 observation.append(base_yaw)
             elif obs_name == "contact_force":
                 observation.append(contact_force)
-            elif obs_name == "joint_states_haa":
-                observation.append(joint_states_haa)
-            elif obs_name == "joint_states_hfe":
-                observation.append(joint_states_hfe)
-            elif obs_name == "joint_states_kfe":
-                observation.append(joint_states_kfe)
-            elif obs_name == "joint_effort_haa":
-                observation.append(joint_effort_haa)
-            elif obs_name == "joint_effort_hfe":
-                observation.append(joint_effort_hfe)
-            elif obs_name == "joint_effort_kfe":
-                observation.append(joint_effort_kfe)
+            elif obs_name == "joint_states":
+                observation.append(joint_state_positions)
+            # elif obs_name == "joint_states_haa":
+            #     observation.append(joint_states_haa)
+            # elif obs_name == "joint_states_hfe":
+            #     observation.append(joint_states_hfe)
+            # elif obs_name == "joint_states_kfe":
+            #     observation.append(joint_states_kfe)
+            elif obs_name == "joint_effort":
+                observation.append(efforts)
+            # elif obs_name == "joint_effort_haa":
+            #     observation.append(joint_effort_haa)
+            # elif obs_name == "joint_effort_hfe":
+            #     observation.append(joint_effort_hfe)
+            # elif obs_name == "joint_effort_kfe":
+            #     observation.append(joint_effort_kfe)
             elif obs_name == "base_angular_vel_x":
                 observation.append(base_angular_vel_x)
             elif obs_name == "base_angular_vel_y":
@@ -578,27 +585,27 @@ class HexapodState(object):
                 max_value = 2*self._desired_force
                 min_value = 0.0
 
-            elif obs_name == "joint_states_haa":
+            elif obs_name == "joint_states":
                 # We consider the URDF maximum values
-                max_value = self._joint_limits["haa_max"]
-                min_value = self._joint_limits["haa_min"]
-            elif obs_name == "joint_states_hfe":
-                max_value = self._joint_limits["hfe_max"]
-                min_value = self._joint_limits["hfe_min"]
-            elif obs_name == "joint_states_kfe":
-                max_value = self._joint_limits["kfe_max"]
-                min_value = self._joint_limits["kfe_min"]
+                max_value = self._joint_limits["max"]
+                min_value = self._joint_limits["min"]
+            # elif obs_name == "joint_states_hfe":
+            #     max_value = self._joint_limits["hfe_max"]
+            #     min_value = self._joint_limits["hfe_min"]
+            # elif obs_name == "joint_states_kfe":
+            #     max_value = self._joint_limits["kfe_max"]
+            #     min_value = self._joint_limits["kfe_min"]
 
-            elif obs_name == "joint_effort_haa":
+            elif obs_name == "joint_effort":
                 # We consider the URDF maximum values
                 max_value = self.maximum_joint_effort
                 min_value = -self.maximum_joint_effort
-            elif obs_name == "joint_effort_hfe":
-                max_value = self.maximum_joint_effort
-                min_value = -self.maximum_joint_effort
-            elif obs_name == "joint_effort_kfe":
-                max_value = self.maximum_joint_effort
-                min_value = -self.maximum_joint_effort
+            # elif obs_name == "joint_effort_hfe":
+            #     max_value = self.maximum_joint_effort
+            #     min_value = -self.maximum_joint_effort
+            # elif obs_name == "joint_effort_kfe":
+            #     max_value = self.maximum_joint_effort
+            #     min_value = -self.maximum_joint_effort
 
 
             elif obs_name == "base_angular_vel_x":
