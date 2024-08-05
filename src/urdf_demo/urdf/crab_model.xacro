@@ -87,7 +87,7 @@
 				<box size="${base_length} ${base_width} ${base_height}" />
 			</geometry>
 		</collision> -->
-		<xacro:box_inertia m="0.01" w="${15.5/norm}" d="${13/norm}" h="${4.5/norm}" /> 
+		<xacro:box_inertia m="0.03" w="${15.5/norm}" d="${13/norm}" h="${4.5/norm}" /> 
 	</link>
 
 	<!-- Pi parameter -->
@@ -112,7 +112,7 @@
 
 		<link name="leg_center_${side}${num}" >
 		<!-- THIS IS EXTRA -->
-			<xacro:box_inertia m="0.1" w="${1/norm}" d="${1/norm}" h="${1/norm}" /> 
+			<xacro:box_inertia m="0.001" w="${1/norm}" d="${1/norm}" h="${1/norm}" /> 
 		</link>
 
 		<joint name="coxa_joint_${side}${num}" type="revolute">
@@ -164,7 +164,7 @@
 					<color rgba="0.7 0.7 0 1" />
 				</material>
 			</collision>
-			<xacro:box_inertia m="0.1" w="${3.3/norm}" d="${3.3/norm}" h="${3.3/norm}" /> 
+			<xacro:box_inertia m="0.01" w="${3.3/norm}" d="${3.3/norm}" h="${3.3/norm}" /> 
 		</link>
 
 		<joint name="femur_joint_${side}${num}" type="revolute">
@@ -208,7 +208,7 @@
 					<color rgba="0 0.7 0.7 1" />
 				</material>
 			</collision>
-			<xacro:box_inertia m="0.1" w="${7/norm}" d="${1.5/norm}" h="${0.4/norm}" /> 
+			<xacro:box_inertia m="0.01" w="${7/norm}" d="${1.5/norm}" h="${0.4/norm}" /> 
 		</link>
 
 		<joint name="tibia_joint_${side}${num}" type="revolute">
@@ -253,7 +253,7 @@
 				</material>
 			</collision>
 			<!-- TODO CHECK INERTIA ORDER!!!! -->
-			<xacro:box_inertia m="0.1" w="${9/norm}" d="${2/norm}" h="${0.5/norm}" /> 
+			<xacro:box_inertia m="0.01" w="${9/norm}" d="${2/norm}" h="${0.5/norm}" /> 
 		</link>
 
 		<joint name="tibia_foot_joint_${side}${num}" type="fixed">
