@@ -3,7 +3,7 @@ alpha: 0.1
 gamma: 0.8
 epsilon: 0.9
 epsilon_discount: 0.999 # 1098 eps to reach 0.1
-nepisodes: 100000
+nepisodes: 10
 nsteps: 1000
 
 # Environment Parameters
@@ -13,6 +13,8 @@ desired_pose:
   z: 0.5
 desired_force: 7.08 # In Newtons, normal contact force when stanting still with 9.81 gravity
 desired_yaw: 0.0 # Desired yaw in radians for the hopper to stay
+desired_roll: 0.0 # Desired yaw in radians for the hopper to stay
+desired_pitch: 0.0 # Desired yaw in radians for the hopper to stay
 max_height: 3.0   # in meters
 min_height: 0.5   # in meters
 max_incl: 1.6       # in rads
@@ -43,10 +45,10 @@ list_of_observations: # Observations you want to use for the learning
 discrete_division: 50 # Parts in which we divide each of the observations sensory range
 
 weight_r1: 0.0 # Weight for joint positions ( joints in the zero is perfect )
-weight_r2: 0.0 # Weight for joint efforts ( no efforts is perfect )
+weight_r2: 1.0 # Weight for joint efforts ( no efforts is perfect )
 weight_r3: 0.0 # Weight for contact force similar to desired ( weight of monoped )
-weight_r4: 0.0 # Weight for orientation ( vertical is perfect )
-weight_r5: 0.0 # Weight for distance from desired point ( on the point is perfect )
+weight_r4: 10.0 # Weight for orientation ( vertical is perfect )
+weight_r5: 100.0 # Weight for distance from desired point ( on the point is perfect )
 
 init_joint_pose:
   coxa_l1: 0.0
@@ -73,13 +75,11 @@ joint_limits_array:
   max: 1.5
 
 episode_done_criteria:
-  - monoped_minimum_height
+  # - monoped_minimum_height
   #- monoped_vertical_orientation
-
+  - stand_up
 maximum_base_linear_acceleration: 3000.0 # Based on making fall from a body height vertical max/min imu readings
 
 maximum_base_angular_velocity: 20.0 # Based on free fall, one body length, at 45 degree angle max/min imu readings 20.0
 
 maximum_joint_effort: 10.0 # Based on observation of Falling knee flexed
-
-jump_increment: 0.8 # Increase in Radians for the jump motion. The bigger the higher the jump.

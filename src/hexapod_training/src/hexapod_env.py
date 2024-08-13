@@ -46,6 +46,8 @@ class HexapodEnv(gym.Env):
         self.done_reward = rospy.get_param("/done_reward")
         self.alive_reward = rospy.get_param("/alive_reward")
         self.desired_force = rospy.get_param("/desired_force")
+        self.desired_roll = rospy.get_param("/desired_roll")
+        self.desired_pitch = rospy.get_param("/desired_pitch")
         self.desired_yaw = rospy.get_param("/desired_yaw")
 
         self.list_of_observations = rospy.get_param("/list_of_observations")
@@ -102,6 +104,8 @@ class HexapodEnv(gym.Env):
                                                     done_reward=self.done_reward,
                                                     alive_reward=self.alive_reward,
                                                     desired_force=self.desired_force,
+                                                    desired_roll=self.desired_roll,
+                                                    desired_pitch=self.desired_pitch,
                                                     desired_yaw=self.desired_yaw,
                                                     weight_r1=self.weight_r1,
                                                     weight_r2=self.weight_r2,
@@ -184,7 +188,13 @@ class HexapodEnv(gym.Env):
         rospy.logdebug("Restore Gravity...")
         self.gazebo.change_gravity(0.0, 0.0, -9.81)
 
-        # 7th: pauses simulation
+        # 7th: pauses simulation, let it fall
+        rospy.logdebug("Unpause SIM...")
+        self.gazebo.unpauseSim()
+
+        rospy.sleep(0.5)
+
+          # 7th: pauses simulation
         rospy.logdebug("Pause SIM...")
         self.gazebo.pauseSim()
 

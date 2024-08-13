@@ -14,7 +14,7 @@ import math
 
 class HexapodState(object):
 
-    def __init__(self, max_height, min_height, abs_max_roll, abs_max_pitch, list_of_observations, joint_limits, episode_done_criteria, joint_increment_value = 0.05, done_reward = -1000.0, alive_reward=10.0, desired_force=7.08, desired_yaw=0.0, weight_r1=1.0, weight_r2=1.0, weight_r3=1.0, weight_r4=1.0, weight_r5=1.0, discrete_division=10, maximum_base_linear_acceleration=3000.0, maximum_base_angular_velocity=20.0, maximum_joint_effort=10.0):
+    def __init__(self, max_height, min_height, abs_max_roll, abs_max_pitch, list_of_observations, joint_limits, episode_done_criteria, joint_increment_value = 0.05, done_reward = -1000.0, alive_reward=10.0, desired_force=7.08, desired_roll=0.0, desired_pitch=0.0, desired_yaw=0.0, weight_r1=1.0, weight_r2=1.0, weight_r3=1.0, weight_r4=1.0, weight_r5=1.0, discrete_division=10, maximum_base_linear_acceleration=3000.0, maximum_base_angular_velocity=20.0, maximum_joint_effort=10.0):
         rospy.logdebug("Starting HexapodState Class object...")
        
         self.desired_world_point = Vector3(0.0, 0.0, 0.0)
@@ -27,6 +27,8 @@ class HexapodState(object):
         self._alive_reward = alive_reward
         self._desired_force = desired_force
         self._desired_yaw = desired_yaw
+        self._desired_pitch = desired_pitch
+        self._desired_roll = desired_roll
 
         self._weight_r1 = weight_r1
         self._weight_r2 = weight_r2
@@ -110,14 +112,14 @@ class HexapodState(object):
             except:
                 rospy.logdebug("Current contacts_data not ready yet, retrying")
 
-        joint_states_msg = None
-        while joint_states_msg is None and not rospy.is_shutdown():
-            try:
-                joint_states_msg = rospy.wait_for_message("/hexapod/joint_states", JointState, timeout=0.1)
-                self.joints_state = joint_states_msg
-                rospy.logdebug("Current joint_states READY")
-            except Exception as e:
-                rospy.logdebug("Current joint_states not ready yet, retrying==>"+str(e))
+        # joint_states_msg = None
+        # while joint_states_msg is None and not rospy.is_shutdown():
+        #     try:
+        #         joint_states_msg = rospy.wait_for_message("/hexapod/joint_states", JointState, timeout=0.1)
+        #         self.joints_state = joint_states_msg
+        #         rospy.logdebug("Current joint_states READY")
+        #     except Exception as e:
+        #         rospy.logdebug("Current joint_states not ready yet, retrying==>"+str(e))
 
         rospy.logdebug("ALL SYSTEMS READY")
 
@@ -191,6 +193,13 @@ class HexapodState(object):
         self.base_angular_velocity = msg.angular_velocity
         self.base_linear_acceleration = msg.linear_acceleration
 
+    def is_straight(self):
+        unit_orientation = self.base_orientation / numpy.linalg.norm(self.base_orientation)
+        similar = numpy.dot(unit_orientation, numpy.array(0.0, 0.0, -1.0))
+        rospy.logdebug("cos of z and unit is>>" + str(similar))
+        rospy.logdebug("angle is >>" + str(numpy.arccos(similar)))
+        return similar >= 0.75
+
     def contact_callback(self,msg):
         """
         /lowerleg_contactsensor_state/states[0]/contact_positions ==> PointContact in World
@@ -213,6 +222,11 @@ class HexapodState(object):
 
         height_ok = self._min_height <= self.get_base_height() < self._max_height
         return height_ok
+
+    def is_stand_up(self):
+
+        is_standing = abs(self.get_base_height() - self.desired_world_point.z) < 0.01
+        return is_standing
 
     def hexapod_orientation_ok(self):
 
@@ -279,9 +293,12 @@ class HexapodState(object):
         :return:
         """
         curren_orientation = self.get_base_rpy()
-        yaw_displacement = curren_orientation.z - self._desired_yaw
+        # yaw_displacement = curren_orientation.z - self._desired_yaw
+        yaw_displacement = 0
+        roll_displacement = curren_orientation.x - self._desired_roll
+        pitch_displacement = curren_orientation.y - self._desired_pitch
         rospy.logdebug("calculate_reward_orientation>>[R,P,Y]=" + str(curren_orientation))
-        acumulated_orientation_displacement = abs(curren_orientation.x) + abs(curren_orientation.y) + abs(yaw_displacement)
+        acumulated_orientation_displacement = abs(roll_displacement) + abs(pitch_displacement) + abs(yaw_displacement)
         reward = weight * acumulated_orientation_displacement
         rospy.logdebug("calculate_reward_orientation>>reward=" + str(reward))
         return reward
@@ -314,6 +331,7 @@ class HexapodState(object):
         r2 = self.calculate_reward_joint_effort(self._weight_r2)
         # Desired Force in Newtons, taken form idle contact with 9.81 gravity.
         r3 = self.calculate_reward_contact_force(self._weight_r3)
+        # r3 = 0
         r4 = self.calculate_reward_orientation(self._weight_r4)
         r5 = self.calculate_reward_distance_from_des_point(self._weight_r5)
 
@@ -794,10 +812,17 @@ class HexapodState(object):
             rospy.logdebug("hexapod_orientation_ok NOT TAKEN INTO ACCOUNT")
             hexapod_orientation_ok = True
 
+        is_standing = False
+        if "stand_up" in self._episode_done_criteria:
+            is_standing = self.is_stand_up()
+
         rospy.logdebug("hexapod_height_ok="+str(hexapod_height_ok))
         rospy.logdebug("hexapod_orientation_ok=" + str(hexapod_orientation_ok))
 
-        done = not(hexapod_height_ok and hexapod_orientation_ok)
+        done = False
+        if (not hexapod_height_ok) or (not hexapod_orientation_ok) or is_standing:
+            done = True
+        
         if done:
             rospy.logerr("It fell, so the reward has to be very low")
             total_reward = self._done_reward
@@ -856,6 +881,8 @@ if __name__ == "__main__":
                                     done_reward=done_reward,
                                     alive_reward=alive_reward,
                                     desired_force=desired_force,
+                                    desired_roll=desired_roll,
+                                    desired_pitch=desired_pitch,
                                     desired_yaw=desired_yaw,
                                     weight_r1=weight_r1,
                                     weight_r2=weight_r2,
