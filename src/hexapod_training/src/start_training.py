@@ -22,8 +22,8 @@ import hexapod_env
 
 if __name__ == '__main__':
     
-    rospy.init_node('hexapod_gym', anonymous=True, log_level=rospy.INFO)
-    # rospy.init_node('hexapod_gym', anonymous=True, log_level=rospy.DEBUG)
+    # rospy.init_node('hexapod_gym', anonymous=True, log_level=rospy.INFO)
+    rospy.init_node('hexapod_gym', anonymous=True, log_level=rospy.DEBUG)
 
     # Create the Gym environment
     env = gym.make('Hexapod-v0')
