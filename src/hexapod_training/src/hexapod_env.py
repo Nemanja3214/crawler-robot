@@ -69,6 +69,7 @@ class HexapodEnv(gym.Env):
         self.weight_r3 = rospy.get_param("/weight_r3")
         self.weight_r4 = rospy.get_param("/weight_r4")
         self.weight_r5 = rospy.get_param("/weight_r5")
+        self.weight_r6 = rospy.get_param("/weight_r6")
 
         def make_name(part, side, num):
             return "/init_joint_pose/" + part + "_" + side + str(num)
@@ -112,6 +113,7 @@ class HexapodEnv(gym.Env):
                                                     weight_r3=self.weight_r3,
                                                     weight_r4=self.weight_r4,
                                                     weight_r5=self.weight_r5,
+                                                    weight_r6=self.weight_r6,
                                                     discrete_division=self.discrete_division,
                                                     maximum_base_linear_acceleration=self.maximum_base_linear_acceleration,
                                                     maximum_base_angular_velocity=self.maximum_base_angular_velocity,

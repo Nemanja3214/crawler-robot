@@ -3,7 +3,7 @@ alpha: 0.1
 gamma: 0.8
 epsilon: 0.9
 epsilon_discount: 0.999 # 1098 eps to reach 0.1
-nepisodes: 10
+nepisodes: 1
 nsteps: 1000
 
 # Environment Parameters
@@ -49,7 +49,7 @@ weight_r2: 1.0 # Weight for joint efforts ( no efforts is perfect )
 weight_r3: 0.0 # Weight for contact force similar to desired ( weight of monoped )
 weight_r4: 10.0 # Weight for orientation ( vertical is perfect )
 weight_r5: 100.0 # Weight for distance from desired point ( on the point is perfect )
-
+weight_r6: 10.0 # Weight for not touching floor
 init_joint_pose:
   coxa_l1: 0.0
   coxa_l2: 0.0

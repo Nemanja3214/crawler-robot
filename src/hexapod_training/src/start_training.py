@@ -1,5 +1,6 @@
 #!/usr/bin/python3.8
 
+from functools import reduce
 import rospy
 from std_msgs.msg import String
 '''
@@ -122,7 +123,9 @@ if __name__ == '__main__':
     l = last_time_steps.tolist()
     l.sort()
 
-    rospy.loginfo("Overall score: {:0.2f}".format(last_time_steps.mean()))
-    rospy.loginfo("Best 100 score: {:0.2f}".format(reduce(lambda x, y: x + y, l[-100:]) / len(l[-100:])))
-
+    if len(l) != 0:
+        rospy.loginfo("Overall score: {:0.2f}".format(last_time_steps.mean()))
+        rospy.loginfo("Best 100 score: {:0.2f}".format(reduce(lambda x, y: x + y, l[-100:]) / len(l[-100:])))
+    else:
+        rospy.loginfo("No episode has reached solution")
     env.close()

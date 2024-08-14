@@ -14,7 +14,7 @@ import math
 
 class HexapodState(object):
 
-    def __init__(self, max_height, min_height, abs_max_roll, abs_max_pitch, list_of_observations, joint_limits, episode_done_criteria, joint_increment_value = 0.05, done_reward = -1000.0, alive_reward=10.0, desired_force=7.08, desired_roll=0.0, desired_pitch=0.0, desired_yaw=0.0, weight_r1=1.0, weight_r2=1.0, weight_r3=1.0, weight_r4=1.0, weight_r5=1.0, discrete_division=10, maximum_base_linear_acceleration=3000.0, maximum_base_angular_velocity=20.0, maximum_joint_effort=10.0):
+    def __init__(self, max_height, min_height, abs_max_roll, abs_max_pitch, list_of_observations, joint_limits, episode_done_criteria, joint_increment_value = 0.05, done_reward = -1000.0, alive_reward=10.0, desired_force=7.08, desired_roll=0.0, desired_pitch=0.0, desired_yaw=0.0, weight_r1=1.0, weight_r2=1.0, weight_r3=1.0, weight_r4=1.0, weight_r5=1.0, weight_r6=1.0, discrete_division=10, maximum_base_linear_acceleration=3000.0, maximum_base_angular_velocity=20.0, maximum_joint_effort=10.0):
         rospy.logdebug("Starting HexapodState Class object...")
        
         self.desired_world_point = Vector3(0.0, 0.0, 0.0)
@@ -35,11 +35,13 @@ class HexapodState(object):
         self._weight_r3 = weight_r3
         self._weight_r4 = weight_r4
         self._weight_r5 = weight_r5
+        self._weight_r6 = weight_r6
 
         self._list_of_observations = list_of_observations
 
         # Dictionary with the max and min of each of the joints
         self._joint_limits = joint_limits
+        self.touching = False
 
         # Maximum base linear acceleration values
         self.maximum_base_linear_acceleration = maximum_base_linear_acceleration
@@ -213,6 +215,8 @@ class HexapodState(object):
         :return:
         """
         # rospy.logdebug(msg)
+        if len(msg.states) != 0:
+            self.touching = True 
         for state in msg.states:
             self.contact_force = state.total_wrench.force
 
@@ -226,7 +230,7 @@ class HexapodState(object):
 
     def is_stand_up(self):
         rospy.logdebug("DISTANCE FROM Z >>>>" + str(abs(self.get_base_height() - self.desired_world_point.z)))
-        is_standing = abs(self.get_base_height() - self.desired_world_point.z) < 0.01
+        is_standing = abs(self.get_base_height() - self.desired_world_point.z) < 0.08
         return is_standing
 
     def hexapod_orientation_ok(self):
@@ -315,6 +319,18 @@ class HexapodState(object):
         reward = weight * distance
         rospy.logdebug("calculate_reward_orientation>>reward=" + str(reward))
         return reward
+    
+    def calculate_touching_reward(self, weight=1.0):
+        """
+        We calculate the reward based on thorax touching floor
+        If not touching that is better.
+        :param weight:
+        :return:reward
+        """
+        if self.touching:
+            return weight
+        return -1000.0 * weight
+            
 
     def calculate_total_reward(self):
         """
@@ -335,9 +351,11 @@ class HexapodState(object):
         # r3 = 0
         r4 = self.calculate_reward_orientation(self._weight_r4)
         r5 = self.calculate_reward_distance_from_des_point(self._weight_r5)
+        r6 = self.calculate_touching_reward(self._weight_r6)
 
         # The sign depend on its function.
-        total_reward = self._alive_reward - r1 - r2 - r3 - r4 - r5
+        total_reward = self._alive_reward - r1 - r2 - r3 - r4 - r5 - r6
+       
 
         rospy.logdebug("###############")
         rospy.logdebug("alive_bonus=" + str(self._alive_reward))
