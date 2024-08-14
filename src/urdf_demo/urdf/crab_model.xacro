@@ -304,7 +304,7 @@
         <sensor name="contactsensor_sensor" type="contact">
           <always_on>true</always_on>
           <contact>
-            <collision>lowerleg_fixed_joint_lump__contactsensor_link_collision_1</collision>
+            <collision>base_link_fixed_joint_lump__thorax_collision_1</collision>
           </contact>
           <plugin name="bumper0_plugin" filename="libgazebo_ros_bumper.so">
             <bumperTopicName>contactsensor_state</bumperTopicName>

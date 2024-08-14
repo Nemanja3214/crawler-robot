@@ -212,6 +212,7 @@ class HexapodState(object):
         :param msg:
         :return:
         """
+        # rospy.logdebug(msg)
         for state in msg.states:
             self.contact_force = state.total_wrench.force
 
@@ -224,7 +225,7 @@ class HexapodState(object):
         return height_ok
 
     def is_stand_up(self):
-
+        rospy.logdebug("DISTANCE FROM Z >>>>" + str(abs(self.get_base_height() - self.desired_world_point.z)))
         is_standing = abs(self.get_base_height() - self.desired_world_point.z) < 0.01
         return is_standing
 
