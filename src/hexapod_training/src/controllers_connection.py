@@ -72,16 +72,17 @@ class ControllersConnection():
 # TODO CHANGE THIS
     def reset_hexapod_joint_controllers(self):
         def make_name(part, side, num):
-            return "/hexapod/" + part + "_joint_" + side + str(num) +"_position_controller/command"
+            return "/hexapod/" + part + "_joint_" + side + str(num) +"_position_controller"
 
 
         parts = ["tibia", "coxa", "femur"]
         sides = ["l", "r"]
         nums = [1, 2, 3]
-        controllers_reset = ['joint_state_controller']
+        controllers_reset = ['/hexapod/joint_state_controller']
         for part in parts:
             for side in sides:
                 for num in nums:
                     name = make_name(part, side, num)
                     controllers_reset.append(name)
+        rospy.logdebug("CONTROLLERs TO RESET>>>>"+ str(controllers_reset))
         self.reset_controllers(controllers_reset)

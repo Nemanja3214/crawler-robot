@@ -3,7 +3,7 @@ alpha: 0.1
 gamma: 0.8
 epsilon: 0.9
 epsilon_discount: 0.999 # 1098 eps to reach 0.1
-nepisodes: 1
+nepisodes: 10
 nsteps: 1000
 
 # Environment Parameters
@@ -78,6 +78,7 @@ episode_done_criteria:
   # - monoped_minimum_height
   #- monoped_vertical_orientation
   - stand_up
+  - less_exceeded_joint_position
 maximum_base_linear_acceleration: 3000.0 # Based on making fall from a body height vertical max/min imu readings
 
 maximum_base_angular_velocity: 20.0 # Based on free fall, one body length, at 45 degree angle max/min imu readings 20.0

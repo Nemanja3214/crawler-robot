@@ -45,7 +45,7 @@ class JointPub(object):
         Checks that all the publishers are working
         :return:
         """
-        rate = rospy.Rate(10)  # 10hz
+        rate = rospy.Rate(50)  # 10hz
         # rospy.loginfo(self.publishers_array)
         for pub in self.publishers_array:
             while (pub.get_num_connections() == 0):

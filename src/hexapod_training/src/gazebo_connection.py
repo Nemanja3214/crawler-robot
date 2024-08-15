@@ -1,5 +1,6 @@
 #!/usr/bin/python3.8
 
+from time import sleep
 import rospy
 from std_srvs.srv import Empty
 from gazebo_msgs.msg import ODEPhysics
@@ -13,7 +14,9 @@ class GazeboConnection():
         
         self.unpause = rospy.ServiceProxy('/gazebo/unpause_physics', Empty)
         self.pause = rospy.ServiceProxy('/gazebo/pause_physics', Empty)
-        self.reset_proxy = rospy.ServiceProxy('/gazebo/reset_simulation', Empty)
+        # Changed to reseting world because time diff problem
+        # self.reset_proxy = rospy.ServiceProxy('/gazebo/reset_simulation', Empty)
+        self.reset_proxy = rospy.ServiceProxy('/gazebo/reset_world', Empty)
 
         # Setup the Gravity Controle system
         service_name = '/gazebo/set_physics_properties'
@@ -24,6 +27,7 @@ class GazeboConnection():
         self.set_physics = rospy.ServiceProxy(service_name, SetPhysicsProperties)
         self.init_values()
         # We always pause the simulation, important for legged robots learning
+
         self.pauseSim()
 
     def pauseSim(self):
@@ -56,12 +60,16 @@ class GazeboConnection():
 
     def init_values(self):
 
+        # Changed to reset world because negative time diff
+
         rospy.wait_for_service('/gazebo/reset_simulation')
         try:
             # reset_proxy.call()
             self.reset_proxy()
         except rospy.ServiceException as e:
             print ("/gazebo/reset_simulation service call failed")
+
+        # sleep(10)
 
         self._time_step = Float64(0.001)
         self._max_update_rate = Float64(1000.0)

@@ -811,6 +811,12 @@ class HexapodState(object):
 
         rospy.logdebug("DONE Clamping current_joint_pose>>>" + str(self.current_joint_pose))
 
+    def is_joints_less_exceeded(self):
+        for pos in self.get_joint_states().position:
+            if pos < -1.5:
+                return True
+        return False
+
 
     def process_data(self):
         """
@@ -830,6 +836,12 @@ class HexapodState(object):
         else:
             rospy.logdebug("hexapod_orientation_ok NOT TAKEN INTO ACCOUNT")
             hexapod_orientation_ok = True
+        
+        # if "less_exceeded_joint_position" in self._episode_done_criteria:
+        #     less_exceeded_joint_position = self.is_joints_less_exceeded()
+        # else:
+        #     rospy.logdebug("exceeded_joint_position NOT TAKEN INTO ACCOUNT")
+        #     less_exceeded_joint_position = False
 
         is_standing = False
         if "stand_up" in self._episode_done_criteria:
@@ -843,8 +855,12 @@ class HexapodState(object):
             done = True
         
         if done:
-            rospy.logerr("It fell, so the reward has to be very low")
-            total_reward = self._done_reward
+            if is_standing:
+                # TODO add to config done reward
+                total_reward = 100000000000
+            else:
+                rospy.logerr("It fell, so the reward has to be very low")
+                total_reward = -100000000000
         else:
             rospy.logdebug("Calculate normal reward because it didn't fall.")
             total_reward = self.calculate_total_reward()

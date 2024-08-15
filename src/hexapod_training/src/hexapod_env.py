@@ -71,7 +71,7 @@ class HexapodEnv(gym.Env):
         self.weight_r5 = rospy.get_param("/weight_r5")
         self.weight_r6 = rospy.get_param("/weight_r6")
 
-        def make_name(part, side, num):
+        def make_init_name(part, side, num):
             return "/init_joint_pose/" + part + "_" + side + str(num)
 
         self.init_joint_pose = []
@@ -81,7 +81,7 @@ class HexapodEnv(gym.Env):
         for part in parts:
             for side in sides:
                 for num in nums:
-                    name = make_name(part, side, num)
+                    name = make_init_name(part, side, num)
                     val = rospy.get_param(name)
                     self.init_joint_pose.append(val)
   
@@ -140,6 +140,7 @@ class HexapodEnv(gym.Env):
 
         self._seed()
 
+
     # A function to initialize the random generator
     def _seed(self, seed=None):
         self.np_random, seed = seeding.np_random(seed)
@@ -149,7 +150,7 @@ class HexapodEnv(gym.Env):
         return None
         
     # Resets the state of the environment and returns an initial observation.
-    def _reset(self):
+    def reset(self):
 
         # 0st: We pause the Simulator
         rospy.logdebug("Pausing SIM...")
@@ -157,7 +158,8 @@ class HexapodEnv(gym.Env):
 
         # 1st: resets the simulation to initial values
         rospy.logdebug("Reset SIM...")
-        self.gazebo.resetSim()
+        # self.gazebo.resetSim()
+        self.gazebo.resetWorld()
 
         # 2nd: We Set the gravity to 0.0 so that we dont fall when reseting joints
         # It also UNPAUSES the simulation
@@ -194,7 +196,7 @@ class HexapodEnv(gym.Env):
         rospy.logdebug("Unpause SIM...")
         self.gazebo.unpauseSim()
 
-        rospy.sleep(0.5)
+        time.sleep(0.5)
 
           # 7th: pauses simulation
         rospy.logdebug("Pause SIM...")
@@ -207,7 +209,7 @@ class HexapodEnv(gym.Env):
 
         return state
 
-    def _step(self, action):
+    def step(self, action):
 
         # Given the action selected by the learning algorithm,
         # we perform the corresponding movement of the robot

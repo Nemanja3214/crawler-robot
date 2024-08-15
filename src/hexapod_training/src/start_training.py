@@ -103,6 +103,8 @@ if __name__ == '__main__':
             cumulated_reward_msg.data = cumulated_reward
             reward_pub.publish(cumulated_reward_msg)
 
+            # rospy.loginfo(env.hexapod_state_object.get_joint_states())
+
             if not(done):
                 state = nextState
             else:
