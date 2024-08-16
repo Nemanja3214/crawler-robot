@@ -299,9 +299,13 @@ class HexapodState(object):
         """
         curren_orientation = self.get_base_rpy()
         # yaw_displacement = curren_orientation.z - self._desired_yaw
-        yaw_displacement = 0
-        roll_displacement = curren_orientation.x - self._desired_roll
+        # roll_displacement = curren_orientation.x - self._desired_roll
         pitch_displacement = curren_orientation.y - self._desired_pitch
+
+        yaw_displacement = 0
+        roll_displacement = 0
+        # pitch_displacement = 0
+        
         rospy.logdebug("calculate_reward_orientation>>[R,P,Y]=" + str(curren_orientation))
         acumulated_orientation_displacement = abs(roll_displacement) + abs(pitch_displacement) + abs(yaw_displacement)
         reward = weight * acumulated_orientation_displacement

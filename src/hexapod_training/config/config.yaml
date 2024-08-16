@@ -10,7 +10,7 @@ nsteps: 1000
 desired_pose:
   x: 0.0
   y: 0.0
-  z: 0.5
+  z: 0.6
 desired_force: 7.08 # In Newtons, normal contact force when stanting still with 9.81 gravity
 desired_yaw: 0.0 # Desired yaw in radians for the hopper to stay
 desired_roll: 0.0 # Desired yaw in radians for the hopper to stay
