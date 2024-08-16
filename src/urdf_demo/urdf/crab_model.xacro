@@ -22,6 +22,16 @@
 		</inertial>
 	</xacro:macro>
 
+<!-- parallel axis theorem -->
+	<xacro:macro name="box_inertia_parallel_w" params="m w h d">
+		<inertial>
+			<origin xyz="0 0 0" rpy="${pi/2} 0 ${pi/2}" />
+			<mass value="${m}" />
+			<inertia ixx="${(m/12) * (h*h + d*d + w*w/4)}" ixy="0.0" ixz="0.0" iyy="${(m/12) * (w*w + d*d + w*w/4)}"
+				iyz="0.0" izz="${(m/12) * (w*w + h*h + w*w/4)}" />
+		</inertial>
+	</xacro:macro>
+
 	<xacro:macro name="cylinder_inertia" params="m r h">
 		<inertial>
 			<origin xyz="0 0 0" rpy="${pi/2} 0 0" />
@@ -87,7 +97,7 @@
 				<box size="${base_length} ${base_width} ${base_height}" />
 			</geometry>
 		</collision> -->
-		<xacro:box_inertia m="0.03" w="${15.5/norm}" d="${13/norm}" h="${4.5/norm}" /> 
+		<xacro:box_inertia m="0.03" w="${13/norm}" d="${15.5/norm}" h="${4.5/norm}" /> 
 	</link>
 
 	<!-- Pi parameter -->
@@ -208,7 +218,7 @@
 					<color rgba="0 0.7 0.7 1" />
 				</material>
 			</collision>
-			<xacro:box_inertia m="0.01" w="${7/norm}" d="${1.5/norm}" h="${0.4/norm}" /> 
+			<xacro:box_inertia_parallel_w m="0.01" w="${7/norm}" d="${0.4/norm}" h="${1.5/norm}" /> 
 		</link>
 
 		<joint name="tibia_joint_${side}${num}" type="revolute">
@@ -261,7 +271,7 @@
 				</material>
 			</collision>
 			<!-- TODO CHECK INERTIA ORDER!!!! -->
-			<xacro:box_inertia m="0.01" w="${9/norm}" d="${2/norm}" h="${0.5/norm}" /> 
+			<xacro:box_inertia_parallel_w m="0.01" w="${9/norm}" d="${0.5/norm}" h="${2/norm}" /> 
 		</link>
 
 		<joint name="tibia_foot_joint_${side}${num}" type="fixed">

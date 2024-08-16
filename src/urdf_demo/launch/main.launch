@@ -14,7 +14,7 @@
 
 
 <!-- Spawn a robot into Gazebo -->
-<node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-z 0.7 -param robot_description -urdf -model hexapod" />
+<node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-z 0.4 -param robot_description -urdf -model hexapod" />
 
     <!-- <node name="joint_state_publisher_gui" pkg="joint_state_publisher_gui" type="joint_state_publisher_gui">
        <remap from="/joint_states" to="/hexapod/joint_states" />

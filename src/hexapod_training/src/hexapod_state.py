@@ -230,7 +230,7 @@ class HexapodState(object):
 
     def is_stand_up(self):
         rospy.logdebug("DISTANCE FROM Z >>>>" + str(abs(self.get_base_height() - self.desired_world_point.z)))
-        is_standing = abs(self.get_base_height() - self.desired_world_point.z) < 0.08
+        is_standing = abs(self.get_base_height() - self.desired_world_point.z) < 0.05
         return is_standing
 
     def hexapod_orientation_ok(self):
@@ -837,11 +837,11 @@ class HexapodState(object):
             rospy.logdebug("hexapod_orientation_ok NOT TAKEN INTO ACCOUNT")
             hexapod_orientation_ok = True
         
-        # if "less_exceeded_joint_position" in self._episode_done_criteria:
-        #     less_exceeded_joint_position = self.is_joints_less_exceeded()
-        # else:
-        #     rospy.logdebug("exceeded_joint_position NOT TAKEN INTO ACCOUNT")
-        #     less_exceeded_joint_position = False
+        if "less_exceeded_joint_position" in self._episode_done_criteria:
+            less_exceeded_joint_position = self.is_joints_less_exceeded()
+        else:
+            rospy.logdebug("exceeded_joint_position NOT TAKEN INTO ACCOUNT")
+            less_exceeded_joint_position = False
 
         is_standing = False
         if "stand_up" in self._episode_done_criteria:
@@ -851,7 +851,7 @@ class HexapodState(object):
         rospy.logdebug("hexapod_orientation_ok=" + str(hexapod_orientation_ok))
 
         done = False
-        if (not hexapod_height_ok) or (not hexapod_orientation_ok) or is_standing:
+        if (not hexapod_height_ok) or (not hexapod_orientation_ok) or less_exceeded_joint_position or is_standing:
             done = True
         
         if done:

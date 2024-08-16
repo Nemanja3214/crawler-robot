@@ -170,6 +170,8 @@ class HexapodEnv(gym.Env):
         rospy.logdebug("reset_hexapod_joint_controllers...")
         self.controllers_object.reset_hexapod_joint_controllers()
 
+        # time.sleep(10.0)
+
         # 3rd: resets the robot to initial conditions
         rospy.logdebug("set_init_pose init variable...>>>" + str(self.init_joint_pose))
         # We save that position as the current joint desired position
@@ -196,7 +198,7 @@ class HexapodEnv(gym.Env):
         rospy.logdebug("Unpause SIM...")
         self.gazebo.unpauseSim()
 
-        time.sleep(0.5)
+        time.sleep(1.5)
 
           # 7th: pauses simulation
         rospy.logdebug("Pause SIM...")

@@ -69,7 +69,6 @@ class ControllersConnection():
 
         return reset_result
 
-# TODO CHANGE THIS
     def reset_hexapod_joint_controllers(self):
         def make_name(part, side, num):
             return "/hexapod/" + part + "_joint_" + side + str(num) +"_position_controller"

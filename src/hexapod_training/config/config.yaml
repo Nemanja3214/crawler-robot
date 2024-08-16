@@ -3,7 +3,7 @@ alpha: 0.1
 gamma: 0.8
 epsilon: 0.9
 epsilon_discount: 0.999 # 1098 eps to reach 0.1
-nepisodes: 10
+nepisodes: 100
 nsteps: 1000
 
 # Environment Parameters
@@ -51,24 +51,24 @@ weight_r4: 10.0 # Weight for orientation ( vertical is perfect )
 weight_r5: 100.0 # Weight for distance from desired point ( on the point is perfect )
 weight_r6: 10.0 # Weight for not touching floor
 init_joint_pose:
-  coxa_l1: 0.0
-  coxa_l2: 0.0
-  coxa_l3: 0.0
-  coxa_r1: 0.0
-  coxa_r2: 0.0
-  coxa_r3: 0.0
-  tibia_l1: 0.0
-  tibia_l2: 0.0
-  tibia_l3: 0.0
-  tibia_r1: 0.0
-  tibia_r2: 0.0
-  tibia_r3: 0.0
-  femur_l1: 0.0
-  femur_l2: 0.0
-  femur_l3: 0.0
-  femur_r1: 0.0
-  femur_r2: 0.0
-  femur_r3: 0.0
+  coxa_l1: 0
+  coxa_l2: 0
+  coxa_l3: 0
+  coxa_r1: 0
+  coxa_r2: 0
+  coxa_r3: 0
+  tibia_l1: 1.0
+  tibia_l2: 1.0
+  tibia_l3: 1.0
+  tibia_r1: 1.0
+  tibia_r2: 1.0
+  tibia_r3: 1.0
+  femur_l1: 0
+  femur_l2: 0
+  femur_l3: 0
+  femur_r1: 0
+  femur_r2: 0
+  femur_r3: 0
 
 joint_limits_array:
   min: -1.5
