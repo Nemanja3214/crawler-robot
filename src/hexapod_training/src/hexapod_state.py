@@ -384,9 +384,8 @@ class HexapodState(object):
                  base_linear_acceleration_y,
                  base_linear_acceleration_z,
                  contact_force,
-                 joint_states_haa,
-                 joint_states_hfe,
-                 joint_states_kfe]
+                 joint_states,
+                 joint_effort]
 
         :return: observation
         """

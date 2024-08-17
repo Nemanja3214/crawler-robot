@@ -19,7 +19,24 @@ import rospkg
 
 # import our training environment
 import hexapod_env
+def replace_if_greater(numeric_arr, side_list, numeric_val, side_val):
+    if numpy.size(numeric_arr, 0) < 10:
+        numeric_arr = numpy.append(numeric_arr, numeric_val)
+        side_list.append(side_val)
+        return numeric_arr
 
+    # Find the index of the tuple to replace
+    replace_index = numpy.where(numeric_arr < numeric_val)[0]
+
+    # Check if there are any valid indices
+    if replace_index.size > 0:
+        # Find the index of the tuple with the minimum first value that's less than the new tuple's first value
+        min_index = replace_index[numpy.argmin(numeric_arr[replace_index])]
+        
+        # Replace the tuple at that index
+        numeric_arr[min_index] = numeric_val
+        side_list[min_index] = side_val
+    return numeric_arr
 
 if __name__ == '__main__':
     
@@ -59,6 +76,10 @@ if __name__ == '__main__':
 
     start_time = time.time()
     highest_reward = 0
+
+    # top 10 episodes (reward, action sequence)
+    top_episodes_rewards = numpy.array([])
+    top_episodes_actions = []
     
     # Starts the main training loop: the one about the episodes to do
     for x in range(nepisodes):
@@ -77,12 +98,15 @@ if __name__ == '__main__':
         state = env.reset()
 
         rospy.logdebug("env.get_state...==>"+str(state))
+
+        action_sequence = numpy.array([])
         
         # for each episode, we test the robot for nsteps
         for i in range(nsteps):
 
             # Pick an action based on the current state
             action = qlearn.chooseAction(state)
+            action_sequence = numpy.append(action_sequence, action)
             
             # Execute the action in the environment and get feedback
             rospy.logdebug("###################### Start Step...["+str(i)+"]")
@@ -118,8 +142,11 @@ if __name__ == '__main__':
         h, m = divmod(m, 60)
         episode_reward_msg.data = cumulated_reward
         episode_reward_pub.publish(episode_reward_msg)
-        rospy.loginfo( ("EP: "+str(x+1)+" - [alpha: "+str(round(qlearn.alpha,2))+" - gamma: "+str(round(qlearn.gamma,2))+" - epsilon: "+str(round(qlearn.epsilon,2))+"] - Reward: "+str(cumulated_reward)+"     Time: %d:%02d:%02d" % (h, m, s)))
 
+        top_episodes_rewards = replace_if_greater(top_episodes_rewards, top_episodes_actions, cumulated_reward, action_sequence)
+        rospy.loginfo( ("EP: "+str(x+1)+" - [alpha: "+str(round(qlearn.alpha,2))+" - gamma: "+str(round(qlearn.gamma,2))+" - epsilon: "+str(round(qlearn.epsilon,2))+"] - Reward: "+str(cumulated_reward)+"     Time: %d:%02d:%02d" % (h, m, s)))
+        rospy.loginfo("TOP EPISODES REWARDS>>>" + str(top_episodes_rewards))
+        # rospy.loginfo("TOP EPISODES ACTIONS>>>" + str(top_episodes_actions))
     rospy.loginfo ( ("\n|"+str(nepisodes)+"|"+str(qlearn.alpha)+"|"+str(qlearn.gamma)+"|"+str(initial_epsilon)+"*"+str(epsilon_discount)+"|"+str(highest_reward)+"| PICTURE |"))
 
     l = last_time_steps.tolist()
