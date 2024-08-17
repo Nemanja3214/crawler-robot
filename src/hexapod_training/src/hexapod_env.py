@@ -129,11 +129,9 @@ class HexapodEnv(gym.Env):
 
 
         """
-        For this version, we consider 5 actions
-        1-2) Increment/Decrement haa_joint
-        3-4) Increment/Decrement hfe_joint
-        5) Dont Move
-        6) Perform One Jump
+        For this version, we consider 37 actions
+        0-36) Increment/Decrement joints
+        37) Dont Move
         """
         self.action_space = spaces.Discrete(37)
         self.reward_range = (-np.inf, np.inf)
@@ -198,7 +196,7 @@ class HexapodEnv(gym.Env):
         rospy.logdebug("Unpause SIM...")
         self.gazebo.unpauseSim()
 
-        time.sleep(1.5)
+        time.sleep(1.0)
 
           # 7th: pauses simulation
         rospy.logdebug("Pause SIM...")

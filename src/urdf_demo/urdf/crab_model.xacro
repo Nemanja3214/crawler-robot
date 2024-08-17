@@ -6,7 +6,7 @@
 	<xacro:property name="base_length" value="0.42" />
 	<xacro:property name="base_height" value="0.18" /> -->
 
-	<xacro:property name="norm" value="20" />
+	<xacro:property name="norm" value="100" />
 
 	<xacro:property name="base_width" value="${13/norm}" />
 	<xacro:property name="base_length" value="${15.5/norm}" />

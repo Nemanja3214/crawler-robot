@@ -299,11 +299,11 @@ class HexapodState(object):
         """
         curren_orientation = self.get_base_rpy()
         # yaw_displacement = curren_orientation.z - self._desired_yaw
-        # roll_displacement = curren_orientation.x - self._desired_roll
+        roll_displacement = curren_orientation.x - self._desired_roll
         pitch_displacement = curren_orientation.y - self._desired_pitch
 
         yaw_displacement = 0
-        roll_displacement = 0
+        # roll_displacement = 0
         # pitch_displacement = 0
         
         rospy.logdebug("calculate_reward_orientation>>[R,P,Y]=" + str(curren_orientation))
@@ -337,18 +337,8 @@ class HexapodState(object):
             
 
     def calculate_total_reward(self):
-        """
-        We consider VERY BAD REWARD -7 or less
-        Perfect reward is 0.0, and total reward 1.0.
-        The defaults values are chosen so that when the robot has fallen or very extreme joint config:
-        r1 = -8.04
-        r2 = -8.84
-        r3 = -7.08
-        r4 = -10.0 ==> We give priority to this, giving it higher value.
-        :return:
-        """
-
         r1 = self.calculate_reward_joint_position(self._weight_r1)
+        # r1 = 0
         r2 = self.calculate_reward_joint_effort(self._weight_r2)
         # Desired Force in Newtons, taken form idle contact with 9.81 gravity.
         r3 = self.calculate_reward_contact_force(self._weight_r3)
@@ -359,8 +349,7 @@ class HexapodState(object):
 
         # The sign depend on its function.
         total_reward = self._alive_reward - r1 - r2 - r3 - r4 - r5 - r6
-       
-
+    
         rospy.logdebug("###############")
         rospy.logdebug("alive_bonus=" + str(self._alive_reward))
         rospy.logdebug("r1 joint_position=" + str(r1))
@@ -372,9 +361,6 @@ class HexapodState(object):
         rospy.logdebug("###############")
 
         return total_reward
-
-
-
 
     def get_observations(self):
         """
@@ -428,16 +414,11 @@ class HexapodState(object):
 
         joint_state_positions = [position for position in joint_states.position]
         efforts = [effort for effort in joint_states.effort]
-        # joint_states_haa = joint_states.position[0]
-        # joint_states_hfe = joint_states.position[1]
-        # joint_states_kfe = joint_states.position[2]
-
-        # joint_effort_haa = joint_states.effort[0]
-        # joint_effort_hfe = joint_states.effort[1]
-        # joint_effort_kfe = joint_states.effort[2]
+        touching_ground = 1 if self.touching else 0
 
         observation = []
         rospy.logdebug("List of Observations==>"+str(self._list_of_observations))
+        # if scalar simply append, if list extend so that list is flat
         for obs_name in self._list_of_observations:
             if obs_name == "distance_from_desired_point":
                 observation.append(distance_from_desired_point)
@@ -450,21 +431,9 @@ class HexapodState(object):
             elif obs_name == "contact_force":
                 observation.append(contact_force)
             elif obs_name == "joint_states":
-                observation.append(joint_state_positions)
-            # elif obs_name == "joint_states_haa":
-            #     observation.append(joint_states_haa)
-            # elif obs_name == "joint_states_hfe":
-            #     observation.append(joint_states_hfe)
-            # elif obs_name == "joint_states_kfe":
-            #     observation.append(joint_states_kfe)
+                observation.extend(joint_state_positions)
             elif obs_name == "joint_effort":
-                observation.append(efforts)
-            # elif obs_name == "joint_effort_haa":
-            #     observation.append(joint_effort_haa)
-            # elif obs_name == "joint_effort_hfe":
-            #     observation.append(joint_effort_hfe)
-            # elif obs_name == "joint_effort_kfe":
-            #     observation.append(joint_effort_kfe)
+                observation.extend(efforts)
             elif obs_name == "base_angular_vel_x":
                 observation.append(base_angular_vel_x)
             elif obs_name == "base_angular_vel_y":
@@ -477,6 +446,8 @@ class HexapodState(object):
                 observation.append(base_linear_acceleration_y)
             elif obs_name == "base_linear_acceleration_z":
                 observation.append(base_linear_acceleration_z)
+            elif obs_name == "touching_ground":
+                observation.append(touching_ground)
             else:
                 raise NameError('Observation Asked does not exist=='+str(obs_name))
 
@@ -502,7 +473,7 @@ class HexapodState(object):
         :return:
         """
         rospy.logdebug("Observations>>"+str(observation))
-
+        rospy.logdebug("Observations list>>"+str(self._list_of_observations))
         state_discrete = numpy.zeros(len(self._list_of_observations), dtype=numpy.int32)
         for i in range(len(self._list_of_observations)):
             # We convert to int because anyway it will be round floats. We add Right True to include limits
@@ -555,25 +526,10 @@ class HexapodState(object):
                 # We consider the URDF maximum values
                 max_value = self._joint_limits["max"]
                 min_value = self._joint_limits["min"]
-            # elif obs_name == "joint_states_hfe":
-            #     max_value = self._joint_limits["hfe_max"]
-            #     min_value = self._joint_limits["hfe_min"]
-            # elif obs_name == "joint_states_kfe":
-            #     max_value = self._joint_limits["kfe_max"]
-            #     min_value = self._joint_limits["kfe_min"]
-
             elif obs_name == "joint_effort":
                 # We consider the URDF maximum values
                 max_value = self.maximum_joint_effort
                 min_value = -self.maximum_joint_effort
-            # elif obs_name == "joint_effort_hfe":
-            #     max_value = self.maximum_joint_effort
-            #     min_value = -self.maximum_joint_effort
-            # elif obs_name == "joint_effort_kfe":
-            #     max_value = self.maximum_joint_effort
-            #     min_value = -self.maximum_joint_effort
-
-
             elif obs_name == "base_angular_vel_x":
                 max_value = self.maximum_base_angular_velocity
                 min_value = -self.maximum_base_angular_velocity
@@ -593,6 +549,9 @@ class HexapodState(object):
             elif obs_name == "base_linear_acceleration_z":
                 max_value = self.maximum_base_linear_acceleration
                 min_value = -self.maximum_base_linear_acceleration
+            elif obs_name == "touching_ground":
+                max_value = 1
+                min_value = 0
 
             else:
                 raise NameError('Observation Asked does not exist=='+str(obs_name))
@@ -798,21 +757,6 @@ class HexapodState(object):
             self.current_joint_pose[i] = max(min(joint_value, self._joint_limits["max"]),
                                          self._joint_limits["min"])
 
-        # haa_joint_value = self.current_joint_pose[0]
-        # hfe_joint_value = self.current_joint_pose[1]
-        # kfe_joint_value = self.current_joint_pose[2]
-
-        # self.current_joint_pose[0] = max(min(haa_joint_value, self._joint_limits["haa_max"]),
-        #                                  self._joint_limits["haa_min"])
-        # self.current_joint_pose[1] = max(min(hfe_joint_value, self._joint_limits["hfe_max"]),
-        #                                  self._joint_limits["hfe_min"])
-
-
-        # rospy.logdebug("kfe_min>>>" + str(self._joint_limits["kfe_min"]))
-        # rospy.logdebug("kfe_max>>>" + str(self._joint_limits["kfe_max"]))
-        # self.current_joint_pose[2] = max(min(kfe_joint_value, self._joint_limits["kfe_max"]),
-        #                                  self._joint_limits["kfe_min"])
-
         rospy.logdebug("DONE Clamping current_joint_pose>>>" + str(self.current_joint_pose))
 
     def is_joints_less_exceeded(self):
@@ -829,11 +773,11 @@ class HexapodState(object):
         :return: reward, done
         """
 
-        if "hexapod_minimum_height" in self._episode_done_criteria:
-            hexapod_height_ok = self.hexapod_height_ok()
-        else:
-            rospy.logdebug("hexapod_height_ok NOT TAKEN INTO ACCOUNT")
-            hexapod_height_ok = True
+        # if "hexapod_minimum_height" in self._episode_done_criteria:
+        #     hexapod_height_ok = self.hexapod_height_ok()
+        # else:
+        #     rospy.logdebug("hexapod_height_ok NOT TAKEN INTO ACCOUNT")
+        #     hexapod_height_ok = True
 
         if "hexapod_vertical_orientation" in self._episode_done_criteria:
             hexapod_orientation_ok = self.hexapod_orientation_ok()
@@ -851,11 +795,11 @@ class HexapodState(object):
         if "stand_up" in self._episode_done_criteria:
             is_standing = self.is_stand_up()
 
-        rospy.logdebug("hexapod_height_ok="+str(hexapod_height_ok))
+        # rospy.logdebug("hexapod_height_ok="+str(hexapod_height_ok))
         rospy.logdebug("hexapod_orientation_ok=" + str(hexapod_orientation_ok))
 
         done = False
-        if (not hexapod_height_ok) or (not hexapod_orientation_ok) or less_exceeded_joint_position or is_standing:
+        if (not hexapod_orientation_ok) or less_exceeded_joint_position or is_standing:
             done = True
         
         if done:
