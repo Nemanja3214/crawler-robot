@@ -16,6 +16,8 @@ from std_msgs.msg import Float64
 # ROS packages required
 import rospy
 import rospkg
+from hexapod_training.msg import ResultMsg
+
 
 # import our training environment
 import hexapod_env
@@ -155,6 +157,22 @@ if __name__ == '__main__':
     if len(l) != 0:
         rospy.loginfo("Overall score: {:0.2f}".format(last_time_steps.mean()))
         rospy.loginfo("Best 100 score: {:0.2f}".format(reduce(lambda x, y: x + y, l[-100:]) / len(l[-100:])))
+        # rate = rospy.Rate(50)
+        for i, _ in enumerate(top_episodes_rewards):
+            rospy.loginfo("Result " + str(i+ 1))
+            pub = rospy.Publisher("/result"+ str(i + 1), ResultMsg, queue_size = 1)
+            msg = ResultMsg()
+            msg.order = i + 1 
+            msg.reward = top_episodes_rewards[i]
+            msg.actions = top_episodes_actions[i]
+            print("SUBS>>>>" + str(pub.get_num_connections()))
+            time.sleep(6)
+            while pub.get_num_connections() == 0:
+                time.sleep(2)
+            print("SUBS>>>>" + str(pub.get_num_connections()))
+            # exit()
+            pub.publish(msg)
+
     else:
         rospy.loginfo("No episode has reached solution")
     env.close()

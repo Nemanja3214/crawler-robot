@@ -3,6 +3,6 @@ prefix=/home/nemanja/catkin_ws/install
 Name: hexapod_training
 Description: Description of hexapod_training
 Version: 0.0.0
-Cflags: 
+Cflags: -I${prefix}/include
 Libs: -L${prefix}/lib 
-Requires: 
+Requires: message_runtime
