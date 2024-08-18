@@ -8,6 +8,7 @@ from std_msgs.msg import String
 '''
 import gym
 import time
+import json
 import numpy
 import random
 import qlearn
@@ -159,19 +160,20 @@ if __name__ == '__main__':
         rospy.loginfo("Best 100 score: {:0.2f}".format(reduce(lambda x, y: x + y, l[-100:]) / len(l[-100:])))
         # rate = rospy.Rate(50)
         for i, _ in enumerate(top_episodes_rewards):
-            rospy.loginfo("Result " + str(i+ 1))
-            pub = rospy.Publisher("/result"+ str(i + 1), ResultMsg, queue_size = 1)
-            msg = ResultMsg()
-            msg.order = i + 1 
-            msg.reward = top_episodes_rewards[i]
-            msg.actions = top_episodes_actions[i]
-            print("SUBS>>>>" + str(pub.get_num_connections()))
-            time.sleep(6)
-            while pub.get_num_connections() == 0:
-                time.sleep(2)
-            print("SUBS>>>>" + str(pub.get_num_connections()))
-            # exit()
-            pub.publish(msg)
+                dir = rospy.get_param("result_dir")
+                with open(dir + "/result"+ str(i+1)+ ".json", "w+") as file:
+                    rospy.loginfo("DUMPING")
+                    ob = {
+                        "order": i+1,
+                        "reward": top_episodes_rewards[i],
+                        "actions": top_episodes_actions[i].tolist()
+                    }
+                    rospy.loginfo(ob)
+                    try:
+                        # rospy.loginfo(os.access(result_path, os.W_OK))
+                        json.dump(ob, file)
+                    except Exception as e:
+                        rospy.logerr(e)
 
     else:
         rospy.loginfo("No episode has reached solution")
