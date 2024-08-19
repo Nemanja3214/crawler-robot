@@ -9,22 +9,6 @@ from hexapod_training.msg import ResultMsg
 import os
 import hexapod_env
 
-def save(msg):
-    try:
-        dir = rospy.get_param("result_dir")
-        with open(dir + "/result"+ str(msg.order)+ ".json", "w+") as file:
-            rospy.loginfo("DUMPING")
-            ob = {
-                "order": msg.order,
-                "reward": msg.reward,
-                "actions": msg.actions
-            }
-            rospy.loginfo(ob)
-            # rospy.loginfo(os.access(result_path, os.W_OK))
-            json.dump(ob, file)
-    except Exception as e:
-        rospy.logerr(e)
-
 
 if __name__ == "__main__":
     rospy.loginfo("STARTED LOADER")

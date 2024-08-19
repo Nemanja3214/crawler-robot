@@ -23,7 +23,7 @@ from hexapod_training.msg import ResultMsg
 # import our training environment
 import hexapod_env
 def replace_if_greater(numeric_arr, side_list, numeric_val, side_val):
-    if numpy.size(numeric_arr, 0) < 10:
+    if numpy.size(numeric_arr, 0) < 50:
         numeric_arr = numpy.append(numeric_arr, numeric_val)
         side_list.append(side_val)
         return numeric_arr
@@ -41,10 +41,33 @@ def replace_if_greater(numeric_arr, side_list, numeric_val, side_val):
         side_list[min_index] = side_val
     return numeric_arr
 
+
+# top 10 episodes (reward, action sequence)
+top_episodes_rewards = numpy.array([])
+top_episodes_actions = []
+def save():
+    for i, _ in enumerate(top_episodes_rewards):
+        dir = rospy.get_param("result_dir")
+        with open(dir + "/result"+ str(i+1)+ ".json", "w+") as file:
+            rospy.loginfo("DUMPING")
+            ob = {
+                "order": i+1,
+                "reward": top_episodes_rewards[i],
+                "actions": top_episodes_actions[i].tolist()
+            }
+            rospy.loginfo(ob)
+            try:
+                # rospy.loginfo(os.access(result_path, os.W_OK))
+                json.dump(ob, file)
+            except Exception as e:
+                rospy.logerr(e)
+
+
 if __name__ == '__main__':
     
     rospy.init_node('hexapod_gym', anonymous=True, log_level=rospy.INFO)
     # rospy.init_node('hexapod_gym', anonymous=True, log_level=rospy.DEBUG)
+    rospy.on_shutdown(save)
 
     # Create the Gym environment
     env = gym.make('Hexapod-v0')
@@ -80,9 +103,6 @@ if __name__ == '__main__':
     start_time = time.time()
     highest_reward = 0
 
-    # top 10 episodes (reward, action sequence)
-    top_episodes_rewards = numpy.array([])
-    top_episodes_actions = []
     
     # Starts the main training loop: the one about the episodes to do
     for x in range(nepisodes):
@@ -159,21 +179,6 @@ if __name__ == '__main__':
         rospy.loginfo("Overall score: {:0.2f}".format(last_time_steps.mean()))
         rospy.loginfo("Best 100 score: {:0.2f}".format(reduce(lambda x, y: x + y, l[-100:]) / len(l[-100:])))
         # rate = rospy.Rate(50)
-        for i, _ in enumerate(top_episodes_rewards):
-                dir = rospy.get_param("result_dir")
-                with open(dir + "/result"+ str(i+1)+ ".json", "w+") as file:
-                    rospy.loginfo("DUMPING")
-                    ob = {
-                        "order": i+1,
-                        "reward": top_episodes_rewards[i],
-                        "actions": top_episodes_actions[i].tolist()
-                    }
-                    rospy.loginfo(ob)
-                    try:
-                        # rospy.loginfo(os.access(result_path, os.W_OK))
-                        json.dump(ob, file)
-                    except Exception as e:
-                        rospy.logerr(e)
 
     else:
         rospy.loginfo("No episode has reached solution")
