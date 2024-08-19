@@ -46,21 +46,22 @@ def replace_if_greater(numeric_arr, side_list, numeric_val, side_val):
 top_episodes_rewards = numpy.array([])
 top_episodes_actions = []
 def save():
+    results = []
     for i, _ in enumerate(top_episodes_rewards):
-        dir = rospy.get_param("result_dir")
-        with open(dir + "/result"+ str(i+1)+ ".json", "w+") as file:
-            rospy.loginfo("DUMPING")
-            ob = {
-                "order": i+1,
-                "reward": top_episodes_rewards[i],
-                "actions": top_episodes_actions[i].tolist()
-            }
-            rospy.loginfo(ob)
-            try:
-                # rospy.loginfo(os.access(result_path, os.W_OK))
-                json.dump(ob, file)
-            except Exception as e:
-                rospy.logerr(e)
+        ob = {
+            "reward": top_episodes_rewards[i],
+            "actions": top_episodes_actions[i].tolist()
+        }
+        results.append(ob)
+        rospy.loginfo(ob)
+    results = sorted(results, key=lambda ob: ob["reward"], reverse=True)
+    dir = rospy.get_param("result_dir")
+    with open(dir + "/results.json", "w+") as file:
+        rospy.loginfo("DUMPING")
+        try:
+            json.dump(results, file)
+        except Exception as e:
+            rospy.logerr(e)
 
 
 if __name__ == '__main__':
