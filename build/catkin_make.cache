@@ -1,2 +1,2 @@
-dummy_controller:gazebo_ros_demos/gazebo_tutorials:gazebo_ros_demos/rrbot_control:gazebo_ros_demos/rrbot_description:gazebo_ros_demos/rrbot_gazebo:hexapod_training:openai_ros/openai_ros:urdf_demo
+hexapod_training:openai_ros/openai_ros:urdf_demo
 -DCATKIN_DEVEL_PREFIX=/home/nemanja/catkin_ws/devel -DCMAKE_INSTALL_PREFIX=/home/nemanja/catkin_ws/install -G Unix Makefiles

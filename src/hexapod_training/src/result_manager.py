@@ -23,7 +23,7 @@ if __name__ == "__main__":
         results = json.load(file)
         # rospy.loginfo(results)
     for i, ob in enumerate(results):
-        print(str(i) + str(ob["reward"]))
+        print(str(i) + " " + str(ob["reward"]))
     while not rospy.is_shutdown():
         option = input("Choose option: ")
         env.reset()

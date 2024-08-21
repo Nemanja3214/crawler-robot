@@ -38,7 +38,11 @@ if(NOT DEFINED CMAKE_CROSSCOMPILING)
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/hexapod_training/msg" TYPE FILE FILES "/home/nemanja/catkin_ws/src/hexapod_training/msg/ResultMsg.msg")
+  file(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/hexapod_training/msg" TYPE FILE FILES
+    "/home/nemanja/catkin_ws/src/hexapod_training/msg/QMatrix.msg"
+    "/home/nemanja/catkin_ws/src/hexapod_training/msg/QMatrixElement.msg"
+    "/home/nemanja/catkin_ws/src/hexapod_training/msg/StateActionPair.msg"
+    )
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)

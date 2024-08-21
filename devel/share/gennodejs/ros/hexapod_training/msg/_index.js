@@ -1,8 +1,12 @@
 
 "use strict";
 
-let ResultMsg = require('./ResultMsg.js');
+let QMatrix = require('./QMatrix.js');
+let QMatrixElement = require('./QMatrixElement.js');
+let StateActionPair = require('./StateActionPair.js');
 
 module.exports = {
-  ResultMsg: ResultMsg,
+  QMatrix: QMatrix,
+  QMatrixElement: QMatrixElement,
+  StateActionPair: StateActionPair,
 };

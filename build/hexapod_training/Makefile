@@ -79,40 +79,6 @@ test/fast: test
 
 .PHONY : test/fast
 
-# Special rule for the target install/strip
-install/strip: preinstall
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing the project stripped..."
-	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
-.PHONY : install/strip
-
-# Special rule for the target install/strip
-install/strip/fast: preinstall/fast
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing the project stripped..."
-	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
-.PHONY : install/strip/fast
-
-# Special rule for the target list_install_components
-list_install_components:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Available install components are: \"Unspecified\""
-.PHONY : list_install_components
-
-# Special rule for the target list_install_components
-list_install_components/fast: list_install_components
-
-.PHONY : list_install_components/fast
-
-# Special rule for the target install
-install: preinstall
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
-	/usr/bin/cmake -P cmake_install.cmake
-.PHONY : install
-
-# Special rule for the target install
-install/fast: preinstall/fast
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
-	/usr/bin/cmake -P cmake_install.cmake
-.PHONY : install/fast
-
 # Special rule for the target rebuild_cache
 rebuild_cache:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake to regenerate build system..."
@@ -134,6 +100,40 @@ edit_cache:
 edit_cache/fast: edit_cache
 
 .PHONY : edit_cache/fast
+
+# Special rule for the target install/strip
+install/strip: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing the project stripped..."
+	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
+.PHONY : install/strip
+
+# Special rule for the target install/strip
+install/strip/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing the project stripped..."
+	/usr/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
+.PHONY : install/strip/fast
+
+# Special rule for the target install
+install: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
+	/usr/bin/cmake -P cmake_install.cmake
+.PHONY : install
+
+# Special rule for the target install
+install/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
+	/usr/bin/cmake -P cmake_install.cmake
+.PHONY : install/fast
+
+# Special rule for the target list_install_components
+list_install_components:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Available install components are: \"Unspecified\""
+.PHONY : list_install_components
+
+# Special rule for the target list_install_components
+list_install_components/fast: list_install_components
+
+.PHONY : list_install_components/fast
 
 # The main all target
 all: cmake_check_build_system
@@ -183,6 +183,66 @@ hexapod_training_generate_messages_nodejs/fast:
 .PHONY : hexapod_training_generate_messages_nodejs/fast
 
 # Convenience name for target.
+hexapod_training/CMakeFiles/hexapod_training_genpy.dir/rule:
+	cd /home/nemanja/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 hexapod_training/CMakeFiles/hexapod_training_genpy.dir/rule
+.PHONY : hexapod_training/CMakeFiles/hexapod_training_genpy.dir/rule
+
+# Convenience name for target.
+hexapod_training_genpy: hexapod_training/CMakeFiles/hexapod_training_genpy.dir/rule
+
+.PHONY : hexapod_training_genpy
+
+# fast build rule for target.
+hexapod_training_genpy/fast:
+	cd /home/nemanja/catkin_ws/build && $(MAKE) -f hexapod_training/CMakeFiles/hexapod_training_genpy.dir/build.make hexapod_training/CMakeFiles/hexapod_training_genpy.dir/build
+.PHONY : hexapod_training_genpy/fast
+
+# Convenience name for target.
+hexapod_training/CMakeFiles/hexapod_training_generate_messages_py.dir/rule:
+	cd /home/nemanja/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 hexapod_training/CMakeFiles/hexapod_training_generate_messages_py.dir/rule
+.PHONY : hexapod_training/CMakeFiles/hexapod_training_generate_messages_py.dir/rule
+
+# Convenience name for target.
+hexapod_training_generate_messages_py: hexapod_training/CMakeFiles/hexapod_training_generate_messages_py.dir/rule
+
+.PHONY : hexapod_training_generate_messages_py
+
+# fast build rule for target.
+hexapod_training_generate_messages_py/fast:
+	cd /home/nemanja/catkin_ws/build && $(MAKE) -f hexapod_training/CMakeFiles/hexapod_training_generate_messages_py.dir/build.make hexapod_training/CMakeFiles/hexapod_training_generate_messages_py.dir/build
+.PHONY : hexapod_training_generate_messages_py/fast
+
+# Convenience name for target.
+hexapod_training/CMakeFiles/hexapod_training_genlisp.dir/rule:
+	cd /home/nemanja/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 hexapod_training/CMakeFiles/hexapod_training_genlisp.dir/rule
+.PHONY : hexapod_training/CMakeFiles/hexapod_training_genlisp.dir/rule
+
+# Convenience name for target.
+hexapod_training_genlisp: hexapod_training/CMakeFiles/hexapod_training_genlisp.dir/rule
+
+.PHONY : hexapod_training_genlisp
+
+# fast build rule for target.
+hexapod_training_genlisp/fast:
+	cd /home/nemanja/catkin_ws/build && $(MAKE) -f hexapod_training/CMakeFiles/hexapod_training_genlisp.dir/build.make hexapod_training/CMakeFiles/hexapod_training_genlisp.dir/build
+.PHONY : hexapod_training_genlisp/fast
+
+# Convenience name for target.
+hexapod_training/CMakeFiles/hexapod_training_generate_messages_lisp.dir/rule:
+	cd /home/nemanja/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 hexapod_training/CMakeFiles/hexapod_training_generate_messages_lisp.dir/rule
+.PHONY : hexapod_training/CMakeFiles/hexapod_training_generate_messages_lisp.dir/rule
+
+# Convenience name for target.
+hexapod_training_generate_messages_lisp: hexapod_training/CMakeFiles/hexapod_training_generate_messages_lisp.dir/rule
+
+.PHONY : hexapod_training_generate_messages_lisp
+
+# fast build rule for target.
+hexapod_training_generate_messages_lisp/fast:
+	cd /home/nemanja/catkin_ws/build && $(MAKE) -f hexapod_training/CMakeFiles/hexapod_training_generate_messages_lisp.dir/build.make hexapod_training/CMakeFiles/hexapod_training_generate_messages_lisp.dir/build
+.PHONY : hexapod_training_generate_messages_lisp/fast
+
+# Convenience name for target.
 hexapod_training/CMakeFiles/std_msgs_generate_messages_cpp.dir/rule:
 	cd /home/nemanja/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 hexapod_training/CMakeFiles/std_msgs_generate_messages_cpp.dir/rule
 .PHONY : hexapod_training/CMakeFiles/std_msgs_generate_messages_cpp.dir/rule
@@ -196,36 +256,6 @@ std_msgs_generate_messages_cpp: hexapod_training/CMakeFiles/std_msgs_generate_me
 std_msgs_generate_messages_cpp/fast:
 	cd /home/nemanja/catkin_ws/build && $(MAKE) -f hexapod_training/CMakeFiles/std_msgs_generate_messages_cpp.dir/build.make hexapod_training/CMakeFiles/std_msgs_generate_messages_cpp.dir/build
 .PHONY : std_msgs_generate_messages_cpp/fast
-
-# Convenience name for target.
-hexapod_training/CMakeFiles/std_msgs_generate_messages_lisp.dir/rule:
-	cd /home/nemanja/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 hexapod_training/CMakeFiles/std_msgs_generate_messages_lisp.dir/rule
-.PHONY : hexapod_training/CMakeFiles/std_msgs_generate_messages_lisp.dir/rule
-
-# Convenience name for target.
-std_msgs_generate_messages_lisp: hexapod_training/CMakeFiles/std_msgs_generate_messages_lisp.dir/rule
-
-.PHONY : std_msgs_generate_messages_lisp
-
-# fast build rule for target.
-std_msgs_generate_messages_lisp/fast:
-	cd /home/nemanja/catkin_ws/build && $(MAKE) -f hexapod_training/CMakeFiles/std_msgs_generate_messages_lisp.dir/build.make hexapod_training/CMakeFiles/std_msgs_generate_messages_lisp.dir/build
-.PHONY : std_msgs_generate_messages_lisp/fast
-
-# Convenience name for target.
-hexapod_training/CMakeFiles/std_msgs_generate_messages_nodejs.dir/rule:
-	cd /home/nemanja/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 hexapod_training/CMakeFiles/std_msgs_generate_messages_nodejs.dir/rule
-.PHONY : hexapod_training/CMakeFiles/std_msgs_generate_messages_nodejs.dir/rule
-
-# Convenience name for target.
-std_msgs_generate_messages_nodejs: hexapod_training/CMakeFiles/std_msgs_generate_messages_nodejs.dir/rule
-
-.PHONY : std_msgs_generate_messages_nodejs
-
-# fast build rule for target.
-std_msgs_generate_messages_nodejs/fast:
-	cd /home/nemanja/catkin_ws/build && $(MAKE) -f hexapod_training/CMakeFiles/std_msgs_generate_messages_nodejs.dir/build.make hexapod_training/CMakeFiles/std_msgs_generate_messages_nodejs.dir/build
-.PHONY : std_msgs_generate_messages_nodejs/fast
 
 # Convenience name for target.
 hexapod_training/CMakeFiles/std_msgs_generate_messages_eus.dir/rule:
@@ -243,19 +273,49 @@ std_msgs_generate_messages_eus/fast:
 .PHONY : std_msgs_generate_messages_eus/fast
 
 # Convenience name for target.
-hexapod_training/CMakeFiles/_hexapod_training_generate_messages_check_deps_ResultMsg.dir/rule:
-	cd /home/nemanja/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 hexapod_training/CMakeFiles/_hexapod_training_generate_messages_check_deps_ResultMsg.dir/rule
-.PHONY : hexapod_training/CMakeFiles/_hexapod_training_generate_messages_check_deps_ResultMsg.dir/rule
+hexapod_training/CMakeFiles/std_msgs_generate_messages_nodejs.dir/rule:
+	cd /home/nemanja/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 hexapod_training/CMakeFiles/std_msgs_generate_messages_nodejs.dir/rule
+.PHONY : hexapod_training/CMakeFiles/std_msgs_generate_messages_nodejs.dir/rule
 
 # Convenience name for target.
-_hexapod_training_generate_messages_check_deps_ResultMsg: hexapod_training/CMakeFiles/_hexapod_training_generate_messages_check_deps_ResultMsg.dir/rule
+std_msgs_generate_messages_nodejs: hexapod_training/CMakeFiles/std_msgs_generate_messages_nodejs.dir/rule
 
-.PHONY : _hexapod_training_generate_messages_check_deps_ResultMsg
+.PHONY : std_msgs_generate_messages_nodejs
 
 # fast build rule for target.
-_hexapod_training_generate_messages_check_deps_ResultMsg/fast:
-	cd /home/nemanja/catkin_ws/build && $(MAKE) -f hexapod_training/CMakeFiles/_hexapod_training_generate_messages_check_deps_ResultMsg.dir/build.make hexapod_training/CMakeFiles/_hexapod_training_generate_messages_check_deps_ResultMsg.dir/build
-.PHONY : _hexapod_training_generate_messages_check_deps_ResultMsg/fast
+std_msgs_generate_messages_nodejs/fast:
+	cd /home/nemanja/catkin_ws/build && $(MAKE) -f hexapod_training/CMakeFiles/std_msgs_generate_messages_nodejs.dir/build.make hexapod_training/CMakeFiles/std_msgs_generate_messages_nodejs.dir/build
+.PHONY : std_msgs_generate_messages_nodejs/fast
+
+# Convenience name for target.
+hexapod_training/CMakeFiles/std_msgs_generate_messages_lisp.dir/rule:
+	cd /home/nemanja/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 hexapod_training/CMakeFiles/std_msgs_generate_messages_lisp.dir/rule
+.PHONY : hexapod_training/CMakeFiles/std_msgs_generate_messages_lisp.dir/rule
+
+# Convenience name for target.
+std_msgs_generate_messages_lisp: hexapod_training/CMakeFiles/std_msgs_generate_messages_lisp.dir/rule
+
+.PHONY : std_msgs_generate_messages_lisp
+
+# fast build rule for target.
+std_msgs_generate_messages_lisp/fast:
+	cd /home/nemanja/catkin_ws/build && $(MAKE) -f hexapod_training/CMakeFiles/std_msgs_generate_messages_lisp.dir/build.make hexapod_training/CMakeFiles/std_msgs_generate_messages_lisp.dir/build
+.PHONY : std_msgs_generate_messages_lisp/fast
+
+# Convenience name for target.
+hexapod_training/CMakeFiles/_hexapod_training_generate_messages_check_deps_QMatrixElement.dir/rule:
+	cd /home/nemanja/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 hexapod_training/CMakeFiles/_hexapod_training_generate_messages_check_deps_QMatrixElement.dir/rule
+.PHONY : hexapod_training/CMakeFiles/_hexapod_training_generate_messages_check_deps_QMatrixElement.dir/rule
+
+# Convenience name for target.
+_hexapod_training_generate_messages_check_deps_QMatrixElement: hexapod_training/CMakeFiles/_hexapod_training_generate_messages_check_deps_QMatrixElement.dir/rule
+
+.PHONY : _hexapod_training_generate_messages_check_deps_QMatrixElement
+
+# fast build rule for target.
+_hexapod_training_generate_messages_check_deps_QMatrixElement/fast:
+	cd /home/nemanja/catkin_ws/build && $(MAKE) -f hexapod_training/CMakeFiles/_hexapod_training_generate_messages_check_deps_QMatrixElement.dir/build.make hexapod_training/CMakeFiles/_hexapod_training_generate_messages_check_deps_QMatrixElement.dir/build
+.PHONY : _hexapod_training_generate_messages_check_deps_QMatrixElement/fast
 
 # Convenience name for target.
 hexapod_training/CMakeFiles/hexapod_training_gennodejs.dir/rule:
@@ -348,6 +408,36 @@ hexapod_training_geneus/fast:
 .PHONY : hexapod_training_geneus/fast
 
 # Convenience name for target.
+hexapod_training/CMakeFiles/_hexapod_training_generate_messages_check_deps_QMatrix.dir/rule:
+	cd /home/nemanja/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 hexapod_training/CMakeFiles/_hexapod_training_generate_messages_check_deps_QMatrix.dir/rule
+.PHONY : hexapod_training/CMakeFiles/_hexapod_training_generate_messages_check_deps_QMatrix.dir/rule
+
+# Convenience name for target.
+_hexapod_training_generate_messages_check_deps_QMatrix: hexapod_training/CMakeFiles/_hexapod_training_generate_messages_check_deps_QMatrix.dir/rule
+
+.PHONY : _hexapod_training_generate_messages_check_deps_QMatrix
+
+# fast build rule for target.
+_hexapod_training_generate_messages_check_deps_QMatrix/fast:
+	cd /home/nemanja/catkin_ws/build && $(MAKE) -f hexapod_training/CMakeFiles/_hexapod_training_generate_messages_check_deps_QMatrix.dir/build.make hexapod_training/CMakeFiles/_hexapod_training_generate_messages_check_deps_QMatrix.dir/build
+.PHONY : _hexapod_training_generate_messages_check_deps_QMatrix/fast
+
+# Convenience name for target.
+hexapod_training/CMakeFiles/_hexapod_training_generate_messages_check_deps_StateActionPair.dir/rule:
+	cd /home/nemanja/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 hexapod_training/CMakeFiles/_hexapod_training_generate_messages_check_deps_StateActionPair.dir/rule
+.PHONY : hexapod_training/CMakeFiles/_hexapod_training_generate_messages_check_deps_StateActionPair.dir/rule
+
+# Convenience name for target.
+_hexapod_training_generate_messages_check_deps_StateActionPair: hexapod_training/CMakeFiles/_hexapod_training_generate_messages_check_deps_StateActionPair.dir/rule
+
+.PHONY : _hexapod_training_generate_messages_check_deps_StateActionPair
+
+# fast build rule for target.
+_hexapod_training_generate_messages_check_deps_StateActionPair/fast:
+	cd /home/nemanja/catkin_ws/build && $(MAKE) -f hexapod_training/CMakeFiles/_hexapod_training_generate_messages_check_deps_StateActionPair.dir/build.make hexapod_training/CMakeFiles/_hexapod_training_generate_messages_check_deps_StateActionPair.dir/build
+.PHONY : _hexapod_training_generate_messages_check_deps_StateActionPair/fast
+
+# Convenience name for target.
 hexapod_training/CMakeFiles/hexapod_training_generate_messages_eus.dir/rule:
 	cd /home/nemanja/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 hexapod_training/CMakeFiles/hexapod_training_generate_messages_eus.dir/rule
 .PHONY : hexapod_training/CMakeFiles/hexapod_training_generate_messages_eus.dir/rule
@@ -362,66 +452,6 @@ hexapod_training_generate_messages_eus/fast:
 	cd /home/nemanja/catkin_ws/build && $(MAKE) -f hexapod_training/CMakeFiles/hexapod_training_generate_messages_eus.dir/build.make hexapod_training/CMakeFiles/hexapod_training_generate_messages_eus.dir/build
 .PHONY : hexapod_training_generate_messages_eus/fast
 
-# Convenience name for target.
-hexapod_training/CMakeFiles/hexapod_training_generate_messages_lisp.dir/rule:
-	cd /home/nemanja/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 hexapod_training/CMakeFiles/hexapod_training_generate_messages_lisp.dir/rule
-.PHONY : hexapod_training/CMakeFiles/hexapod_training_generate_messages_lisp.dir/rule
-
-# Convenience name for target.
-hexapod_training_generate_messages_lisp: hexapod_training/CMakeFiles/hexapod_training_generate_messages_lisp.dir/rule
-
-.PHONY : hexapod_training_generate_messages_lisp
-
-# fast build rule for target.
-hexapod_training_generate_messages_lisp/fast:
-	cd /home/nemanja/catkin_ws/build && $(MAKE) -f hexapod_training/CMakeFiles/hexapod_training_generate_messages_lisp.dir/build.make hexapod_training/CMakeFiles/hexapod_training_generate_messages_lisp.dir/build
-.PHONY : hexapod_training_generate_messages_lisp/fast
-
-# Convenience name for target.
-hexapod_training/CMakeFiles/hexapod_training_genpy.dir/rule:
-	cd /home/nemanja/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 hexapod_training/CMakeFiles/hexapod_training_genpy.dir/rule
-.PHONY : hexapod_training/CMakeFiles/hexapod_training_genpy.dir/rule
-
-# Convenience name for target.
-hexapod_training_genpy: hexapod_training/CMakeFiles/hexapod_training_genpy.dir/rule
-
-.PHONY : hexapod_training_genpy
-
-# fast build rule for target.
-hexapod_training_genpy/fast:
-	cd /home/nemanja/catkin_ws/build && $(MAKE) -f hexapod_training/CMakeFiles/hexapod_training_genpy.dir/build.make hexapod_training/CMakeFiles/hexapod_training_genpy.dir/build
-.PHONY : hexapod_training_genpy/fast
-
-# Convenience name for target.
-hexapod_training/CMakeFiles/hexapod_training_generate_messages_py.dir/rule:
-	cd /home/nemanja/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 hexapod_training/CMakeFiles/hexapod_training_generate_messages_py.dir/rule
-.PHONY : hexapod_training/CMakeFiles/hexapod_training_generate_messages_py.dir/rule
-
-# Convenience name for target.
-hexapod_training_generate_messages_py: hexapod_training/CMakeFiles/hexapod_training_generate_messages_py.dir/rule
-
-.PHONY : hexapod_training_generate_messages_py
-
-# fast build rule for target.
-hexapod_training_generate_messages_py/fast:
-	cd /home/nemanja/catkin_ws/build && $(MAKE) -f hexapod_training/CMakeFiles/hexapod_training_generate_messages_py.dir/build.make hexapod_training/CMakeFiles/hexapod_training_generate_messages_py.dir/build
-.PHONY : hexapod_training_generate_messages_py/fast
-
-# Convenience name for target.
-hexapod_training/CMakeFiles/hexapod_training_genlisp.dir/rule:
-	cd /home/nemanja/catkin_ws/build && $(MAKE) -f CMakeFiles/Makefile2 hexapod_training/CMakeFiles/hexapod_training_genlisp.dir/rule
-.PHONY : hexapod_training/CMakeFiles/hexapod_training_genlisp.dir/rule
-
-# Convenience name for target.
-hexapod_training_genlisp: hexapod_training/CMakeFiles/hexapod_training_genlisp.dir/rule
-
-.PHONY : hexapod_training_genlisp
-
-# fast build rule for target.
-hexapod_training_genlisp/fast:
-	cd /home/nemanja/catkin_ws/build && $(MAKE) -f hexapod_training/CMakeFiles/hexapod_training_genlisp.dir/build.make hexapod_training/CMakeFiles/hexapod_training_genlisp.dir/build
-.PHONY : hexapod_training_genlisp/fast
-
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -431,27 +461,29 @@ help:
 	@echo "... install/local"
 	@echo "... test"
 	@echo "... hexapod_training_generate_messages_nodejs"
+	@echo "... rebuild_cache"
+	@echo "... edit_cache"
+	@echo "... hexapod_training_genpy"
+	@echo "... hexapod_training_generate_messages_py"
+	@echo "... hexapod_training_genlisp"
+	@echo "... hexapod_training_generate_messages_lisp"
 	@echo "... install/strip"
 	@echo "... std_msgs_generate_messages_cpp"
-	@echo "... list_install_components"
-	@echo "... std_msgs_generate_messages_lisp"
-	@echo "... std_msgs_generate_messages_nodejs"
 	@echo "... install"
 	@echo "... std_msgs_generate_messages_eus"
-	@echo "... _hexapod_training_generate_messages_check_deps_ResultMsg"
+	@echo "... std_msgs_generate_messages_nodejs"
+	@echo "... list_install_components"
+	@echo "... std_msgs_generate_messages_lisp"
+	@echo "... _hexapod_training_generate_messages_check_deps_QMatrixElement"
 	@echo "... hexapod_training_gennodejs"
 	@echo "... hexapod_training_generate_messages_cpp"
 	@echo "... hexapod_training_gencpp"
 	@echo "... std_msgs_generate_messages_py"
 	@echo "... hexapod_training_generate_messages"
 	@echo "... hexapod_training_geneus"
+	@echo "... _hexapod_training_generate_messages_check_deps_QMatrix"
+	@echo "... _hexapod_training_generate_messages_check_deps_StateActionPair"
 	@echo "... hexapod_training_generate_messages_eus"
-	@echo "... hexapod_training_generate_messages_lisp"
-	@echo "... rebuild_cache"
-	@echo "... edit_cache"
-	@echo "... hexapod_training_genpy"
-	@echo "... hexapod_training_generate_messages_py"
-	@echo "... hexapod_training_genlisp"
 .PHONY : help
 
 

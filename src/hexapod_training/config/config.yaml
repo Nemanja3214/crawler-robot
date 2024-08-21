@@ -3,7 +3,7 @@ alpha: 0.1
 gamma: 0.8
 epsilon: 0.9
 epsilon_discount: 0.999 # 1098 eps to reach 0.1
-nepisodes: 15
+nepisodes: 2000
 nsteps: 1000
 
 # Environment Parameters
@@ -54,12 +54,12 @@ init_joint_pose:
   coxa_r1: 0
   coxa_r2: 0
   coxa_r3: 0
-  tibia_l1: 1.0
-  tibia_l2: 1.0
-  tibia_l3: 1.0
-  tibia_r1: 1.0
-  tibia_r2: 1.0
-  tibia_r3: 1.0
+  tibia_l1: 1
+  tibia_l2: 1
+  tibia_l3: 1
+  tibia_r1: 1
+  tibia_r2: 1
+  tibia_r3: 1
   femur_l1: 0
   femur_l2: 0
   femur_l3: 0

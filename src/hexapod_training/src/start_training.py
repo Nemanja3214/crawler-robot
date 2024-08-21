@@ -18,6 +18,7 @@ from std_msgs.msg import Float64
 import rospy
 import rospkg
 from hexapod_training.msg import ResultMsg
+from hexapod_training.msg import QMatrix, QMatrixElement, StateActionPair
 
 
 # import our training environment
@@ -63,6 +64,17 @@ def save():
         except Exception as e:
             rospy.logerr(e)
 
+def make_msg(q_matrix):
+    q_msg = QMatrix()
+    for pair, reward in q_matrix.items():
+        q_element = QMatrixElement()
+        q_element.pair.state = pair[0]
+        q_element.pair.action = pair[1]
+        q_element.reward = Float64(reward)
+        q_msg.elements.append(q_element)
+    return q_msg
+
+
 
 if __name__ == '__main__':
     
@@ -95,6 +107,7 @@ if __name__ == '__main__':
     epsilon_discount = rospy.get_param("/epsilon_discount")
     nepisodes = rospy.get_param("/nepisodes")
     nsteps = rospy.get_param("/nsteps")
+    q_pub = rospy.Publisher("/q_matrix", QMatrix, queue_size=1)
 
     # Initialises the algorithm that we are going to use for learning
     qlearn = qlearn.QLearn(actions=range(env.action_space.n),
@@ -127,6 +140,9 @@ if __name__ == '__main__':
         
         # for each episode, we test the robot for nsteps
         for i in range(nsteps):
+            q_matrix = qlearn.q
+            q_matrix_msg = make_msg(q_matrix)
+            q_pub.publish(q_matrix_msg)
 
             # Pick an action based on the current state
             action = qlearn.chooseAction(state)
@@ -146,6 +162,8 @@ if __name__ == '__main__':
 
             # Make the algorithm learn based on the results
             qlearn.learn(state, action, reward, nextState)
+            # print("Q: " + str(qlearn.q))
+
 
             # We publish the cumulated reward
             cumulated_reward_msg.data = cumulated_reward

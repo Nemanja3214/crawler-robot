@@ -131,13 +131,8 @@ endif()
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
   include("/home/nemanja/catkin_ws/build/gtest/cmake_install.cmake")
-  include("/home/nemanja/catkin_ws/build/gazebo_ros_demos/rrbot_control/cmake_install.cmake")
-  include("/home/nemanja/catkin_ws/build/gazebo_ros_demos/rrbot_description/cmake_install.cmake")
-  include("/home/nemanja/catkin_ws/build/gazebo_ros_demos/rrbot_gazebo/cmake_install.cmake")
-  include("/home/nemanja/catkin_ws/build/dummy_controller/cmake_install.cmake")
   include("/home/nemanja/catkin_ws/build/hexapod_training/cmake_install.cmake")
   include("/home/nemanja/catkin_ws/build/openai_ros/openai_ros/cmake_install.cmake")
-  include("/home/nemanja/catkin_ws/build/gazebo_ros_demos/gazebo_tutorials/cmake_install.cmake")
   include("/home/nemanja/catkin_ws/build/urdf_demo/cmake_install.cmake")
 
 endif()

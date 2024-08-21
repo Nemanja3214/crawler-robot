@@ -1,7 +1,11 @@
 (cl:defpackage hexapod_training-msg
   (:use )
   (:export
-   "<RESULTMSG>"
-   "RESULTMSG"
+   "<QMATRIX>"
+   "QMATRIX"
+   "<QMATRIXELEMENT>"
+   "QMATRIXELEMENT"
+   "<STATEACTIONPAIR>"
+   "STATEACTIONPAIR"
   ))
 
