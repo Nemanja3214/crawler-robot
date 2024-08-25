@@ -23,7 +23,7 @@
 		</inertial>
 	</xacro:macro>
 
-<!-- parallel axis theorem -->
+<!-- Parallel axis theorem -->
 	<xacro:macro name="box_inertia_parallel_w" params="m w h d origin_xyz rpy_x rpy_y rpy_z">
 		<inertial>
 			<origin xyz="${origin_xyz}" rpy="${rpy_x} ${rpy_y} ${rpy_z}" />
