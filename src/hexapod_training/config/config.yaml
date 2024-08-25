@@ -78,6 +78,6 @@ episode_done_criteria:
   - less_exceeded_joint_position
 maximum_base_linear_acceleration: 3000.0 # Based on making fall from a body height vertical max/min imu readings
 
-maximum_base_angular_velocity: 20.0 # Based on free fall, one body length, at 45 degree angle max/min imu readings 20.0
+maximum_base_angular_velocity: 0.000031998 # Based on free fall, one body length, at 45 degree angle max/min imu readings 20.0
 
-maximum_joint_effort: 10.0 # Based on observation of Falling knee flexed
+maximum_joint_effort: 0.2745862 # Based on observation of Falling knee flexed

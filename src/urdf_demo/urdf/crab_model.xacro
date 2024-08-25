@@ -5,6 +5,7 @@
 	<!-- <xacro:property name="base_width" value="0.31" />
 	<xacro:property name="base_length" value="0.42" />
 	<xacro:property name="base_height" value="0.18" /> -->
+	<!-- INERTIA COORDINATE SYSTEM IS DIFFRENT THAN GAZEBO, INERTIA Y IS UP, GAZEBO Z IS UP -->
 
 	<xacro:property name="norm" value="100" />
 
@@ -13,9 +14,9 @@
 	<xacro:property name="base_height" value="${4.5/norm}" />
 
 	<!-- Define macros for inertia  -->
-	<xacro:macro name="box_inertia" params="m w h d">
+	<xacro:macro name="box_inertia" params="m w h d origin_xyz rpy_x rpy_y rpy_z">
 		<inertial>
-			<origin xyz="0 0 0" rpy="${pi/2} 0 ${pi/2}" />
+			<origin xyz="${origin_xyz}" rpy="${rpy_x} ${rpy_y} ${rpy_z}"/>
 			<mass value="${m}" />
 			<inertia ixx="${(m/12) * (h*h + d*d)}" ixy="0.0" ixz="0.0" iyy="${(m/12) * (w*w + d*d)}"
 				iyz="0.0" izz="${(m/12) * (w*w + h*h)}" />
@@ -23,9 +24,9 @@
 	</xacro:macro>
 
 <!-- parallel axis theorem -->
-	<xacro:macro name="box_inertia_parallel_w" params="m w h d">
+	<xacro:macro name="box_inertia_parallel_w" params="m w h d origin_xyz rpy_x rpy_y rpy_z">
 		<inertial>
-			<origin xyz="0 0 0" rpy="${pi/2} 0 ${pi/2}" />
+			<origin xyz="${origin_xyz}" rpy="${rpy_x} ${rpy_y} ${rpy_z}" />
 			<mass value="${m}" />
 			<inertia ixx="${(m/12) * (h*h + d*d + w*w/4)}" ixy="0.0" ixz="0.0" iyy="${(m/12) * (w*w + d*d + w*w/4)}"
 				iyz="0.0" izz="${(m/12) * (w*w + h*h + w*w/4)}" />
@@ -74,8 +75,7 @@
 		<visual>
 			<origin xyz="0 0 0" rpy="0 0 0" />
 			<geometry>
-				<box size="${15.5/norm} ${13/norm} ${4.5/norm}" />
-				<!-- <mesh filename="package://crab_description/meshes/thorax.STL" /> -->
+				<box size="${base_length} ${base_width} ${base_height}" />
 			</geometry>
 			<material name="grey">
 				<color rgba="0.5 0.5 0.5 1" />
@@ -84,8 +84,7 @@
 		<collision>
 			<origin xyz="0 0 0" rpy="0 0 0" />
 			<geometry>
-				<box size="${15.5/norm} ${13/norm} ${4.5/norm}" />
-				<!-- <mesh filename="package://crab_description/meshes/thorax.STL" /> -->
+				<box size="${base_length} ${base_width} ${base_height}" />
 			</geometry>
 			<material name="grey">
 				<color rgba="0.5 0.5 0.5 1" />
@@ -97,7 +96,9 @@
 				<box size="${base_length} ${base_width} ${base_height}" />
 			</geometry>
 		</collision> -->
-		<xacro:box_inertia m="0.03" w="${13/norm}" d="${15.5/norm}" h="${4.5/norm}" /> 
+		<xacro:box_inertia rpy_x="0" rpy_y="0" rpy_z="0" 
+		origin_xyz="0 0 0" m="0.03"
+		 w="${15.5/norm}" h="${13/norm}" d="${4.5/norm}" /> 
 	</link>
 
 	<!-- Pi parameter -->
@@ -122,7 +123,9 @@
 
 		<link name="leg_center_${side}${num}" >
 		<!-- THIS IS EXTRA -->
-			<xacro:box_inertia m="0.001" w="${1/norm}" d="${1/norm}" h="${1/norm}" /> 
+			<xacro:box_inertia rpy_x="0" rpy_y="0" rpy_z="0"
+			  origin_xyz="${x} ${y} 0" m="0.0001"
+			   w="${1/norm}" d="${1/norm}" h="${1/norm}" /> 
 		</link>
 
 		<joint name="coxa_joint_${side}${num}" type="revolute">
@@ -147,7 +150,7 @@
 
 		<link name="coxa_${side}${num}">
 			<visual>
-				<xacro:if value="${side == 'l'}">
+			<xacro:if value="${side == 'l'}">
 				<origin xyz="${0.8/norm} ${0.5/norm} 0" rpy="0 0 0" />
 			</xacro:if>
 			<xacro:if value="${side == 'r'}">
@@ -161,7 +164,7 @@
 				</material>
 			</visual>
 			<collision>
-				<xacro:if value="${side == 'l'}">
+			<xacro:if value="${side == 'l'}">
 				<origin xyz="${0.8/norm} ${0.5/norm} 0" rpy="0 0 0" />
 			</xacro:if>
 			<xacro:if value="${side == 'r'}">
@@ -174,10 +177,21 @@
 					<color rgba="0.7 0.7 0 1" />
 				</material>
 			</collision>
-			<xacro:box_inertia m="0.01" w="${3.3/norm}" d="${3.3/norm}" h="${3.3/norm}" /> 
+			<xacro:if value="${side == 'l'}">
+					<xacro:box_inertia rpy_x="0" rpy_y="0" rpy_z="0"
+					  origin_xyz="${0.8/norm} ${0.5/norm} 0"  m="0.01"
+					   w="${3.3/norm}" d="${3.3/norm}" h="${3.3/norm}" /> 
+			</xacro:if>
+			<xacro:if value="${side == 'r'}">
+					<xacro:box_inertia rpy_x="0" rpy_y="0" rpy_z="0"
+					   origin_xyz="${0.8/norm} -${0.5/norm} 0"  m="0.01" 
+					   w="${3.3/norm}" d="${3.3/norm}" h="${3.3/norm}" /> 
+			</xacro:if>
+		
 		</link>
 
 		<joint name="femur_joint_${side}${num}" type="revolute">
+		<!-- TODO check maybe +pi/2 separate for left and right -->
 			<origin xyz="${1/norm} 0 -${1/norm}" rpy="-${pi/2} 0 0" />
 			<parent link="coxa_${side}${num}" />
 			<child link="femur_${side}${num}" />
@@ -202,7 +216,6 @@
 				<origin xyz="${(7/2)/norm} 0 0" rpy="0 0 0" />
 				<geometry>
 					<box size="${7/norm} ${1.5/norm} ${0.4/norm}" />
-					<!-- <mesh filename="package://crab_description/meshes/femur_${side}.STL" /> -->
 				</geometry>
 				<material name="">
 					<color rgba="0 0.7 0.7 1" />
@@ -212,13 +225,14 @@
 				<origin xyz="${(7/2)/norm} 0 0" rpy="0 0 0" />
 				<geometry>
 					<box size="${7/norm} ${1.5/norm} ${0.4/norm}" />
-					<!-- <mesh filename="package://crab_description/meshes/femur_${side}.STL" /> -->
 				</geometry>
 				<material name="">
 					<color rgba="0 0.7 0.7 1" />
 				</material>
 			</collision>
-			<xacro:box_inertia_parallel_w m="0.01" w="${7/norm}" d="${0.4/norm}" h="${1.5/norm}" /> 
+			<xacro:box_inertia_parallel_w rpy_x="0" rpy_y="0" rpy_z="0"
+			 origin_xyz="${(7/2)/norm} 0 0" m="0.01"
+			  w="${7/norm}" d="${0.4/norm}" h="${1.5/norm}" /> 
 		</link>
 
 		<joint name="tibia_joint_${side}${num}" type="revolute">
@@ -246,7 +260,6 @@
 				<origin xyz="${((9-1.4)/2)/norm} 0 ${2/norm}" rpy="0 0 0.06" />
 				<geometry>
 					<box size="${9/norm} ${2/norm} ${0.5/norm}" />
-					<!-- <mesh filename="package://crab_description/meshes/tibia_${side}.STL" /> -->
 				</geometry>
 				<material name="">
 					<color rgba="0.7 0 0.7 1" />
@@ -256,7 +269,6 @@
 				<origin xyz="${((9-1.4)/2)/norm} 0 ${2/norm}" rpy="0 0 0.06" />
 				<geometry>
 					<box size="${9/norm} ${2/norm} ${0.5/norm}" />
-					<!-- <mesh filename="package://crab_description/meshes/tibia_${side}.STL" /> -->
 				</geometry>
 				<surface>
 					<friction>
@@ -270,8 +282,9 @@
 					<color rgba="0.7 0 0.7 1" />
 				</material>
 			</collision>
-			<!-- TODO CHECK INERTIA ORDER!!!! -->
-			<xacro:box_inertia_parallel_w m="0.01" w="${9/norm}" d="${0.5/norm}" h="${2/norm}" /> 
+			<xacro:box_inertia_parallel_w rpy_x="0" rpy_y="0" rpy_z="0.06"
+			 origin_xyz="${((9-1.4)/2)/norm} 0 ${2/norm}" m="0.01"
+			  w="${9/norm}" d="${0.5/norm}" h="${2/norm}" /> 
 		</link>
 
 		<joint name="tibia_foot_joint_${side}${num}" type="fixed">
