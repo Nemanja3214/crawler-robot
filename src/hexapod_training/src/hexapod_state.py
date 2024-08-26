@@ -231,8 +231,10 @@ class HexapodState(object):
         return height_ok
 
     def is_stand_up(self):
+        orientation_rpy = self.get_base_rpy()
+        pitch_ok = abs(orientation_rpy.y ) < 0.5 #~30 deg
         rospy.logdebug("DISTANCE FROM Z >>>>" + str(abs(self.get_base_height() - self.desired_world_point.z)))
-        is_standing = abs(self.get_base_height() - self.desired_world_point.z) < 0.05
+        is_standing = abs(self.get_base_height() - self.desired_world_point.z) < 0.05 and pitch_ok
         return is_standing
 
     def hexapod_orientation_ok(self):
@@ -621,7 +623,6 @@ class HexapodState(object):
         """
         self.current_joint_pose =[]
         self.current_joint_pose = copy.deepcopy(des_init_pos)
-        self.init_knee_value = copy.deepcopy(self.current_joint_pose[2])
         return self.current_joint_pose
 
     def get_action_to_position(self, action):
@@ -749,12 +750,8 @@ class HexapodState(object):
             self.current_joint_pose[17] -= self._joint_increment_value
 
 
-        elif action == 36:  # Dont Move
-            rospy.logdebug("Action Decided:Dont Move>>>")
-
-        # We set the Knee to be ready for jump, based on the init knee pose
-        # TODO check if needed
-        self.current_joint_pose[2] = self.init_knee_value
+        # elif action == 36:  # Dont Move
+        #     rospy.logdebug("Action Decided:Dont Move>>>")
 
         rospy.logdebug("action to move joint states>>>" + str(self.current_joint_pose))
 
@@ -785,7 +782,7 @@ class HexapodState(object):
 
     def is_joints_less_exceeded(self):
         for pos in self.get_joint_states().position:
-            if pos < -1.5:
+            if pos < self._joint_limits["min"] or pos > self._joint_limits["max"]:
                 return True
         return False
 
@@ -815,19 +812,19 @@ class HexapodState(object):
             rospy.logdebug("exceeded_joint_position NOT TAKEN INTO ACCOUNT")
             less_exceeded_joint_position = False
 
-        is_standing = False
+        is_standing_up = False
         if "stand_up" in self._episode_done_criteria:
-            is_standing = self.is_stand_up()
+            is_standing_up = self.is_stand_up()
 
         # rospy.logdebug("hexapod_height_ok="+str(hexapod_height_ok))
         rospy.logdebug("hexapod_orientation_ok=" + str(hexapod_orientation_ok))
 
         done = False
-        if (not hexapod_orientation_ok) or less_exceeded_joint_position or is_standing:
+        if (not hexapod_orientation_ok) or less_exceeded_joint_position or is_standing_up:
             done = True
         
         if done:
-            if is_standing:
+            if is_standing_up:
                 # TODO add to config done reward
                 total_reward = 100000000000
             else:
@@ -839,64 +836,3 @@ class HexapodState(object):
 
         return total_reward, done
 
-    def testing_loop(self):
-
-        rate = rospy.Rate(50)
-        while not rospy.is_shutdown():
-            self.calculate_total_reward()
-            rate.sleep()
-
-
-if __name__ == "__main__":
-    rospy.init_node('hexapod_state_node', anonymous=True, log_level=rospy.DEBUG)
-    max_height = 3.0
-    min_height = 0.5
-    max_incl = 1.57
-    joint_increment_value = 0.32
-    list_of_observations = ["base_roll",
-                            "base_pitch",
-                            "base_angular_vel_x",
-                            "base_angular_vel_y",
-                            "base_angular_vel_z",
-                            "base_linear_acceleration_x",
-                            "base_linear_acceleration_y",
-                            "base_linear_acceleration_z"]
-    joint_limits = {"max": 1.5,
-                     "min": -1.5
-                     }
-    episode_done_criteria = [ "hexapod_minimum_height",
-                              "hexapod_vertical_orientation"]
-    done_reward = -1000.0
-    alive_reward = 100.0
-    desired_force = 7.08
-    desired_yaw = 0.0
-    weight_r1 = 0.0 # Weight for joint positions ( joints in the zero is perfect )
-    weight_r2 = 0.0 # Weight for joint efforts ( no efforts is perfect )
-    weight_r3 = 0.0 # Weight for contact force similar to desired ( weight of hexapod )
-    weight_r4 = 10.0 # Weight for orientation ( vertical is perfect )
-    weight_r5 = 10.0 # Weight for distance from desired point ( on the point is perfect )
-    discrete_division = 10
-    maximum_base_linear_acceleration = 3000.0
-    hexapod_state = HexapodState(   max_height=max_height,
-                                    min_height=min_height,
-                                    abs_max_roll=max_incl,
-                                    abs_max_pitch=max_incl,
-                                    joint_increment_value=joint_increment_value,
-                                    list_of_observations=list_of_observations,
-                                    joint_limits=joint_limits,
-                                    episode_done_criteria=episode_done_criteria,
-                                    done_reward=done_reward,
-                                    alive_reward=alive_reward,
-                                    desired_force=desired_force,
-                                    desired_roll=desired_roll,
-                                    desired_pitch=desired_pitch,
-                                    desired_yaw=desired_yaw,
-                                    weight_r1=weight_r1,
-                                    weight_r2=weight_r2,
-                                    weight_r3=weight_r3,
-                                    weight_r4=weight_r4,
-                                    weight_r5=weight_r5,
-                                    discrete_division=discrete_division,
-                                    maximum_base_linear_acceleration=maximum_base_linear_acceleration
-                                                )
-    hexapod_state.testing_loop()

@@ -76,7 +76,7 @@ class HexapodEnv(gym.Env):
             return "/init_joint_pose/" + part + "_" + side + str(num)
 
         self.init_joint_pose = []
-        parts = ["tibia", "coxa", "femur"]
+        parts = ["coxa", "tibia", "femur"]
         sides = ["l", "r"]
         nums = [1, 2, 3]
         for part in parts:
@@ -135,7 +135,7 @@ class HexapodEnv(gym.Env):
         0-36) Increment/Decrement joints
         37) Dont Move
         """
-        self.action_space = spaces.Discrete(37)
+        self.action_space = spaces.Discrete(36)
         self.reward_range = (-np.inf, np.inf)
 
         self._seed()

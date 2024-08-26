@@ -7,14 +7,14 @@
     <arg name="world_name" value="worlds/emtpy_world.world"/> 
     <arg name="paused" value="false"/>
     <arg name="use_sim_time" value="true"/>
-    <arg name="gui" value="true"/>
+    <arg name="gui" value="false"/>
     <arg name="recording" value="false"/>
     <arg name="debug" value="false"/>
   </include>
 
 
 <!-- Spawn a robot into Gazebo -->
-<node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-z 0.2 -param robot_description -urdf -model hexapod" />
+<node name="spawn_urdf" pkg="gazebo_ros" type="spawn_model" args="-z 0.1 -param robot_description -urdf -model hexapod" />
 
     <!-- <node name="joint_state_publisher_gui" pkg="joint_state_publisher_gui" type="joint_state_publisher_gui">
        <remap from="/joint_states" to="/hexapod/joint_states" />

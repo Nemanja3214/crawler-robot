@@ -74,7 +74,7 @@ class ControllersConnection():
             return "/hexapod/" + part + "_joint_" + side + str(num) +"_position_controller"
 
 
-        parts = ["tibia", "coxa", "femur"]
+        parts = ["coxa", "tibia", "femur"]
         sides = ["l", "r"]
         nums = [1, 2, 3]
         controllers_reset = ['/hexapod/joint_state_controller']
