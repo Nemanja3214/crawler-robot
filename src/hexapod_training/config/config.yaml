@@ -4,19 +4,19 @@ gamma: 0.8
 epsilon: 0.9
 epsilon_discount: 0.999 # 1098 eps to reach 0.1
 nepisodes: 2000
-nsteps: 1000
+nsteps: 500
 
 # Environment Parameters
 desired_pose:
   x: 0.0
   y: 0.0
-  z: 0.6
+  z: 0.3
 desired_force: 7.08 # In Newtons, normal contact force when stanting still with 9.81 gravity
 desired_yaw: 0.0 # Desired yaw in radians for the robot to stay
 desired_roll: 0.0 # Desired yaw in radians for the robot to stay
 desired_pitch: 0.0 # Desired yaw in radians for the robot to stay
-max_height: 3.0   # in meters
-min_height: 0.5   # in meters
+max_height: 1.0   # in meters
+min_height: 0.0   # in meters
 max_incl: 1.6       # in rads
 running_step: 0.0010   # in seconds
 joint_increment_value: 0.2   # in radians
@@ -39,14 +39,15 @@ list_of_observations: # Observations you want to use for the learning
   - joint_effort
   - touching_ground
 
-discrete_division: 50 # Parts in which we divide each of the observations sensory range
+discrete_division: 30 # Parts in which we divide each of the observations sensory range
 
-weight_r1: 0.0 # Weight for joint positions ( joints in the zero is perfect )
+weight_r1: 3.0 # Weight for joint positions ( joints in the zero is perfect )
 weight_r2: 1.0 # Weight for joint efforts ( no efforts is perfect )
-weight_r3: 0.0 # Weight for contact force similar to desired ( weight of monoped )
+weight_r3: 0.0 # Weight for contact force similar to desired ( weight of hexapod )
 weight_r4: 10.0 # Weight for orientation ( vertical is perfect )
 weight_r5: 100.0 # Weight for distance from desired point ( on the point is perfect )
 weight_r6: 10.0 # Weight for not touching floor
+weight_r7: 30.0 # Weight for not synchronisation
 init_joint_pose:
   coxa_l1: 0
   coxa_l2: 0
@@ -80,4 +81,4 @@ maximum_base_linear_acceleration: 3000.0 # Based on making fall from a body heig
 
 maximum_base_angular_velocity: 0.000031998 # Based on free fall, one body length, at 45 degree angle max/min imu readings 20.0
 
-maximum_joint_effort: 0.2745862 # Based on observation of Falling knee flexed
+maximum_joint_effort: 0.2745862 

@@ -17,7 +17,6 @@ from std_msgs.msg import Float64
 # ROS packages required
 import rospy
 import rospkg
-from hexapod_training.msg import ResultMsg
 from hexapod_training.msg import QMatrix, QMatrixElement, StateActionPair
 
 

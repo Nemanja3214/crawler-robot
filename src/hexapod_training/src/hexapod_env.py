@@ -70,6 +70,7 @@ class HexapodEnv(gym.Env):
         self.weight_r4 = rospy.get_param("/weight_r4")
         self.weight_r5 = rospy.get_param("/weight_r5")
         self.weight_r6 = rospy.get_param("/weight_r6")
+        self.weight_r7 = rospy.get_param("/weight_r7")
 
         def make_init_name(part, side, num):
             return "/init_joint_pose/" + part + "_" + side + str(num)
@@ -114,6 +115,7 @@ class HexapodEnv(gym.Env):
                                                     weight_r4=self.weight_r4,
                                                     weight_r5=self.weight_r5,
                                                     weight_r6=self.weight_r6,
+                                                    weight_r7=self.weight_r7,
                                                     discrete_division=self.discrete_division,
                                                     maximum_base_linear_acceleration=self.maximum_base_linear_acceleration,
                                                     maximum_base_angular_velocity=self.maximum_base_angular_velocity,
@@ -175,6 +177,9 @@ class HexapodEnv(gym.Env):
         # We save that position as the current joint desired position
         init_pos = self.hexapod_state_object.init_joints_pose(self.init_joint_pose)
 
+        # reset standing variable
+        self.hexapod_state_object.touching = False
+
         # 4th: We Set the init pose to the jump topic so that the jump control can update
         rospy.logdebug("Publish init_pose for Jump Control...>>>" + str(init_pos))
         # We check the jump publisher has connection
@@ -188,6 +193,7 @@ class HexapodEnv(gym.Env):
         rospy.logdebug("check_all_systems_ready...")
         self.hexapod_state_object.check_all_systems_ready()
 
+
         # 6th: We restore the gravity to original
         rospy.logdebug("Restore Gravity...")
         self.gazebo.change_gravity(0.0, 0.0, -9.81)
@@ -196,8 +202,13 @@ class HexapodEnv(gym.Env):
         rospy.logdebug("Unpause SIM...")
         self.gazebo.unpauseSim()
 
-        time.sleep(1.0)
+        rospy.logdebug(self.hexapod_state_object.touching)
 
+        # wait for robot to fall
+        while not self.hexapod_state_object.touching:
+            rospy.logdebug("LOOPING: " + str(self.hexapod_state_object.touching))
+            time.sleep(0.07)
+        rospy.logdebug("FINISHED LOOPING: " +str(self.hexapod_state_object.touching))
           # 7th: pauses simulation
         rospy.logdebug("Pause SIM...")
         self.gazebo.pauseSim()

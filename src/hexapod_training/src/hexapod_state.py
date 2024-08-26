@@ -14,7 +14,7 @@ import math
 
 class HexapodState(object):
 
-    def __init__(self, max_height, min_height, abs_max_roll, abs_max_pitch, list_of_observations, joint_limits, episode_done_criteria, joint_increment_value = 0.05, done_reward = -1000.0, alive_reward=10.0, desired_force=7.08, desired_roll=0.0, desired_pitch=0.0, desired_yaw=0.0, weight_r1=1.0, weight_r2=1.0, weight_r3=1.0, weight_r4=1.0, weight_r5=1.0, weight_r6=1.0, discrete_division=10, maximum_base_linear_acceleration=3000.0, maximum_base_angular_velocity=20.0, maximum_joint_effort=10.0):
+    def __init__(self, max_height, min_height, abs_max_roll, abs_max_pitch, list_of_observations, joint_limits, episode_done_criteria, joint_increment_value = 0.05, done_reward = -1000.0, alive_reward=10.0, desired_force=7.08, desired_roll=0.0, desired_pitch=0.0, desired_yaw=0.0, weight_r1=1.0, weight_r2=1.0, weight_r3=1.0, weight_r4=1.0, weight_r5=1.0, weight_r6=1.0,weight_r7=1.0, discrete_division=10, maximum_base_linear_acceleration=3000.0, maximum_base_angular_velocity=20.0, maximum_joint_effort=10.0):
         rospy.logdebug("Starting HexapodState Class object...")
        
         self.desired_world_point = Vector3(0.0, 0.0, 0.0)
@@ -36,6 +36,7 @@ class HexapodState(object):
         self._weight_r4 = weight_r4
         self._weight_r5 = weight_r5
         self._weight_r6 = weight_r6
+        self._weight_r7 = weight_r7
 
         self._list_of_observations = list_of_observations
 
@@ -114,14 +115,14 @@ class HexapodState(object):
             except:
                 rospy.logdebug("Current contacts_data not ready yet, retrying")
 
-        # joint_states_msg = None
-        # while joint_states_msg is None and not rospy.is_shutdown():
-        #     try:
-        #         joint_states_msg = rospy.wait_for_message("/hexapod/joint_states", JointState, timeout=0.1)
-        #         self.joints_state = joint_states_msg
-        #         rospy.logdebug("Current joint_states READY")
-        #     except Exception as e:
-        #         rospy.logdebug("Current joint_states not ready yet, retrying==>"+str(e))
+        joint_states_msg = None
+        while joint_states_msg is None and not rospy.is_shutdown():
+            try:
+                joint_states_msg = rospy.wait_for_message("/hexapod/joint_states", JointState, timeout=0.1)
+                self.joints_state = joint_states_msg
+                rospy.logdebug("Current joint_states READY")
+            except Exception as e:
+                rospy.logdebug("Current joint_states not ready yet, retrying==>"+str(e))
 
         rospy.logdebug("ALL SYSTEMS READY")
 
@@ -219,6 +220,7 @@ class HexapodState(object):
             self.touching = True 
         for state in msg.states:
             self.contact_force = state.total_wrench.force
+        
 
     def joints_state_callback(self,msg):
         self.joints_state = msg
@@ -333,12 +335,30 @@ class HexapodState(object):
         """
         if self.touching:
             return weight
-        return -1000.0 * weight
+        return -100.0 * weight
+
+    def calculate_synchro_reward(self, weight=1.0):
+        """
+        We calculate the reward based synchronisation of joins
+        on one side.
+        :param weight:
+        :return:reward
+        """
+        total_sum = 0
+
+        # tibia_l1, tibia_l2, tibia_l3
+        # then tibia_r1, tibia_r2, tibia_r3
+        # then same for other joints
+        for side_part_i in range(0, len(self.joints_state.position), 3):
+            total_sum += abs(self.joints_state.position[side_part_i] - self.joints_state.position[side_part_i + 1]) + \
+            abs(self.joints_state.position[side_part_i] - self.joints_state.position[side_part_i + 2]) + \
+            abs(self.joints_state.position[side_part_i + 1] - self.joints_state.position[side_part_i + 2])
+
+        return weight * total_sum
             
 
     def calculate_total_reward(self):
         r1 = self.calculate_reward_joint_position(self._weight_r1)
-        # r1 = 0
         r2 = self.calculate_reward_joint_effort(self._weight_r2)
         # Desired Force in Newtons, taken form idle contact with 9.81 gravity.
         r3 = self.calculate_reward_contact_force(self._weight_r3)
@@ -346,6 +366,7 @@ class HexapodState(object):
         r4 = self.calculate_reward_orientation(self._weight_r4)
         r5 = self.calculate_reward_distance_from_des_point(self._weight_r5)
         r6 = self.calculate_touching_reward(self._weight_r6)
+        r7 = self.calculate_synchro_reward(self._weight_r7)
 
         # The sign depend on its function.
         total_reward = self._alive_reward - r1 - r2 - r3 - r4 - r5 - r6
@@ -357,6 +378,7 @@ class HexapodState(object):
         rospy.logdebug("r3 contact_force=" + str(r3))
         rospy.logdebug("r4 orientation=" + str(r4))
         rospy.logdebug("r5 distance=" + str(r5))
+        rospy.logdebug("r6 touching=" + str(r6))
         rospy.logdebug("total_reward=" + str(total_reward))
         rospy.logdebug("###############")
 
@@ -583,6 +605,9 @@ class HexapodState(object):
             obs_name = self._list_of_observations[counter]
             min_value = self._obs_range_dict[obs_name][0]
             max_value = self._obs_range_dict[obs_name][1]
+            # if obs_name == "touching_ground":
+            #     self._bins[counter] = numpy.linspace(min_value, max_value, 2)
+            # else:
             self._bins[counter] = numpy.linspace(min_value, max_value, parts_we_disrcetize)
 
             rospy.logdebug("bins==>" + str(self._bins[counter]))

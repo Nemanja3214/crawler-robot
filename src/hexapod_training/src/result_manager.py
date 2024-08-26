@@ -5,7 +5,6 @@ import rospy
 import numpy
 import rospkg
 import gym
-from hexapod_training.msg import ResultMsg
 import os
 import hexapod_env
 
