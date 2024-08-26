@@ -234,7 +234,7 @@ class HexapodState(object):
         orientation_rpy = self.get_base_rpy()
         pitch_ok = abs(orientation_rpy.y ) < 0.5 #~30 deg
         rospy.logdebug("DISTANCE FROM Z >>>>" + str(abs(self.get_base_height() - self.desired_world_point.z)))
-        is_standing = abs(self.get_base_height() - self.desired_world_point.z) < 0.05 and pitch_ok
+        is_standing = abs(self.get_base_height() - self.desired_world_point.z) < 0.01 and pitch_ok
         return is_standing
 
     def hexapod_orientation_ok(self):

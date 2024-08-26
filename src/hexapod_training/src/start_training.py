@@ -23,7 +23,7 @@ from hexapod_training.msg import QMatrix, QMatrixElement, StateActionPair
 # import our training environment
 import hexapod_env
 def replace_if_greater(numeric_arr, side_list, numeric_val, side_val):
-    if numpy.size(numeric_arr, 0) < 50:
+    if numpy.size(numeric_arr, 0) < 100:
         numeric_arr = numpy.append(numeric_arr, numeric_val)
         side_list.append(side_val)
         return numeric_arr
