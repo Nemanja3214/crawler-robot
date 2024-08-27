@@ -218,6 +218,8 @@ class HexapodState(object):
         # rospy.logdebug(msg)
         if len(msg.states) != 0:
             self.touching = True 
+        else:
+            self.touching = False
         for state in msg.states:
             self.contact_force = state.total_wrench.force
         
@@ -234,7 +236,7 @@ class HexapodState(object):
         orientation_rpy = self.get_base_rpy()
         pitch_ok = abs(orientation_rpy.y ) < 0.5 #~30 deg
         rospy.logdebug("DISTANCE FROM Z >>>>" + str(abs(self.get_base_height() - self.desired_world_point.z)))
-        is_standing = abs(self.get_base_height() - self.desired_world_point.z) < 0.01 and pitch_ok
+        is_standing = self.get_base_height() > self.desired_world_point.z and pitch_ok
         return is_standing
 
     def hexapod_orientation_ok(self):

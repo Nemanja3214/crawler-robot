@@ -3,6 +3,7 @@ alpha: 0.1
 gamma: 0.8
 epsilon: 0.9
 epsilon_discount: 0.999 # 2197 eps to reach 0.1, 587 to reach 0.5
+# epsilon_discount: 0.998 # 1097 eps to reach 0.1, 587 to reach 0.5
 nepisodes: 2000
 nsteps: 500
 
@@ -10,7 +11,7 @@ nsteps: 500
 desired_pose:
   x: 0.0
   y: 0.0
-  z: 0.15
+  z: 0.09 # 0.13 m
 desired_force: 7.08 # In Newtons, normal contact force when stanting still with 9.81 gravity
 desired_yaw: 0.0 # Desired yaw in radians for the robot to stay
 desired_roll: 0.0 # Desired yaw in radians for the robot to stay

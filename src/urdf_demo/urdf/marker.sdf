@@ -1,0 +1,17 @@
+<sdf version="1.6">
+  <model name="sphere_marker">
+    <link name="link">
+      <visual name="visual">
+        <geometry>
+          <sphere>
+            <radius>0.01</radius> <!-- Radius of the sphere -->
+          </sphere>
+        </geometry>
+        <material>
+          <ambient>1 0 0 1</ambient> <!-- Color: Red -->
+        </material>
+      </visual>
+    </link>
+     <static>true</static> 
+  </model>
+</sdf>

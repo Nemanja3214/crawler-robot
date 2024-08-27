@@ -139,9 +139,9 @@ if __name__ == '__main__':
         
         # for each episode, we test the robot for nsteps
         for i in range(nsteps):
-            q_matrix = qlearn.q
-            q_matrix_msg = make_msg(q_matrix)
-            q_pub.publish(q_matrix_msg)
+            # q_matrix = qlearn.q
+            # q_matrix_msg = make_msg(q_matrix)
+            # q_pub.publish(q_matrix_msg)
 
             # Pick an action based on the current state
             action = qlearn.chooseAction(state)

@@ -5,4 +5,5 @@
     <param name="result_dir" type="str" value="$(find hexapod_training)/results" />
     <!-- Launch the training system -->
     <node pkg="hexapod_training" name="hexapod_gym" type="start_training.py" output="screen"/>
+
 </launch>
