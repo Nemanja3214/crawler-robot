@@ -22,6 +22,8 @@ reg = register(
     entry_point='hexapod_env:HexapodEnv'
     )
 
+deep = True
+
 def make_name(part, side, num):
     return "/hexapod/" + part + "_joint_" + side + str(num) +"_position_controller/command"
 
@@ -258,4 +260,7 @@ class HexapodEnv(gym.Env):
         # for qleaen
         # return self.hexapod_state_object.get_state_as_string(observation)
         # for deep qlearn
-        return  self.hexapod_state_object.get_state_as_bins(observation)
+        if deep:
+            return  self.hexapod_state_object.get_state_as_bins(observation)
+        else:
+            return self.hexapod_state_object.get_state_as_string(observation)
