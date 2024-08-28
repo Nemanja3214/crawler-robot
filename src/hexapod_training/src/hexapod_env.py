@@ -255,4 +255,7 @@ class HexapodEnv(gym.Env):
         We retrieve the Stringuified-Discrete version of the given observation
         :return: state
         """
-        return self.hexapod_state_object.get_state_as_string(observation)
+        # for qleaen
+        # return self.hexapod_state_object.get_state_as_string(observation)
+        # for deep qlearn
+        return  self.hexapod_state_object.get_state_as_bins(observation)

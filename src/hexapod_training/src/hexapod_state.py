@@ -491,6 +491,17 @@ class HexapodState(object):
         rospy.logdebug("STATE==>"+str(string_state))
         return string_state
 
+    def get_state_as_bins(self, observation):
+        """
+        This function will do two things:
+        1) It will make discrete the observations
+        2) Will convert the discrete observations in to state tags strings
+        :param observation:
+        :return: state
+        """
+        observations_discrete = self.assign_bins(observation)
+        return observations_discrete
+
     def assign_bins(self, observation):
         """
         Will make observations discrete by placing each value into its corresponding bin
