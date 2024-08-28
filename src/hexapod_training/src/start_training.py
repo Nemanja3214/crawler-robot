@@ -203,7 +203,7 @@ def qlearn_main():
         rospy.loginfo("No episode has reached solution")
     env.close()
 
-def normalize_state(state):
+def scale_state(state):
     return (state + 100) / 200
 
 def deep_qlearn_main():
@@ -252,7 +252,7 @@ def deep_qlearn_main():
             epsilon_end=0.01,
             epsilon_decay=0.995,
             learning_rate=0.001,
-            batch_size=2
+            batch_size=64
         )
     initial_epsilon = Epsilon
 
@@ -291,9 +291,9 @@ def deep_qlearn_main():
             # q_pub.publish(q_matrix_msg)
 
             # Pick an action based on the current state
-            action  = deep_qlearn_agent.act(normalize_state(state))
+            action  = deep_qlearn_agent.act(scale_state(state))
             # rospy.loginfo("STATE>>>>>>" + str(state))
-            # rospy.loginfo("NORMALIZED STATE>>>>>>" + str(normalize_state(state)))
+            # rospy.loginfo("SCALED STATE>>>>>>" + str(scale_state(state)))
             action_sequence = numpy.append(action_sequence, action)
             
             # Execute the action in the environment and get feedback
