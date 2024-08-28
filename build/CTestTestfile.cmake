@@ -6,5 +6,4 @@
 # testing this directory and lists subdirectories to be tested as well.
 subdirs("gtest")
 subdirs("hexapod_training")
-subdirs("openai_ros/openai_ros")
 subdirs("urdf_demo")

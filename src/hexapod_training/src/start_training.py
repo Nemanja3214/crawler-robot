@@ -203,11 +203,15 @@ def qlearn_main():
         rospy.loginfo("No episode has reached solution")
     env.close()
 
+def normalize_state(state):
+    return (state + 100) / 200
+
 def deep_qlearn_main():
     global top_episodes_rewards, top_episodes_actions
     rospy.init_node('hexapod_gym', anonymous=True, log_level=rospy.INFO)
     # rospy.init_node('hexapod_gym', anonymous=True, log_level=rospy.DEBUG)
-    rospy.on_shutdown(save)
+
+ 
 
     # Create the Gym environment
     env = gym.make('Hexapod-v0')
@@ -248,13 +252,18 @@ def deep_qlearn_main():
             epsilon_end=0.01,
             epsilon_decay=0.995,
             learning_rate=0.001,
-            batch_size=64
+            batch_size=2
         )
     initial_epsilon = Epsilon
 
     start_time = time.time()
     highest_reward = 0
 
+    def save_with_plot():
+        save()
+        deep_qlearn_agent.plot_statistics()
+        
+    rospy.on_shutdown(save_with_plot)
     
     # Starts the main training loop: the one about the episodes to do
     for x in range(nepisodes):
@@ -282,7 +291,9 @@ def deep_qlearn_main():
             # q_pub.publish(q_matrix_msg)
 
             # Pick an action based on the current state
-            action  = deep_qlearn_agent.act(state)
+            action  = deep_qlearn_agent.act(normalize_state(state))
+            # rospy.loginfo("STATE>>>>>>" + str(state))
+            # rospy.loginfo("NORMALIZED STATE>>>>>>" + str(normalize_state(state)))
             action_sequence = numpy.append(action_sequence, action)
             
             # Execute the action in the environment and get feedback
@@ -307,7 +318,7 @@ def deep_qlearn_main():
                 state = nextState
             else:
                 rospy.logdebug ("DONE")
-                deep_qlearn_agent.memory.add((state, action, cumulated_reward, state, done))
+                deep_qlearn_agent.memory.add((state, action, cumulated_reward, nextState, done))
                 deep_qlearn_agent.replay()
                 last_time_steps = numpy.append(last_time_steps, [int(i + 1)])
                 break
@@ -325,6 +336,7 @@ def deep_qlearn_main():
         # rospy.loginfo("TOP EPISODES ACTIONS>>>" + str(top_episodes_actions))
     rospy.loginfo ( ("\n|"+str(nepisodes)+"|"+str(Alpha)+"|"+str(Gamma)+"|"+str(initial_epsilon)+"*"+str(epsilon_discount)+"|"+str(highest_reward)+"| PICTURE |"))
 
+    deep_qlearn_agent.plot_statistics()
     l = last_time_steps.tolist()
     l.sort()
 

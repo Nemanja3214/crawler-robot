@@ -261,6 +261,9 @@ class HexapodEnv(gym.Env):
         # return self.hexapod_state_object.get_state_as_string(observation)
         # for deep qlearn
         if deep:
-            return  self.hexapod_state_object.get_state_as_bins(observation)
+            # discrete
+            # return  self.hexapod_state_object.get_state_as_bins(observation)
+            # continual
+            return np.array(observation)
         else:
             return self.hexapod_state_object.get_state_as_string(observation)

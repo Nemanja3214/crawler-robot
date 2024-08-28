@@ -234,7 +234,7 @@ class HexapodState(object):
 
     def is_stand_up(self):
         orientation_rpy = self.get_base_rpy()
-        pitch_ok = abs(orientation_rpy.y ) < 0.5 #~30 deg
+        pitch_ok = abs(orientation_rpy.y ) < self._desired_pitch #~15 deg
         rospy.logdebug("DISTANCE FROM Z >>>>" + str(abs(self.get_base_height() - self.desired_world_point.z)))
         is_standing = self.get_base_height() > self.desired_world_point.z and pitch_ok
         return is_standing
@@ -386,7 +386,10 @@ class HexapodState(object):
         rospy.logdebug("total_reward=" + str(total_reward))
         rospy.logdebug("###############")
 
-        return total_reward
+        return self.scale_reward(total_reward)
+
+    def scale_reward(self, reward):
+        return (reward + self._done_reward) / (2 * self._done_reward)
 
     def get_observations(self):
         """
@@ -475,6 +478,8 @@ class HexapodState(object):
                 observation.append(touching_ground)
             else:
                 raise NameError('Observation Asked does not exist=='+str(obs_name))
+            
+        # rospy.loginfo("OBSERVATIONS>>>>>" + str(observation))
 
         return observation
 
@@ -839,10 +844,10 @@ class HexapodState(object):
         if done:
             if is_standing_up:
                 # TODO add to config done reward
-                total_reward = 100000000000
+                total_reward = self._done_reward
             else:
                 rospy.logerr("It fell, so the reward has to be very low")
-                total_reward = -100000000000
+                total_reward = -self._done_reward
         else:
             rospy.logdebug("Calculate normal reward because it didn't fall.")
             total_reward = self.calculate_total_reward()

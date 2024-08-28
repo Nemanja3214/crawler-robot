@@ -4,7 +4,7 @@ gamma: 0.8
 epsilon: 0.9
 epsilon_discount: 0.999 # 2197 eps to reach 0.1, 587 to reach 0.5
 # epsilon_discount: 0.998 # 1097 eps to reach 0.1, 587 to reach 0.5
-nepisodes: 2000
+nepisodes: 20
 nsteps: 500
 
 # Environment Parameters
@@ -15,13 +15,13 @@ desired_pose:
 desired_force: 7.08 # In Newtons, normal contact force when stanting still with 9.81 gravity
 desired_yaw: 0.0 # Desired yaw in radians for the robot to stay
 desired_roll: 0.0 # Desired yaw in radians for the robot to stay
-desired_pitch: 0.0 # Desired yaw in radians for the robot to stay
+desired_pitch: 0.25 # Desired yaw in radians for the robot to stay
 max_height: 1.0   # in meters
 min_height: 0.0   # in meters
 max_incl: 1.6       # in rads
 running_step: 0.0010   # in seconds
 joint_increment_value: 0.2   # in radians
-done_reward: -1000.0 # reward
+done_reward: 100000000 # reward
 alive_reward: 100.0 # reward
 
 list_of_observations: # Observations you want to use for the learning
@@ -35,7 +35,9 @@ list_of_observations: # Observations you want to use for the learning
   #- base_linear_acceleration_x
   #- base_linear_acceleration_y
   #- base_linear_acceleration_z
-  - contact_force
+  
+  # maybe add
+  # - contact_force
   - joint_states
   - joint_effort
   - touching_ground

@@ -9,7 +9,7 @@ from tensorflow.keras import layers
 from std_msgs.msg import Float32
 from std_msgs.msg import Int32
 from std_msgs.msg import Bool
-from sensor_msgs.msg import JointState  # Assuming sensor_msgs for state
+import matplotlib.pyplot as plt
 
 class ReplayMemory:
     def __init__(self, size):
@@ -35,6 +35,7 @@ class DDQNAgent:
         self.epsilon_decay = epsilon_decay
         self.learning_rate = learning_rate
         self.batch_size = batch_size
+        self.loss_history = [] 
         
         self.model = self.build_model()
         self.target_model = self.build_model()
@@ -60,8 +61,9 @@ class DDQNAgent:
     
     def replay(self):
         if self.memory.size() < self.batch_size:
+            rospy.loginfo("NOT REPLAYING" + str(self.memory.size()) + "     " + str(self.batch_size))
             return
-        
+        rospy.loginfo("REPLAYING")
         batch = self.memory.sample(self.batch_size)
         for state, action, reward, next_state, done in batch:
             target = reward
@@ -71,7 +73,31 @@ class DDQNAgent:
             
             target_f = self.model.predict(np.expand_dims(state, axis=0))
             target_f[0][action] = target
-            self.model.fit(np.expand_dims(state, axis=0), target_f, epochs=1, verbose=0)
+            history = self.model.fit(np.expand_dims(state, axis=0), target_f, epochs=1, verbose=0)
+            loss = history.history['loss'][0]
+            rospy.loginfo("LOSS>>>>>>>>>>"  + str(loss))
+            self.loss_history.append(loss)
         
         if self.epsilon > self.epsilon_end:
             self.epsilon *= self.epsilon_decay
+
+    def plot_statistics(self):
+        # Plot rewards and MSE loss
+        plt.figure(figsize=(14, 6))
+
+        # plt.subplot(1, 2, 1)
+        # plt.plot(self.episode_rewards)
+        # plt.title('Rewards per Episode')
+        # plt.xlabel('Episode')
+        # plt.ylabel('Total Reward')
+
+        plt.subplot(1, 2, 2)
+        plt.plot(self.loss_history)
+        rospy.loginfo(self.loss_history)
+        plt.title('Model Loss During Training')
+        plt.xlabel('Training Steps')
+        plt.ylabel('Loss')
+
+        plt.tight_layout()
+        plt.show()
+        plt.savefig('foo.png')
