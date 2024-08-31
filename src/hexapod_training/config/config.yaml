@@ -26,6 +26,7 @@ alive_reward: 100.0 # reward
 
 list_of_observations: # Observations you want to use for the learning
   - distance_from_desired_point
+  - base_z
   - base_roll
   - base_pitch
   # - base_yaw

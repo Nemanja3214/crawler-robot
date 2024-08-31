@@ -358,11 +358,78 @@ def scale_state(state):
 #     env.close()
 from stable_baselines3.common.env_checker import check_env
 from sb3_contrib import MaskablePPO
-from sb3_contrib.common.envs import InvalidActionEnvDiscrete
 from sb3_contrib.common.maskable.evaluation import evaluate_policy
 from sb3_contrib.common.maskable.utils import get_action_masks
 # This is a drop-in replacement for EvalCallback
-from sb3_contrib.common.maskable.callbacks import MaskableEvalCallback
+# from sb3_contrib.common.maskable.callbacks import MaskableEvalCallback
+from stable_baselines3.common.callbacks import BaseCallback
+# from stable_baselines3.common.results_plotter import load_results, ts2xy, plot_results
+import os
+
+# class SaveOnBestTrainingRewardCallback(BaseCallback):
+#     """
+#     Callback for saving a model (the check is done every ``check_freq`` steps)
+#     based on the training reward (in practice, we recommend using ``EvalCallback``).
+
+#     :param check_freq:
+#     :param log_dir: Path to the folder where the model will be saved.
+#       It must contains the file created by the ``Monitor`` wrapper.
+#     :param verbose: Verbosity level.
+#     """
+#     def __init__(self, check_freq: int, log_dir: str, verbose: int = 1):
+#         super(SaveOnBestTrainingRewardCallback, self).__init__(verbose)
+#         self.check_freq = check_freq
+#         self.log_dir = log_dir
+#         self.save_path = os.path.join(log_dir, 'best_model')
+#         self.best_mean_reward = -numpy.inf
+
+#     def _init_callback(self) -> None:
+#         # Create folder if needed
+#         if self.save_path is not None:
+#             os.makedirs(self.save_path, exist_ok=True)
+
+#     def _on_step(self) -> bool:
+#         if self.n_calls % self.check_freq == 0:
+
+#           # Retrieve training reward
+#           x, y = ts2xy(load_results(self.log_dir), 'timesteps')
+#           if len(x) > 0:
+#               # Mean training reward over the last 100 episodes
+#               mean_reward = numpy.mean(y[-100:])
+#               if self.verbose > 0:
+#                 print(f"Num timesteps: {self.num_timesteps}")
+#                 print(f"Best mean reward: {self.best_mean_reward:.2f} - Last mean reward per episode: {mean_reward:.2f}")
+
+#               # New best model, you could save the agent here
+#               if mean_reward > self.best_mean_reward:
+#                   self.best_mean_reward = mean_reward
+#                   # Example for saving best model
+#                   if self.verbose > 0:
+#                     print(f"Saving new best model to {self.save_path}")
+#                   self.model.save(self.save_path)
+
+#         return True
+class TensorBoardCallback(BaseCallback):
+    def __init__(self, log_dir: str, n_eval_freq: int, *args, **kwargs):
+        super(TensorBoardCallback, self).__init__(*args, **kwargs)
+        self.log_dir = log_dir
+        self.n_eval_freq = n_eval_freq
+
+    def _on_training_start(self) -> None:
+        from tensorboardX import SummaryWriter
+        from datetime import datetime
+        run_name = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        self.log_dir = os.path.join(self.log_dir, run_name)
+        self.writer = SummaryWriter(log_dir=self.log_dir)
+        
+    def _on_step(self) -> bool:
+        if self.num_timesteps % self.n_eval_freq == 0:
+            self.writer.add_scalar('train/episode_reward', self.locals['rewards'], self.num_timesteps)
+        return True
+
+    def _on_training_end(self) -> None:
+        self.writer.close()
+
 
 def ppo_main():
     global top_episodes_rewards, top_episodes_actions
@@ -375,131 +442,25 @@ def ppo_main():
     env = gym.make('Hexapod-v0')
     check_env(env)
 
-    rospy.logdebug ( "Gym environment done")
-    reward_pub = rospy.Publisher('/hexapod/reward', Float64, queue_size=1)
-    episode_reward_pub = rospy.Publisher('/hexapod/episode_reward', Float64, queue_size=1)
+    # rospy.logdebug ( "Gym environment done")
 
     # Set the logging system
     rospack = rospkg.RosPack()
     pkg_path = rospack.get_path('hexapod_training')
-    outdir = pkg_path + '/training_results'
-    
-    last_time_steps = numpy.ndarray(0)
 
-    # Loads parameters from the ROS param server
-    # Parameters are stored in a yaml file inside the config directory
-    # They are loaded at runtime by the launch file
-    Alpha = rospy.get_param("/alpha")
-    Epsilon = rospy.get_param("/epsilon")
-    Gamma = rospy.get_param("/gamma")
-    epsilon_discount = rospy.get_param("/epsilon_discount")
-    nepisodes = rospy.get_param("/nepisodes")
-    nsteps = rospy.get_param("/nsteps")
-    q_pub = rospy.Publisher("/q_matrix", QMatrix, queue_size=1)
-
-    # Initialises the algorithm that we are going to use for learning
+    # Create log dir
+    log_dir = pkg_path + "/tmp/"
+    os.makedirs(log_dir, exist_ok=True)
+    tensorboard_callback = TensorBoardCallback(log_dir=log_dir, n_eval_freq=1000)
     
     model = MaskablePPO("MlpPolicy", env, gamma=0.4, seed=32, verbose=1)
+    # callback = SaveOnBestTrainingRewardCallback(check_freq=1000, log_dir=log_dir)
 
- 
-    start_time = time.time()
-    highest_reward = 0
-
-    
-    # Starts the main training loop: the one about the episodes to do
-    for x in range(nepisodes):
-        rospy.loginfo ("STARTING Episode #"+str(x))
-        
-        cumulated_reward = 0
-        cumulated_reward_msg = Float64()
-        episode_reward_msg = Float64()
-        done = False
-        
-        # Initialize the environment and get first state of the robot
-        rospy.logdebug("env.reset...")
-        # Now We return directly the stringuified observations called state
-        state = env.reset()
-        state = scale_state(state)
-
-        rospy.logdebug("env.get_state...==>"+str(state))
-
-        action_sequence = numpy.array([])
-
-            # Step 3: Train the model
-        model.learn(total_timesteps=nsteps)  # Adjust total_timesteps as needed
-
-        # Step 4: Save the model
-        # model.save("ppo_hexapod")
-
-        
-        # for each episode, we test the robot for nsteps
-        for i in range(nsteps):
-            # q_matrix = qlearn.q
-            # q_matrix_msg = make_msg(q_matrix)
-            # q_pub.publish(q_matrix_msg)
-
-            # Pick an action based on the current state
-            action_masks = get_action_masks(env)
-            action, _states = model.predict(state, action_masks=action_masks)
-            action_sequence = numpy.append(action_sequence, action)
-            
-            # Execute the action in the environment and get feedback
-            rospy.logdebug("###################### Start Step...["+str(i)+"]")
-            rospy.logdebug("Action to Perform >> "+str(action))
-            nextState, reward, done, info = env.step(action)
-            state = scale_state(nextState)
-            rospy.logdebug("END Step...")
-            rospy.logdebug("Reward ==> " + str(reward))
-            cumulated_reward += reward
-            if highest_reward < cumulated_reward:
-                highest_reward = cumulated_reward
-
-            rospy.logdebug("Next state==>" + str(nextState))
-
-            # Make the algorithm learn based on the results
-            qlearn.learn(state, action, reward, nextState)
-            # print("Q: " + str(qlearn.q))
+    model.learn(total_timesteps=5, callback=tensorboard_callback)
+    model.save('Hexapod-v0')
 
 
-            # We publish the cumulated reward
-            cumulated_reward_msg.data = cumulated_reward
-            reward_pub.publish(cumulated_reward_msg)
-
-            # rospy.loginfo(env.hexapod_state_object.get_joint_states())
-
-            if not(done):
-                state = nextState
-            else:
-                rospy.logdebug ("DONE")
-                last_time_steps = numpy.append(last_time_steps, [int(i + 1)])
-                break
-
-            rospy.logdebug("###################### END Step...["+str(i)+"]")
-
-        m, s = divmod(int(time.time() - start_time), 60)
-        h, m = divmod(m, 60)
-        episode_reward_msg.data = cumulated_reward
-        episode_reward_pub.publish(episode_reward_msg)
-
-        top_episodes_rewards = replace_if_greater(top_episodes_rewards, top_episodes_actions, cumulated_reward, action_sequence)
-        rospy.loginfo( ("EP: "+str(x+1)+"] - Reward: "+str(cumulated_reward)+"     Time: %d:%02d:%02d" % (h, m, s)))
-        rospy.loginfo("TOP EPISODES REWARDS>>>" + str(top_episodes_rewards))
-        # rospy.loginfo("TOP EPISODES ACTIONS>>>" + str(top_episodes_actions))
-    rospy.loginfo ( ("\n|"+str(nepisodes)+"|HIGHEST REWARD"+str(highest_reward)+"| PICTURE |"))
-
-    l = last_time_steps.tolist()
-    l.sort()
-
-    if len(l) != 0:
-        rospy.loginfo("Overall score: {:0.2f}".format(last_time_steps.mean()))
-        rospy.loginfo("Best 100 score: {:0.2f}".format(reduce(lambda x, y: x + y, l[-100:]) / len(l[-100:])))
-        # rate = rospy.Rate(50)
-
-    else:
-        rospy.loginfo("No episode has reached solution")
-    env.close()
 
 if __name__ == '__main__':
     ppo_main()
     # qlearn_main()
-    print()

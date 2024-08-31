@@ -420,6 +420,7 @@ class HexapodState(object):
         """
 
         distance_from_desired_point = self.get_distance_from_point(self.desired_world_point)
+        z = self.get_base_height()
 
         base_orientation = self.get_base_rpy()
         base_roll = base_orientation.x
@@ -484,6 +485,9 @@ class HexapodState(object):
             elif obs_name == "touching_ground":
                 rospy.logdebug("TOUCHING GROUND==>"+str(touching_ground))
                 observation.append(touching_ground)
+            elif obs_name == "base_z":
+                rospy.logdebug("BASE Z==>"+str(z))
+                observation.append(z)
             else:
                 raise NameError('Observation Asked does not exist=='+str(obs_name))
             
@@ -600,6 +604,9 @@ class HexapodState(object):
                 min_value = -self.maximum_base_linear_acceleration
             elif obs_name == "touching_ground":
                 max_value = 1
+                min_value = 0
+            elif obs_name == "base_z":
+                max_value = 2
                 min_value = 0
 
             else:
