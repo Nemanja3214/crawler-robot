@@ -58,7 +58,7 @@ class DDQNAgent:
             return random.randrange(self.action_size)
         q_values = self.model.predict(np.expand_dims(state, axis=0))
         # rospy.loginfo(q_values)
-        return find_ith_arg_max(q_values[0], i)
+        return np.argmax(q_values[0])
     
     def replay(self):
         if self.memory.size() < self.batch_size:
@@ -106,11 +106,3 @@ class DDQNAgent:
         file_path = os.path.join(directory, 'foo.png')
         plt.savefig(file_path)
         plt.close()
-
-def find_ith_arg_max(arr, i):
-    # Partition the array to find the i-th largest value
-    partitioned_indices = np.argpartition(-arr, i)  # Negative to get max values
-
-    # The i-th maximum value's index
-    ith_max_index = partitioned_indices[i - 1]
-    return ith_max_index
