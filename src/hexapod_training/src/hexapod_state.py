@@ -442,24 +442,31 @@ class HexapodState(object):
 
         joint_state_positions = [position for position in joint_states.position]
         efforts = [effort for effort in joint_states.effort]
-        touching_ground = 1 if self.touching else 0
+        touching_ground = 1.0 if self.touching else 0.0
 
         observation = []
         rospy.logdebug("List of Observations==>"+str(self._list_of_observations))
         # if scalar simply append, if list extend so that list is flat
         for obs_name in self._list_of_observations:
             if obs_name == "distance_from_desired_point":
+                rospy.logdebug("DISTANCE==>"+str(distance_from_desired_point))
                 observation.append(distance_from_desired_point)
             elif obs_name == "base_roll":
+                rospy.logdebug("BASE ROLL==>"+str(base_roll))
                 observation.append(base_roll)
             elif obs_name == "base_pitch":
+                rospy.logdebug("BASE PITCH==>"+str(base_pitch))
                 observation.append(base_pitch)
             elif obs_name == "base_yaw":
                 observation.append(base_yaw)
             elif obs_name == "contact_force":
                 observation.append(contact_force)
             elif obs_name == "joint_states":
-                observation.extend(joint_state_positions)
+                rospy.logdebug("JOINT STATES==>"+str(joint_state_positions))
+                if len(joint_state_positions) == 0:
+                    observation.extend(18*[0.0])
+                else:
+                    observation.extend(joint_state_positions)
             elif obs_name == "joint_effort":
                 observation.extend(efforts)
             elif obs_name == "base_angular_vel_x":
@@ -475,11 +482,12 @@ class HexapodState(object):
             elif obs_name == "base_linear_acceleration_z":
                 observation.append(base_linear_acceleration_z)
             elif obs_name == "touching_ground":
+                rospy.logdebug("TOUCHING GROUND==>"+str(touching_ground))
                 observation.append(touching_ground)
             else:
                 raise NameError('Observation Asked does not exist=='+str(obs_name))
             
-        # rospy.loginfo("OBSERVATIONS>>>>>" + str(observation))
+        # rospy.logdebug("OBSERVATIONS>>>>>" + str(observation))
 
         return observation
 

@@ -3,24 +3,24 @@
     By Miguel Angel Rodriguez <duckfrost@theconstructsim.com>
     Visit our website at www.theconstructsim.com
 '''
-import gym
+import gymnasium
 import rospy
 import numpy as np
 import time
-from gym import utils, spaces
+from gymnasium import utils, spaces
 from geometry_msgs.msg import Pose
-from gym.utils import seeding
-from gym.envs.registration import register
+from gymnasium.utils import seeding
+from gymnasium.envs.registration import register
 from gazebo_connection import GazeboConnection
 from joint_publisher import JointPub
 from hexapod_state import HexapodState
 from controllers_connection import ControllersConnection
 
-# register the training environment in the gym as an available one
-reg = register(
-    id='Hexapod-v0',
-    entry_point='hexapod_env:HexapodEnv'
-    )
+#register the training environment in the gym as an available one
+# reg = register(
+#     id='Hexapod-v0',
+#     entry_point='hexapod_env:HexapodEnv'
+#     )
 
 deep = True
 
@@ -28,7 +28,8 @@ def make_name(part, side, num):
     return "/hexapod/" + part + "_joint_" + side + str(num) +"_position_controller/command"
 
 
-class HexapodEnv(gym.Env):
+class HexapodEnv(gymnasium.Env):
+    metadata = {"render_modes": ["human"], "render_fps": 30}
 
     def __init__(self):
         
@@ -36,7 +37,6 @@ class HexapodEnv(gym.Env):
         # before initialising the environment
 
         # gets training parameters from param server
-        
         self.desired_pose = Pose()
         self.desired_pose.position.x = rospy.get_param("/desired_pose/x")
         self.desired_pose.position.y = rospy.get_param("/desired_pose/y")
@@ -139,10 +139,6 @@ class HexapodEnv(gym.Env):
         37) Dont Move
         """
         self.action_space = spaces.Discrete(36)
-        observation = self.hexapod_state_object.get_observations()
-        state = self.get_state(observation)
-        # rospy.loginfo(observation)
-        self.observation_space = spaces.Box(low=-50, high=50, shape=(len(state),), dtype=np.float64)
         self.reward_range = (-np.inf, np.inf)
 
         self._seed()
@@ -224,9 +220,8 @@ class HexapodEnv(gym.Env):
         rospy.logdebug("get_observations...")
         observation = self.hexapod_state_object.get_observations()
         state = self.get_state(observation)
-        # rospy.loginfo(state)
 
-        return state
+        return state, {}
 
     def step(self, action):
 
@@ -256,7 +251,7 @@ class HexapodEnv(gym.Env):
         # Get the State Discrete Stringuified version of the observations
         state = self.get_state(observation)
 
-        return state, reward, done, {}
+        return state, reward, done, False, {}
     
     def is_valid_action(self, action):
         return self.hexapod_state_object.is_valid_action(action)
@@ -269,10 +264,10 @@ class HexapodEnv(gym.Env):
         # for qleaen
         # return self.hexapod_state_object.get_state_as_string(observation)
         # for deep qlearn
-        # if deep:
+        if deep:
             # discrete
             # return  self.hexapod_state_object.get_state_as_bins(observation)
             # continual
-        return np.array(observation, dtype=np.float64)
-        # else:
-        #     return self.hexapod_state_object.get_state_as_string(observation)
+            return np.array(observation)
+        else:
+            return self.hexapod_state_object.get_state_as_string(observation)

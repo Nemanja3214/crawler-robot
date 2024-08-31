@@ -39,7 +39,7 @@ list_of_observations: # Observations you want to use for the learning
   # maybe add
   # - contact_force
   - joint_states
-  - joint_effort
+  # - joint_effort
   - touching_ground
 
 discrete_division: 30 # Parts in which we divide each of the observations sensory range
