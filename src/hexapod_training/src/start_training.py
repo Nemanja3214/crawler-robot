@@ -357,6 +357,12 @@ def scale_state(state):
 #         rospy.loginfo("No episode has reached solution")
 #     env.close()
 from stable_baselines3.common.env_checker import check_env
+from sb3_contrib import MaskablePPO
+from sb3_contrib.common.envs import InvalidActionEnvDiscrete
+from sb3_contrib.common.maskable.evaluation import evaluate_policy
+from sb3_contrib.common.maskable.utils import get_action_masks
+# This is a drop-in replacement for EvalCallback
+from sb3_contrib.common.maskable.callbacks import MaskableEvalCallback
 
 def ppo_main():
     global top_episodes_rewards, top_episodes_actions
@@ -367,7 +373,7 @@ def ppo_main():
 
     # Create the Gym environment
     env = gym.make('Hexapod-v0')
-    # check_env(env)
+    check_env(env)
 
     rospy.logdebug ( "Gym environment done")
     reward_pub = rospy.Publisher('/hexapod/reward', Float64, queue_size=1)
@@ -393,7 +399,7 @@ def ppo_main():
 
     # Initialises the algorithm that we are going to use for learning
     
-    model = PPO('MlpPolicy', env, verbose=1)  # You can adjust the verbosity level
+    model = MaskablePPO("MlpPolicy", env, gamma=0.4, seed=32, verbose=1)
 
  
     start_time = time.time()
@@ -433,7 +439,8 @@ def ppo_main():
             # q_pub.publish(q_matrix_msg)
 
             # Pick an action based on the current state
-            action, _states = model.predict(state)
+            action_masks = get_action_masks(env)
+            action, _states = model.predict(state, action_masks=action_masks)
             action_sequence = numpy.append(action_sequence, action)
             
             # Execute the action in the environment and get feedback

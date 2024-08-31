@@ -260,6 +260,16 @@ class HexapodEnv(gym.Env):
     
     def is_valid_action(self, action):
         return self.hexapod_state_object.is_valid_action(action)
+    
+    def action_masks(self):
+        mask = np.zeros(self.action_space.n, dtype=bool)
+        
+        # Example criteria for masking actions
+        # Here, we set actions 0 and 1 to valid (True), others to invalid (False)
+        for action in range(self.action_space.n):
+            mask[action] = self.is_valid_action(action)
+        
+        return mask
 
     def get_state(self, observation):
         """
