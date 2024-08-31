@@ -4,7 +4,7 @@ gamma: 0.8
 epsilon: 0.9
 epsilon_discount: 0.999 # 2197 eps to reach 0.1, 587 to reach 0.5
 # epsilon_discount: 0.998 # 1097 eps to reach 0.1, 587 to reach 0.5
-nepisodes: 20
+nepisodes: 120
 nsteps: 500
 
 # Environment Parameters
@@ -21,7 +21,7 @@ min_height: 0.0   # in meters
 max_incl: 1.6       # in rads
 running_step: 0.0010   # in seconds
 joint_increment_value: 0.2   # in radians
-done_reward: 100000000 # reward
+done_reward: 1000000 # reward
 alive_reward: 100.0 # reward
 
 list_of_observations: # Observations you want to use for the learning

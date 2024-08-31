@@ -53,15 +53,16 @@ class DDQNAgent:
     def update_target_model(self):
         self.target_model.set_weights(self.model.get_weights())
     
-    def act(self, state):
+    def act(self, state, i):
         if np.random.rand() <= self.epsilon:
             return random.randrange(self.action_size)
         q_values = self.model.predict(np.expand_dims(state, axis=0))
-        return np.argmax(q_values[0])
+        # rospy.loginfo(q_values)
+        return find_ith_arg_max(q_values[0], i)
     
     def replay(self):
         if self.memory.size() < self.batch_size:
-            rospy.loginfo("NOT REPLAYING" + str(self.memory.size()) + "     " + str(self.batch_size))
+            rospy.loginfo("NOT REPLAYING: memory size" + str(self.memory.size()) + ", batch size  " + str(self.batch_size))
             return
         rospy.loginfo("REPLAYING")
         batch = self.memory.sample(self.batch_size)
@@ -100,4 +101,16 @@ class DDQNAgent:
 
         plt.tight_layout()
         plt.show()
-        plt.savefig('foo.png')
+        import os
+        directory = os.path.expanduser('~/catkin_ws/src/hexapod_training')
+        file_path = os.path.join(directory, 'foo.png')
+        plt.savefig(file_path)
+        plt.close()
+
+def find_ith_arg_max(arr, i):
+    # Partition the array to find the i-th largest value
+    partitioned_indices = np.argpartition(-arr, i)  # Negative to get max values
+
+    # The i-th maximum value's index
+    ith_max_index = partitioned_indices[i - 1]
+    return ith_max_index

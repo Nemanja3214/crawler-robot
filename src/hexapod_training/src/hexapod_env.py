@@ -251,6 +251,9 @@ class HexapodEnv(gym.Env):
         state = self.get_state(observation)
 
         return state, reward, done, {}
+    
+    def is_valid_action(self, action):
+        return self.hexapod_state_object.is_valid_action(action)
 
     def get_state(self, observation):
         """

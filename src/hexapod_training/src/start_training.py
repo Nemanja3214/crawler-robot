@@ -246,14 +246,15 @@ def deep_qlearn_main():
     deep_qlearn_agent = deep_qlearn.DDQNAgent(
             state_size=state_size,  # Adjust as needed
             action_size=36,  # Adjust as needed
-            memory_size=2000,
+            memory_size=10000,
             gamma=0.99,
             epsilon_start=Epsilon,
             epsilon_end=0.01,
             epsilon_decay=0.995,
-            learning_rate=0.001,
+            learning_rate=0.01,
             batch_size=64
         )
+    sync_rate = 6
     initial_epsilon = Epsilon
 
     start_time = time.time()
@@ -278,6 +279,7 @@ def deep_qlearn_main():
         rospy.logdebug("env.reset...")
         # Now We return directly the stringuified observations called state
         state = env.reset()
+        state = scale_state(state)
 
 
         rospy.logdebug("env.get_state...==>"+str(state))
@@ -291,7 +293,12 @@ def deep_qlearn_main():
             # q_pub.publish(q_matrix_msg)
 
             # Pick an action based on the current state
-            action  = deep_qlearn_agent.act(scale_state(state))
+            invalid_action_counter = 1
+            action  = deep_qlearn_agent.act(state, invalid_action_counter)
+            # pick new action until it is valid
+            while not env.is_valid_action(action):
+                action  = deep_qlearn_agent.act(state, invalid_action_counter)
+                invalid_action_counter += 1
             # rospy.loginfo("STATE>>>>>>" + str(state))
             # rospy.loginfo("SCALED STATE>>>>>>" + str(scale_state(state)))
             action_sequence = numpy.append(action_sequence, action)
@@ -300,6 +307,7 @@ def deep_qlearn_main():
             rospy.logdebug("###################### Start Step...["+str(i)+"]")
             rospy.logdebug("Action to Perform >> "+str(action))
             nextState, reward, done, info = env.step(action)
+            nextState = scale_state(state)
             rospy.logdebug("END Step...")
             rospy.logdebug("Reward ==> " + str(reward))
             cumulated_reward += reward
@@ -319,7 +327,8 @@ def deep_qlearn_main():
             else:
                 rospy.logdebug ("DONE")
                 deep_qlearn_agent.memory.add((state, action, cumulated_reward, nextState, done))
-                deep_qlearn_agent.replay()
+                if i % sync_rate == 0 and x > 10:
+                    deep_qlearn_agent.replay()
                 last_time_steps = numpy.append(last_time_steps, [int(i + 1)])
                 break
 
