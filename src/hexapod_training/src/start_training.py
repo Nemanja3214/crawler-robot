@@ -50,6 +50,7 @@ def replace_if_greater(numeric_arr, side_list, numeric_val, side_val):
 top_episodes_rewards = numpy.array([])
 top_episodes_actions = []
 def save():
+    global model
     results = []
     for i, _ in enumerate(top_episodes_rewards):
         ob = {
@@ -66,6 +67,7 @@ def save():
             json.dump(results, file)
         except Exception as e:
             rospy.logerr(e)
+    model.save(dir + '/Hexapod-v0')
 
 def make_msg(q_matrix):
     q_msg = QMatrix()
@@ -430,9 +432,9 @@ class TensorBoardCallback(BaseCallback):
     def _on_training_end(self) -> None:
         self.writer.close()
 
-
+global model
 def ppo_main():
-    global top_episodes_rewards, top_episodes_actions
+    global top_episodes_rewards, top_episodes_actions, model
     
     rospy.init_node('hexapod_gym', anonymous=True, log_level=rospy.INFO)
     # rospy.init_node('hexapod_gym', anonymous=True, log_level=rospy.DEBUG)
@@ -453,10 +455,10 @@ def ppo_main():
     os.makedirs(log_dir, exist_ok=True)
     tensorboard_callback = TensorBoardCallback(log_dir=log_dir, n_eval_freq=1000)
     
-    model = MaskablePPO("MlpPolicy", env, gamma=0.4, seed=32, verbose=1)
+    model = MaskablePPO("MlpPolicy", env, gamma=0.4, seed=32, verbose=1, learning_rate=0.03)
     # callback = SaveOnBestTrainingRewardCallback(check_freq=1000, log_dir=log_dir)
 
-    model.learn(total_timesteps=5, callback=tensorboard_callback)
+    model.learn(total_timesteps=250000, callback=tensorboard_callback)
     model.save('Hexapod-v0')
 
 
