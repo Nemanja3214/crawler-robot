@@ -28,6 +28,6 @@ if __name__ == "__main__":
         state = env.reset()
         done = False
         while not done:
-            action, _ = model.predict(state)
+            action, _ = model.predict(state, deterministic=True)
             _, _, done, _ = env.step(action)
         

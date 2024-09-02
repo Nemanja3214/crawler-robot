@@ -386,10 +386,10 @@ class HexapodState(object):
         rospy.logdebug("total_reward=" + str(total_reward))
         rospy.logdebug("###############")
 
-        return self.scale_reward(total_reward)
+        return total_reward
 
-    def scale_reward(self, reward):
-        return (reward + self._done_reward) / (2 * self._done_reward)
+    # def scale_reward(self, reward):
+    #     return (reward + self._done_reward) / (2 * self._done_reward)
 
     def get_observations(self):
         """

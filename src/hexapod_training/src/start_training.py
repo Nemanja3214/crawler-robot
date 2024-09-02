@@ -206,8 +206,8 @@ def make_msg(q_matrix):
 #         rospy.loginfo("No episode has reached solution")
 #     env.close()
 
-def scale_state(state):
-    return (state + 100) / 200
+# def scale_state(state):
+#     return (state + 100) / 200
 
 # def deep_qlearn_main():
 #     global top_episodes_rewards, top_episodes_actions
@@ -411,16 +411,17 @@ import os
 #                   self.model.save(self.save_path)
 
 #         return True
+import datetime
 class TensorBoardCallback(BaseCallback):
-    def __init__(self, log_dir: str, n_eval_freq: int, *args, **kwargs):
+    def __init__(self, log_dir: str, n_eval_freq: int, name: str, *args, **kwargs):
         super(TensorBoardCallback, self).__init__(*args, **kwargs)
         self.log_dir = log_dir
         self.n_eval_freq = n_eval_freq
+        self.name = name
 
     def _on_training_start(self) -> None:
         from tensorboardX import SummaryWriter
-        from datetime import datetime
-        run_name = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+        run_name = self.name
         self.log_dir = os.path.join(self.log_dir, run_name)
         self.writer = SummaryWriter(log_dir=self.log_dir)
         
@@ -433,6 +434,7 @@ class TensorBoardCallback(BaseCallback):
         self.writer.close()
 
 global model
+
 def ppo_main():
     global top_episodes_rewards, top_episodes_actions, model
     
@@ -452,14 +454,16 @@ def ppo_main():
 
     # Create log dir
     log_dir = pkg_path + "/tmp/"
+
     os.makedirs(log_dir, exist_ok=True)
-    tensorboard_callback = TensorBoardCallback(log_dir=log_dir, n_eval_freq=1000)
+    name = str(datetime.datetime.now())
+    tensorboard_callback = TensorBoardCallback(log_dir=log_dir, name=name, n_eval_freq=1000)
     
-    model = MaskablePPO("MlpPolicy", env, gamma=0.4, seed=32, verbose=1, learning_rate=0.03)
+    model = MaskablePPO("MlpPolicy", env, gamma=0.99, seed=32, verbose=1, learning_rate=0.0003)
     # callback = SaveOnBestTrainingRewardCallback(check_freq=1000, log_dir=log_dir)
 
     model.learn(total_timesteps=250000, callback=tensorboard_callback)
-    model.save('Hexapod-v0')
+    model.save(name)
 
 
 
