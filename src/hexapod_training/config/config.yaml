@@ -48,8 +48,8 @@ discrete_division: 30 # Parts in which we divide each of the observations sensor
 weight_r1: 3.0 # Weight for joint positions ( joints in the zero is perfect )
 weight_r2: 1.0 # Weight for joint efforts ( no efforts is perfect )
 weight_r3: 0.0 # Weight for contact force similar to desired ( weight of hexapod )
-weight_r4: 10.0 # Weight for orientation ( vertical is perfect )
-weight_r5: 100.0 # Weight for distance from desired point ( on the point is perfect )
+weight_r4: 100.0 # Weight for orientation ( vertical is perfect )
+weight_r5: 10000.0 # Weight for distance from desired point ( on the point is perfect )
 weight_r6: 20.0 # Weight for not touching floor
 weight_r7: 30.0 # Weight for not synchronisation
 # Tibia is furthest from the body

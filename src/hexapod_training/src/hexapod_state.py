@@ -338,7 +338,7 @@ class HexapodState(object):
         :return:reward
         """
         if self.touching:
-            return weight
+            return 100 * weight
         return -100.0 * weight
 
     def calculate_synchro_reward(self, weight=1.0):
@@ -371,9 +371,11 @@ class HexapodState(object):
         r5 = self.calculate_reward_distance_from_des_point(self._weight_r5)
         r6 = self.calculate_touching_reward(self._weight_r6)
         r7 = self.calculate_synchro_reward(self._weight_r7)
-
+        if self.touching:
+            return self._alive_reward - r6
+        else:
+            total_reward = self._alive_reward - r1 - r2 - r3 - r4 - r5 - r6 - r7
         # The sign depend on its function.
-        total_reward = self._alive_reward - r1 - r2 - r3 - r4 - r5 - r6
     
         rospy.logdebug("###############")
         rospy.logdebug("alive_bonus=" + str(self._alive_reward))

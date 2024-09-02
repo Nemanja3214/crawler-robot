@@ -363,6 +363,8 @@ from sb3_contrib import MaskablePPO
 from sb3_contrib.common.maskable.evaluation import evaluate_policy
 from sb3_contrib.common.maskable.utils import get_action_masks
 # This is a drop-in replacement for EvalCallback
+
+from sb3_contrib.common.wrappers import ActionMasker
 # from sb3_contrib.common.maskable.callbacks import MaskableEvalCallback
 from stable_baselines3.common.callbacks import BaseCallback
 # from stable_baselines3.common.results_plotter import load_results, ts2xy, plot_results
@@ -434,6 +436,8 @@ class TensorBoardCallback(BaseCallback):
         self.writer.close()
 
 global model
+def mask_fn(env: gym.Env) -> numpy.ndarray:
+    return env.action_masks()
 
 def ppo_main():
     global top_episodes_rewards, top_episodes_actions, model
@@ -444,6 +448,7 @@ def ppo_main():
 
     # Create the Gym environment
     env = gym.make('Hexapod-v0')
+    env = ActionMasker(env, mask_fn)
     check_env(env)
 
     # rospy.logdebug ( "Gym environment done")

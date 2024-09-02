@@ -27,7 +27,9 @@ if __name__ == "__main__":
     while not rospy.is_shutdown():
         state = env.reset()
         done = False
+      
         while not done:
-            action, _ = model.predict(state, deterministic=True)
+            action_masks = env.action_masks()
+            action, _ = model.predict(state, deterministic=True, action_masks=action_masks)
             _, _, done, _ = env.step(action)
         
