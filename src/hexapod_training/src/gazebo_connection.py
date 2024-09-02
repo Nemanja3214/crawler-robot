@@ -4,9 +4,10 @@ from time import sleep
 import rospy
 from std_srvs.srv import Empty
 from gazebo_msgs.msg import ODEPhysics
-from gazebo_msgs.srv import SetPhysicsProperties, SetPhysicsPropertiesRequest
+from gazebo_msgs.srv import SetPhysicsProperties, SetPhysicsPropertiesRequest, DeleteModel, SpawnModel, DeleteModelRequest, SpawnModelRequest
 from std_msgs.msg import Float64
-from geometry_msgs.msg import Vector3
+from geometry_msgs.msg import Vector3, Point, Pose
+
 
 class GazeboConnection():
     
@@ -17,6 +18,19 @@ class GazeboConnection():
         # Changed to reseting world because time diff problem
         # self.reset_proxy = rospy.ServiceProxy('/gazebo/reset_simulation', Empty)
         self.reset_proxy = rospy.ServiceProxy('/gazebo/reset_world', Empty)
+
+        self.delete_model_proxy = rospy.ServiceProxy('/gazebo/delete_model', DeleteModel)
+        self.delete_model_request = DeleteModelRequest()
+        self.delete_model_request.model_name = "hexapod"
+
+        self.spawn_model_proxy = rospy.ServiceProxy('/gazebo/spawn_urdf_model', SpawnModel)
+        self.spawn_model_request = SpawnModelRequest()
+        self.spawn_model_request.model_name = "hexapod"
+
+        # rospy.loginfo("XML>>>>>"+rospy.get_param('robot_description'))
+        self.spawn_model_request.model_xml = rospy.get_param('robot_description')
+        self.spawn_model_request.initial_pose =Pose()
+        self.spawn_model_request.initial_pose.position = Point(x=0.0, y=0.0, z=0.09)
 
         # Setup the Gravity Controle system
         service_name = '/gazebo/set_physics_properties'
@@ -57,6 +71,21 @@ class GazeboConnection():
             self.reset_proxy()
         except rospy.ServiceException as e:
             print ("/gazebo/reset_world service call failed")
+
+    def deleteModel(self):
+        rospy.wait_for_service('/gazebo/delete_model')
+        try:
+            self.delete_model_proxy(self.delete_model_request)
+        except rospy.ServiceException as e:
+            print ("/gazebo/delete_model service call failed")
+    
+    def spawnModel(self):
+        # rospy.loginfo("SPAWNING")
+        rospy.wait_for_service('/gazebo/spawn_urdf_model')
+        try:
+            self.spawn_model_proxy(self.spawn_model_request)
+        except rospy.ServiceException as e:
+            print ("/gazebo/spawn_urdf_model service call failed")
 
     def init_values(self):
 

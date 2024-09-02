@@ -163,10 +163,14 @@ class HexapodEnv(gym.Env):
         rospy.logdebug("Pausing SIM...")
         self.gazebo.pauseSim()
 
+        self.gazebo.deleteModel()
+        self.gazebo.spawnModel()
+
         # 1st: resets the simulation to initial values
         rospy.logdebug("Reset SIM...")
         # self.gazebo.resetSim()
         self.gazebo.resetWorld()
+   
 
         # 2nd: We Set the gravity to 0.0 so that we dont fall when reseting joints
         # It also UNPAUSES the simulation

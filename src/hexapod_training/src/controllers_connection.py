@@ -1,14 +1,23 @@
 #!/usr/bin/python3.8
 
 import rospy
-from controller_manager_msgs.srv import SwitchController, SwitchControllerRequest, SwitchControllerResponse
-
+from controller_manager_msgs.srv import SwitchController, LoadController, LoadControllerRequest, SwitchControllerRequest, SwitchControllerResponse
+import rospkg
+import rosparam
 class ControllersConnection():
+
+    # def load_controllers(self):
+    #     rospack = rospkg.RosPack()
+    #     yaml_file = rospack.get_path("urdf_demo") + "/config/controllers.yaml"
+    #     namespace = "/hexapod"
+    #     rosparam.load_file(yaml_file, namespace)
     
     def __init__(self, namespace):
 
         self.switch_service_name = '/'+namespace+'/controller_manager/switch_controller'
         self.switch_service = rospy.ServiceProxy(self.switch_service_name, SwitchController)
+        self.load_service_name = '/'+namespace+'/controller_manager/load_controller'
+        self.load_service = rospy.ServiceProxy(self.load_service_name, LoadController)
 
     def switch_controllers(self, controllers_on, controllers_off, strictness=1):
         """
@@ -22,10 +31,11 @@ class ControllersConnection():
         try:
             switch_request_object = SwitchControllerRequest()
             switch_request_object.start_controllers = controllers_on
-            switch_request_object.start_controllers = controllers_off
+            switch_request_object.stop_controllers = controllers_off
             switch_request_object.strictness = strictness
-
+            rospy.logdebug(switch_request_object)
             switch_result = self.switch_service(switch_request_object)
+            rospy.logdebug(switch_result)
             """
             [controller_manager_msgs/SwitchController]
             int32 BEST_EFFORT=1
@@ -53,10 +63,24 @@ class ControllersConnection():
         """
         reset_result = False
 
+        rospy.logdebug("TURNING OFF CONTROLLERS>>>"+str(controllers_reset))
         result_off_ok = self.switch_controllers(controllers_on = [],
                                 controllers_off = controllers_reset)
 
         if result_off_ok:
+            rospy.logdebug("TURNING ON CONTROLLERS>>>"+str(controllers_reset))
+            
+          
+            for controller in controllers_reset:
+                req = LoadControllerRequest()
+                req.name = controller
+                # req.
+                # rospy.loginfo(rosparam.get_param("hexapod/tibia_joint_l1_position_controller/pid/d"))
+                # # rospy.loginfo("CONTROLLER>>>>>"+controller)
+                load_ok = self.load_service(req)
+                # rospy.loginfo("LOAD IS>>>>>"+str(load_ok))
+
+
             result_on_ok = self.switch_controllers(controllers_on=controllers_reset,
                                                     controllers_off=[])
             if result_on_ok:
@@ -77,7 +101,7 @@ class ControllersConnection():
         parts = ["coxa", "tibia", "femur"]
         sides = ["l", "r"]
         nums = [1, 2, 3]
-        controllers_reset = ['/hexapod/joint_state_controller']
+        controllers_reset = []
         for part in parts:
             for side in sides:
                 for num in nums:
