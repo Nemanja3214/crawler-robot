@@ -77,6 +77,7 @@ class ControllersConnection():
                 # req.
                 # rospy.loginfo(rosparam.get_param("hexapod/tibia_joint_l1_position_controller/pid/d"))
                 # # rospy.loginfo("CONTROLLER>>>>>"+controller)
+                rospy.wait_for_service(self.load_service_name)
                 load_ok = self.load_service(req)
                 rospy.logdebug("LOAD IS>>>>>"+str(load_ok))
 
