@@ -158,13 +158,13 @@ class HexapodEnv(gym.Env):
         
     # Resets the state of the environment and returns an initial observation.
     def reset(self):
-
+        self.gazebo.deleteModel()
+        self.gazebo.spawnModel()
         # 0st: We pause the Simulator
         rospy.logdebug("Pausing SIM...")
         self.gazebo.pauseSim()
 
-        self.gazebo.deleteModel()
-        self.gazebo.spawnModel()
+    
 
         # 1st: resets the simulation to initial values
         rospy.logdebug("Reset SIM...")

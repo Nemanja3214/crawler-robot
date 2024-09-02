@@ -78,7 +78,7 @@ class ControllersConnection():
                 # rospy.loginfo(rosparam.get_param("hexapod/tibia_joint_l1_position_controller/pid/d"))
                 # # rospy.loginfo("CONTROLLER>>>>>"+controller)
                 load_ok = self.load_service(req)
-                # rospy.loginfo("LOAD IS>>>>>"+str(load_ok))
+                rospy.logdebug("LOAD IS>>>>>"+str(load_ok))
 
 
             result_on_ok = self.switch_controllers(controllers_on=controllers_reset,
@@ -101,7 +101,7 @@ class ControllersConnection():
         parts = ["coxa", "tibia", "femur"]
         sides = ["l", "r"]
         nums = [1, 2, 3]
-        controllers_reset = []
+        controllers_reset = ["/hexapod/joint_state_controller"]
         for part in parts:
             for side in sides:
                 for num in nums:
