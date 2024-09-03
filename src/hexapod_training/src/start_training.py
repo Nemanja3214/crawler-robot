@@ -465,7 +465,7 @@ def ppo_main():
     tensorboard_callback = TensorBoardCallback(log_dir=log_dir, name=name, n_eval_freq=1000)
     rospy.loginfo("BEFORE CREATING MODEL")
     
-    model = MaskablePPO("MlpPolicy", env, gamma=0.99, seed=32, verbose=1, learning_rate=0.0003)
+    model = MaskablePPO("MlpPolicy", env, gamma=0.4, seed=32, verbose=1, learning_rate=0.0003)
     # callback = SaveOnBestTrainingRewardCallback(check_freq=1000, log_dir=log_dir)
 
     model.learn(total_timesteps=250000, callback=tensorboard_callback)
