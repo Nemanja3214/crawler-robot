@@ -1,23 +1,64 @@
 #!/usr/bin/python3.8
 
 import rospy
-from controller_manager_msgs.srv import SwitchController, LoadController, LoadControllerRequest, SwitchControllerRequest, SwitchControllerResponse
+from controller_manager_msgs.srv import SwitchController,UnloadController, UnloadControllerRequest, LoadController, LoadControllerRequest, SwitchControllerRequest, SwitchControllerResponse
 import rospkg
 import rosparam
-class ControllersConnection():
 
-    # def load_controllers(self):
-    #     rospack = rospkg.RosPack()
-    #     yaml_file = rospack.get_path("urdf_demo") + "/config/controllers.yaml"
-    #     namespace = "/hexapod"
-    #     rosparam.load_file(yaml_file, namespace)
+def make_name(part, side, num):
+            return part + "_joint_" + side + str(num) +"_position_controller"
+
+class ControllersConnection():
     
     def __init__(self, namespace):
 
         self.switch_service_name = '/'+namespace+'/controller_manager/switch_controller'
         self.switch_service = rospy.ServiceProxy(self.switch_service_name, SwitchController)
+
         self.load_service_name = '/'+namespace+'/controller_manager/load_controller'
         self.load_service = rospy.ServiceProxy(self.load_service_name, LoadController)
+
+        self.unload_service_name = '/'+namespace+'/controller_manager/unload_controller'
+        self.unload_service = rospy.ServiceProxy(self.unload_service_name, UnloadController)
+
+    def controllers_list(self):
+        parts = ["coxa", "tibia", "femur"]
+        sides = ["l", "r"]
+        nums = [1, 2, 3]
+        controllers = ["joint_state_controller"]
+        for part in parts:
+            for side in sides:
+                for num in nums:
+                    name = make_name(part, side, num)
+                    controllers.append(name)
+        return controllers
+
+    def unload(self):
+        for controller in self.controllers_list():
+            req = UnloadControllerRequest()
+            req.name = controller
+            rospy.wait_for_service(self.unload_service_name)
+            unload_ok = self.unload_service(req)
+            rospy.logdebug("UNLOAD IS>>>>>"+str(unload_ok))
+
+    def stop(self):
+        self.switch_controllers(controllers_on=[],
+                                                    controllers_off=self.controllers_list())
+
+    def start(self):
+        self.switch_controllers(controllers_on=self.controllers_list(),
+                                                    controllers_off=[])
+
+
+               
+
+    def load(self):
+        for controller in self.controllers_list():
+            req = LoadControllerRequest()
+            req.name = controller
+            rospy.wait_for_service(self.load_service_name)
+            load_ok = self.load_service(req)
+            rospy.logdebug("UNLOAD IS>>>>>"+str(load_ok))
 
     def switch_controllers(self, controllers_on, controllers_off, strictness=1):
         """
@@ -26,6 +67,7 @@ class ControllersConnection():
         :param controllers_off: ["name_controler_1", "name_controller2",...,"name_controller_n"]
         :return:
         """
+        rospy.logdebug("WAITING FOR SWITCH SERVICE")
         rospy.wait_for_service(self.switch_service_name)
 
         try:
@@ -33,9 +75,10 @@ class ControllersConnection():
             switch_request_object.start_controllers = controllers_on
             switch_request_object.stop_controllers = controllers_off
             switch_request_object.strictness = strictness
-            rospy.logdebug(switch_request_object)
+            switch_request_object.start_asap = True
+            switch_request_object.timeout = 120
+            rospy.loginfo(switch_request_object)
             switch_result = self.switch_service(switch_request_object)
-            rospy.logdebug(switch_result)
             """
             [controller_manager_msgs/SwitchController]
             int32 BEST_EFFORT=1
@@ -46,7 +89,7 @@ class ControllersConnection():
             ---
             bool ok
             """
-            rospy.logdebug("Switch Result==>"+str(switch_result.ok))
+            rospy.loginfo("Switch Result==>"+str(switch_result.ok))
 
             return switch_result.ok
 
@@ -66,21 +109,8 @@ class ControllersConnection():
         rospy.logdebug("TURNING OFF CONTROLLERS>>>"+str(controllers_reset))
         result_off_ok = self.switch_controllers(controllers_on = [],
                                 controllers_off = controllers_reset)
-
         if result_off_ok:
             rospy.logdebug("TURNING ON CONTROLLERS>>>"+str(controllers_reset))
-            
-          
-            for controller in controllers_reset:
-                req = LoadControllerRequest()
-                req.name = controller
-                # req.
-                # rospy.loginfo(rosparam.get_param("hexapod/tibia_joint_l1_position_controller/pid/d"))
-                # # rospy.loginfo("CONTROLLER>>>>>"+controller)
-                rospy.wait_for_service(self.load_service_name)
-                load_ok = self.load_service(req)
-                rospy.logdebug("LOAD IS>>>>>"+str(load_ok))
-
 
             result_on_ok = self.switch_controllers(controllers_on=controllers_reset,
                                                     controllers_off=[])
@@ -95,18 +125,4 @@ class ControllersConnection():
         return reset_result
 
     def reset_hexapod_joint_controllers(self):
-        def make_name(part, side, num):
-            return "/hexapod/" + part + "_joint_" + side + str(num) +"_position_controller"
-
-
-        parts = ["coxa", "tibia", "femur"]
-        sides = ["l", "r"]
-        nums = [1, 2, 3]
-        controllers_reset = ["/hexapod/joint_state_controller"]
-        for part in parts:
-            for side in sides:
-                for num in nums:
-                    name = make_name(part, side, num)
-                    controllers_reset.append(name)
-        rospy.logdebug("CONTROLLERs TO RESET>>>>"+ str(controllers_reset))
-        self.reset_controllers(controllers_reset)
+        self.reset_controllers(self.controllers_list())

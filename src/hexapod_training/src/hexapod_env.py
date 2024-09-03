@@ -158,13 +158,9 @@ class HexapodEnv(gym.Env):
         
     # Resets the state of the environment and returns an initial observation.
     def reset(self):
-        self.gazebo.deleteModel()
-        self.gazebo.spawnModel()
         # 0st: We pause the Simulator
         rospy.logdebug("Pausing SIM...")
         self.gazebo.pauseSim()
-
-    
 
         # 1st: resets the simulation to initial values
         rospy.logdebug("Reset SIM...")
@@ -174,12 +170,19 @@ class HexapodEnv(gym.Env):
 
         # 2nd: We Set the gravity to 0.0 so that we dont fall when reseting joints
         # It also UNPAUSES the simulation
-        rospy.logdebug("Remove Gravity...")
+        # rospy.logdebug("Remove Gravity...")
         self.gazebo.change_gravity(0.0, 0.0, 0.0)
 
         # EXTRA: Reset JoinStateControlers because sim reset doesnt reset TFs, generating time problems
         rospy.logdebug("reset_hexapod_joint_controllers...")
-        self.controllers_object.reset_hexapod_joint_controllers()
+        self.controllers_object.stop()
+        self.controllers_object.unload()
+        self.gazebo.deleteModel()
+        self.gazebo.spawnModel()
+        self.controllers_object.load()
+        self.controllers_object.start()
+        rospy.loginfo("ALL DONE")
+        # self.controllers_object.reset_hexapod_joint_controllers()
 
         # time.sleep(10.0)
 

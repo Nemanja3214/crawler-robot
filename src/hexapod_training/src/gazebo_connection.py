@@ -16,8 +16,8 @@ class GazeboConnection():
         self.unpause = rospy.ServiceProxy('/gazebo/unpause_physics', Empty)
         self.pause = rospy.ServiceProxy('/gazebo/pause_physics', Empty)
         # Changed to reseting world because time diff problem
-        # self.reset_proxy = rospy.ServiceProxy('/gazebo/reset_simulation', Empty)
-        self.reset_proxy = rospy.ServiceProxy('/gazebo/reset_world', Empty)
+        self.reset_sim_proxy = rospy.ServiceProxy('/gazebo/reset_simulation', Empty)
+        self.reset_world_proxy = rospy.ServiceProxy('/gazebo/reset_world', Empty)
 
         self.delete_model_proxy = rospy.ServiceProxy('/gazebo/delete_model', DeleteModel)
         self.delete_model_request = DeleteModelRequest()
@@ -61,14 +61,14 @@ class GazeboConnection():
     def resetSim(self):
         rospy.wait_for_service('/gazebo/reset_simulation')
         try:
-            self.reset_proxy()
+            self.reset_sim_proxy()
         except rospy.ServiceException as e:
             print ("/gazebo/reset_simulation service call failed")
 
     def resetWorld(self):
         rospy.wait_for_service('/gazebo/reset_world')
         try:
-            self.reset_proxy()
+            self.reset_world_proxy()
         except rospy.ServiceException as e:
             print ("/gazebo/reset_world service call failed")
 
@@ -94,7 +94,7 @@ class GazeboConnection():
         rospy.wait_for_service('/gazebo/reset_simulation')
         try:
             # reset_proxy.call()
-            self.reset_proxy()
+            self.reset_world_proxy()
         except rospy.ServiceException as e:
             print ("/gazebo/reset_simulation service call failed")
 
