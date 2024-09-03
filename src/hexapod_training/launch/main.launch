@@ -1,4 +1,5 @@
 <launch>
+
 <rosparam file="$(find urdf_demo)/config/controllers.yaml" command="load"/>
     <!-- Load the parameters for the algorithm -->
     <rosparam command="load" file="$(find hexapod_training)/config/config.yaml" />

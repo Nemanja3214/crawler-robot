@@ -1,7 +1,7 @@
 #!/usr/bin/python3.8
 
 import rospy
-from controller_manager_msgs.srv import SwitchController,UnloadController, UnloadControllerRequest, LoadController, LoadControllerRequest, SwitchControllerRequest, SwitchControllerResponse
+from controller_manager_msgs.srv import ReloadControllerLibraries, ReloadControllerLibrariesRequest, SwitchController,UnloadController, UnloadControllerRequest, LoadController, LoadControllerRequest, SwitchControllerRequest, SwitchControllerResponse
 import rospkg
 import rosparam
 
@@ -21,6 +21,9 @@ class ControllersConnection():
         self.unload_service_name = '/'+namespace+'/controller_manager/unload_controller'
         self.unload_service = rospy.ServiceProxy(self.unload_service_name, UnloadController)
 
+        self.reload_lib_service_name = '/'+namespace+'/controller_manager/reload_controller_libraries'
+        self.reload_lib_service = rospy.ServiceProxy(self.unload_service_name, ReloadControllerLibraries)
+
     def controllers_list(self):
         parts = ["coxa", "tibia", "femur"]
         sides = ["l", "r"]
@@ -38,8 +41,11 @@ class ControllersConnection():
             req = UnloadControllerRequest()
             req.name = controller
             rospy.wait_for_service(self.unload_service_name)
-            unload_ok = self.unload_service(req)
-            rospy.logdebug("UNLOAD IS>>>>>"+str(unload_ok))
+            try:
+                unload_ok = self.unload_service(req)
+                rospy.logdebug("UNLOAD IS>>>>>"+str(unload_ok))
+            except rospy.ServiceException as e:
+                print (self.unload_service_name+" service call failed")
 
     def stop(self):
         self.switch_controllers(controllers_on=[],
@@ -57,8 +63,22 @@ class ControllersConnection():
             req = LoadControllerRequest()
             req.name = controller
             rospy.wait_for_service(self.load_service_name)
-            load_ok = self.load_service(req)
-            rospy.logdebug("UNLOAD IS>>>>>"+str(load_ok))
+            try:
+                load_ok = self.load_service(req)
+                rospy.logdebug("UNLOAD IS>>>>>"+str(load_ok))
+            except rospy.ServiceException as e:
+                print (self.load_service_name+" service call failed")
+
+    def reload_lib(self):
+        rospy.wait_for_service(self.reload_lib_service_name)
+        req = ReloadControllerLibrariesRequest()
+        req.force_kill(True)
+        try:
+            reload_ok = self.reload_lib_service(req)
+            rospy.logdebug("RELOAD LIB IS>>>>>"+str(reload_ok))
+        except rospy.ServiceException as e:
+            print (self.reload_lib_service_name+" service call failed")
+
 
     def switch_controllers(self, controllers_on, controllers_off, strictness=1):
         """
@@ -75,9 +95,9 @@ class ControllersConnection():
             switch_request_object.start_controllers = controllers_on
             switch_request_object.stop_controllers = controllers_off
             switch_request_object.strictness = strictness
-            switch_request_object.start_asap = True
             switch_request_object.timeout = 120
-            rospy.loginfo(switch_request_object)
+            switch_request_object.start_asap = False
+            rospy.logdebug(switch_request_object)
             switch_result = self.switch_service(switch_request_object)
             """
             [controller_manager_msgs/SwitchController]
@@ -89,7 +109,7 @@ class ControllersConnection():
             ---
             bool ok
             """
-            rospy.loginfo("Switch Result==>"+str(switch_result.ok))
+            rospy.logdebug("Switch Result==>"+str(switch_result.ok))
 
             return switch_result.ok
 

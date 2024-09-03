@@ -15,6 +15,7 @@ from gazebo_connection import GazeboConnection
 from joint_publisher import JointPub
 from hexapod_state import HexapodState
 from controllers_connection import ControllersConnection
+from collections import deque
 
 # register the training environment in the gym as an available one
 reg = register(
@@ -88,6 +89,8 @@ class HexapodEnv(gym.Env):
                     name = make_init_name(part, side, num)
                     val = rospy.get_param(name)
                     self.init_joint_pose.append(val)
+        self.timestamps = deque(maxlen=10)
+        self.reset_counter = 0
   
 
         # Fill in the Done Episode Criteria list
@@ -155,10 +158,9 @@ class HexapodEnv(gym.Env):
     
     def _render(self):
         return None
-        
-    # Resets the state of the environment and returns an initial observation.
-    def reset(self):
-        # 0st: We pause the Simulator
+    
+    def hard_reset(self):
+          # 0st: We pause the Simulator
         rospy.logdebug("Pausing SIM...")
         self.gazebo.pauseSim()
 
@@ -178,10 +180,15 @@ class HexapodEnv(gym.Env):
         self.controllers_object.stop()
         self.controllers_object.unload()
         self.gazebo.deleteModel()
+
+        # self.controllers_object.reload_lib()
+        # gc.collect()
+        time.sleep(1)
+
         self.gazebo.spawnModel()
         self.controllers_object.load()
         self.controllers_object.start()
-        rospy.loginfo("ALL DONE")
+        # rospy.loginfo("ALL DONE")
         # self.controllers_object.reset_hexapod_joint_controllers()
 
         # time.sleep(10.0)
@@ -234,6 +241,105 @@ class HexapodEnv(gym.Env):
         # rospy.loginfo(state)
 
         return state
+    
+    def soft_reset(self):
+          # 0st: We pause the Simulator
+        rospy.logdebug("Pausing SIM...")
+        self.gazebo.pauseSim()
+
+        # 1st: resets the simulation to initial values
+        rospy.logdebug("Reset SIM...")
+        # self.gazebo.resetSim()
+        self.gazebo.resetWorld()
+   
+
+        # 2nd: We Set the gravity to 0.0 so that we dont fall when reseting joints
+        # It also UNPAUSES the simulation
+        # rospy.logdebug("Remove Gravity...")
+        self.gazebo.change_gravity(0.0, 0.0, 0.0)
+
+        # EXTRA: Reset JoinStateControlers because sim reset doesnt reset TFs, generating time problems
+        rospy.logdebug("reset_hexapod_joint_controllers...")
+        # self.controllers_object.stop()
+        # self.controllers_object.unload()
+        # self.gazebo.deleteModel()
+
+        # # self.controllers_object.reload_lib()
+        # # gc.collect()
+        # time.sleep(1)
+
+        # self.gazebo.spawnModel()
+        # self.controllers_object.load()
+        # self.controllers_object.start()
+        # # rospy.loginfo("ALL DONE")
+        self.controllers_object.reset_hexapod_joint_controllers()
+
+        # time.sleep(10.0)
+
+        # 3rd: resets the robot to initial conditions
+        rospy.logdebug("set_init_pose init variable...>>>" + str(self.init_joint_pose))
+        # We save that position as the current joint desired position
+        init_pos = self.hexapod_state_object.init_joints_pose(self.init_joint_pose)
+
+        # reset standing variable
+        self.hexapod_state_object.touching = False
+
+        # 4th: We Set the init pose to the jump topic so that the jump control can update
+        rospy.logdebug("Publish init_pose for Jump Control...>>>" + str(init_pos))
+        # We check the jump publisher has connection
+        self.hexapod_joint_pubisher_object.check_publishers_connection()
+        # We move the joints to position, no jump
+        self.hexapod_joint_pubisher_object.move_joints(init_pos)
+
+        # 5th: Check all subscribers work.
+        # Get the state of the Robot defined by its RPY orientation, distance from
+        # desired point, contact force and JointState of the three joints
+        rospy.logdebug("check_all_systems_ready...")
+        self.hexapod_state_object.check_all_systems_ready()
+
+
+        # 6th: We restore the gravity to original
+        rospy.logdebug("Restore Gravity...")
+        self.gazebo.change_gravity(0.0, 0.0, -9.81)
+
+        # 7th: pauses simulation, let it fall
+        rospy.logdebug("Unpause SIM...")
+        self.gazebo.unpauseSim()
+
+        rospy.logdebug(self.hexapod_state_object.touching)
+
+        # wait for robot to fall
+        while not self.hexapod_state_object.touching:
+            rospy.logdebug("LOOPING: " + str(self.hexapod_state_object.touching))
+            time.sleep(0.07)
+        rospy.logdebug("FINISHED LOOPING: " +str(self.hexapod_state_object.touching))
+          # 7th: pauses simulation
+        rospy.logdebug("Pause SIM...")
+        self.gazebo.pauseSim()
+
+        # 8th: Get the State Discrete Stringuified version of the observations
+        rospy.logdebug("get_observations...")
+        observation = self.hexapod_state_object.get_observations()
+        state = self.get_state(observation)
+        # rospy.loginfo(state)
+
+        return state
+
+        
+    # Resets the state of the environment and returns an initial observation.
+    def reset(self):
+        now = time.time()
+        self.timestamps.append(now)
+        self.reset_counter += 1
+        if self.reset_counter > 10:
+            past_time = self.timestamps[0]
+            diff = now - past_time
+            rospy.loginfo("DIFF>>>" + str(diff))
+            if diff < 4:
+                rospy.loginfo("HARD RESETING")
+                return self.hard_reset()
+        return self.soft_reset()
+
 
     def step(self, action):
 
