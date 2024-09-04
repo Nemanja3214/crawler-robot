@@ -60,10 +60,10 @@ class JointPub(object):
 
         rospy.logdebug("All Joint Publishers READY")
 
-    def joint_mono_des_callback(self, msg):
-        rospy.logdebug(str(msg.joint_state.position))
+    # def joint_mono_des_callback(self, msg):
+    #     rospy.logdebug(str(msg.joint_state.position))
 
-        self.move_joints(msg.joint_state.position)
+    #     self.move_joints(msg.joint_state.position)
 
     def move_joints(self, joints_array):
         rospy.logdebug("Moving joints>>>>" +str(joints_array))
