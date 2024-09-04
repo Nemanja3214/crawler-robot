@@ -141,7 +141,7 @@ class HexapodEnv(gym.Env):
         0-36) Increment/Decrement joints
         37) Dont Move
         """
-        self.action_space = spaces.Discrete(36)
+        self.action_space = spaces.Box(low=-1.5, high=1.5, shape=(18,), dtype=np.float64)
         observation = self.hexapod_state_object.get_observations()
         state = self.get_state(observation)
         # rospy.loginfo(observation)
@@ -200,6 +200,7 @@ class HexapodEnv(gym.Env):
 
         # reset standing variable
         self.hexapod_state_object.touching = False
+        self.hexapod_state_object.reached_goal_times = 0
 
         # 4th: We Set the init pose to the jump topic so that the jump control can update
         rospy.logdebug("Publish init_pose for Jump Control...>>>" + str(init_pos))
@@ -283,6 +284,7 @@ class HexapodEnv(gym.Env):
 
         # reset standing variable
         self.hexapod_state_object.touching = False
+        self.hexapod_state_object.reached_goal_times = 0
 
         # 4th: We Set the init pose to the jump topic so that the jump control can update
         rospy.logdebug("Publish init_pose for Jump Control...>>>" + str(init_pos))
@@ -348,7 +350,6 @@ class HexapodEnv(gym.Env):
 
         # 1st, decide which action corresponds to which joint is incremented
         next_action_position = self.hexapod_state_object.get_action_to_position(action)
-
         # We move it to that pos
         self.gazebo.unpauseSim()
         self.hexapod_joint_pubisher_object.move_joints(next_action_position)

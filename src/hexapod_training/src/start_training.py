@@ -442,8 +442,6 @@ def mask_fn(env: gym.Env) -> numpy.ndarray:
 def ppo_main():
     global top_episodes_rewards, top_episodes_actions, model
     
-    rospy.init_node('hexapod_gym', anonymous=True, log_level=rospy.INFO)
-    # rospy.init_node('hexapod_gym', anonymous=True, log_level=rospy.DEBUG)
     rospy.on_shutdown(save)
 
     # Create the Gym environment
@@ -471,8 +469,11 @@ def ppo_main():
     model.learn(total_timesteps=250000, callback=tensorboard_callback)
     model.save(name)
 
-
+import continous_ppo
 
 if __name__ == '__main__':
-    ppo_main()
+    rospy.init_node('hexapod_gym', anonymous=True, log_level=rospy.INFO)
+    # rospy.init_node('hexapod_gym', anonymous=True, log_level=rospy.DEBUG)
+    # ppo_main()
     # qlearn_main()
+    continous_ppo.run()

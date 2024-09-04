@@ -11,7 +11,7 @@ nsteps: 500
 desired_pose:
   x: 0.0
   y: 0.0
-  z: 0.09 # 0.13 m
+  z: 0.1 # 0.13 m
 desired_force: 7.08 # In Newtons, normal contact force when stanting still with 9.81 gravity
 desired_yaw: 0.0 # Desired yaw in radians for the robot to stay
 desired_roll: 0.0 # Desired yaw in radians for the robot to stay

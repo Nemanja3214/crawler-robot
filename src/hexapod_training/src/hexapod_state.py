@@ -43,6 +43,7 @@ class HexapodState(object):
         # Dictionary with the max and min of each of the joints
         self._joint_limits = joint_limits
         self.touching = False
+        self.reached_goal_times = 0
 
         # Maximum base linear acceleration values
         self.maximum_base_linear_acceleration = maximum_base_linear_acceleration
@@ -237,6 +238,8 @@ class HexapodState(object):
         pitch_ok = abs(orientation_rpy.y ) < self._desired_pitch #~15 deg
         rospy.logdebug("DISTANCE FROM Z >>>>" + str(abs(self.get_base_height() - self.desired_world_point.z)))
         is_standing = self.get_base_height() > self.desired_world_point.z and pitch_ok
+        if is_standing:
+            self.reached_goal_times += 1
         return is_standing
 
     def hexapod_orientation_ok(self):
@@ -659,140 +662,12 @@ class HexapodState(object):
         self.current_joint_pose =[]
         self.current_joint_pose = copy.deepcopy(des_init_pos)
         return self.current_joint_pose
-
+    
     def get_action_to_position(self, action):
-        """
-        Here we have the ACtions number to real joint movement correspondance.
-        :param action: Integer that goes from 0 to 6, because we have 7 actions.
-        :return:
-        """
-
-        rospy.logdebug("current joint pose>>>"+str(self.current_joint_pose))
-        rospy.logdebug("Action Number>>>"+str(action))
-
-# COXA
-        if action == 0: #Increment coxa_l1
-            rospy.logdebug("Action Decided:Increment coxa_l1_joint>>>")
-            self.current_joint_pose[0] += self._joint_increment_value
-        elif action == 1: #Decrement coxa_l1
-            rospy.logdebug("Action Decided:Decrement coxa_l1_joint>>>")
-            self.current_joint_pose[0] -= self._joint_increment_value
-        elif action == 2: #Increment coxa_l2
-            rospy.logdebug("Action Decided:Increment coxa_l2_joint>>>")
-            self.current_joint_pose[1] += self._joint_increment_value
-        elif action == 3: #Decrement coxa_l2
-            rospy.logdebug("Action Decided:Decrement coxa_l2_joint>>>")
-            self.current_joint_pose[1] -= self._joint_increment_value
-        elif action == 4: #Increment coxa_l3
-            rospy.logdebug("Action Decided:Increment coxa_l3_joint>>>")
-            self.current_joint_pose[2] += self._joint_increment_value
-        elif action == 5: #Decrement coxa_l3
-            rospy.logdebug("Action Decided:Decrement coxa_l3_joint>>>")
-            self.current_joint_pose[2] -= self._joint_increment_value
-        elif action == 6: #Increment coxa_r1
-            rospy.logdebug("Action Decided:Increment coxa_r1_joint>>>")
-            self.current_joint_pose[3] += self._joint_increment_value
-        elif action == 7: #Decrement coxa_r1
-            rospy.logdebug("Action Decided:Decrement coxa_r1_joint>>>")
-            self.current_joint_pose[3] -= self._joint_increment_value
-        elif action == 8: #Increment coxa_r2
-            rospy.logdebug("Action Decided:Increment coxa_r2_joint>>>")
-            self.current_joint_pose[4] += self._joint_increment_value
-        elif action == 9: #Decrement coxa_r2
-            rospy.logdebug("Action Decided:Decrement coxa_r2_joint>>>")
-            self.current_joint_pose[4] -= self._joint_increment_value
-        elif action == 10: #Decrement coxa_r3
-            rospy.logdebug("Action Decided:Decrement coxa_r3_joint>>>")
-            self.current_joint_pose[5] += self._joint_increment_value
-        elif action == 11: #Decrement coxa_r3
-            rospy.logdebug("Action Decided:Decrement coxa_r3_joint>>>")
-            self.current_joint_pose[5] -= self._joint_increment_value
-
-# TIBIA
-        if action == 12: #Increment tibia_l1
-            rospy.logdebug("Action Decided:Increment haa_joint>>>")
-            self.current_joint_pose[6] += self._joint_increment_value
-        elif action == 13: #Decrement tibia_l1
-            rospy.logdebug("Action Decided:Decrement haa_joint>>>")
-            self.current_joint_pose[6] -= self._joint_increment_value
-        elif action == 14: #Increment tibia_l2
-            rospy.logdebug("Action Decided:Increment hfe_joint>>>")
-            self.current_joint_pose[7] += self._joint_increment_value
-        elif action == 15: #Decrement tibia_l2
-            rospy.logdebug("Action Decided:Decrement hfe_joint>>>")
-            self.current_joint_pose[7] -= self._joint_increment_value
-        elif action == 16: #Increment tibia_l3
-            rospy.logdebug("Action Decided:Increment hfe_joint>>>")
-            self.current_joint_pose[8] += self._joint_increment_value
-        elif action == 17: #Decrement tibia_l3
-            rospy.logdebug("Action Decided:Decrement hfe_joint>>>")
-            self.current_joint_pose[8] -= self._joint_increment_value
-        elif action == 18: #Increment tibia_r1
-            rospy.logdebug("Action Decided:Increment hfe_joint>>>")
-            self.current_joint_pose[9] += self._joint_increment_value
-        elif action == 19: #Decrement tibia_r1
-            rospy.logdebug("Action Decided:Decrement hfe_joint>>>")
-            self.current_joint_pose[9] -= self._joint_increment_value
-        elif action == 20: #Increment tibia_r2
-            rospy.logdebug("Action Decided:Increment hfe_joint>>>")
-            self.current_joint_pose[10] += self._joint_increment_value
-        elif action == 21: #Decrement tibia_r2
-            rospy.logdebug("Action Decided:Decrement hfe_joint>>>")
-            self.current_joint_pose[10] -= self._joint_increment_value
-        elif action == 22: #Decrement tibia_r3
-            rospy.logdebug("Action Decided:Decrement hfe_joint>>>")
-            self.current_joint_pose[11] += self._joint_increment_value
-        elif action == 23: #Decrement tibia_r3
-            rospy.logdebug("Action Decided:Decrement hfe_joint>>>")
-            self.current_joint_pose[11] -= self._joint_increment_value
-
-# FEMUR
-        if action == 24: #Increment femur_l1
-            rospy.logdebug("Action Decided:Increment haa_joint>>>")
-            self.current_joint_pose[12] += self._joint_increment_value
-        elif action == 25: #Decrement femur_l1
-            rospy.logdebug("Action Decided:Decrement haa_joint>>>")
-            self.current_joint_pose[12] -= self._joint_increment_value
-        elif action == 26: #Increment femur_l2
-            rospy.logdebug("Action Decided:Increment hfe_joint>>>")
-            self.current_joint_pose[13] += self._joint_increment_value
-        elif action == 27: #Decrement femur_l2
-            rospy.logdebug("Action Decided:Decrement hfe_joint>>>")
-            self.current_joint_pose[13] -= self._joint_increment_value
-        elif action == 28: #Increment femur_l3
-            rospy.logdebug("Action Decided:Increment hfe_joint>>>")
-            self.current_joint_pose[14] += self._joint_increment_value
-        elif action == 29: #Decrement femur_l3
-            rospy.logdebug("Action Decided:Decrement hfe_joint>>>")
-            self.current_joint_pose[14] -= self._joint_increment_value
-        elif action == 30: #Increment femur_r1
-            rospy.logdebug("Action Decided:Increment hfe_joint>>>")
-            self.current_joint_pose[15] += self._joint_increment_value
-        elif action == 31: #Decrement femur_r1
-            rospy.logdebug("Action Decided:Decrement hfe_joint>>>")
-            self.current_joint_pose[15] -= self._joint_increment_value
-        elif action == 32: #Increment femur_r2
-            rospy.logdebug("Action Decided:Increment hfe_joint>>>")
-            self.current_joint_pose[16] += self._joint_increment_value
-        elif action == 33: #Decrement femur_r2
-            rospy.logdebug("Action Decided:Decrement hfe_joint>>>")
-            self.current_joint_pose[16] -= self._joint_increment_value
-        elif action == 34: #Decrement femur_r3
-            rospy.logdebug("Action Decided:Decrement hfe_joint>>>")
-            self.current_joint_pose[17] += self._joint_increment_value
-        elif action == 35: #Decrement femur_r3
-            rospy.logdebug("Action Decided:Decrement hfe_joint>>>")
-            self.current_joint_pose[17] -= self._joint_increment_value
-
-
-        # elif action == 36:  # Dont Move
-        #     rospy.logdebug("Action Decided:Dont Move>>>")
-
-        rospy.logdebug("action to move joint states>>>" + str(self.current_joint_pose))
-
-        self.clamp_to_joint_limits()
-
+        for i in range(len(self.current_joint_pose)):
+            self.current_joint_pose[i] = action[i]
         return self.current_joint_pose
+
 
     def clamp_to_joint_limits(self):
         """
@@ -822,120 +697,10 @@ class HexapodState(object):
         return False
 
     def is_valid_action(self, action):
-        # COXA
-        if action == 0: #Increment coxa_l1
-            rospy.logdebug("Action Decided:Increment coxa_l1_joint>>>")
-            return -1.5 < self.current_joint_pose[0] + self._joint_increment_value < 1.5
-        elif action == 1: #Decrement coxa_l1
-            rospy.logdebug("Action Decided:Decrement coxa_l1_joint>>>")
-            return -1.5 < self.current_joint_pose[0] - self._joint_increment_value < 1.5
-        elif action == 2: #Increment coxa_l2
-            rospy.logdebug("Action Decided:Increment coxa_l2_joint>>>")
-            return -1.5 < self.current_joint_pose[1] + self._joint_increment_value < 1.5 
-        elif action == 3: #Decrement coxa_l2
-            rospy.logdebug("Action Decided:Decrement coxa_l2_joint>>>")
-            return -1.5 < self.current_joint_pose[1] - self._joint_increment_value < 1.5
-        elif action == 4: #Increment coxa_l3
-            rospy.logdebug("Action Decided:Increment coxa_l3_joint>>>")
-            return -1.5 < self.current_joint_pose[2] + self._joint_increment_value < 1.5
-        elif action == 5: #Decrement coxa_l3
-            rospy.logdebug("Action Decided:Decrement coxa_l3_joint>>>")
-            return -1.5 < self.current_joint_pose[2] - self._joint_increment_value < 1.5
-        elif action == 6: #Increment coxa_r1
-            rospy.logdebug("Action Decided:Increment coxa_r1_joint>>>")
-            return -1.5 < self.current_joint_pose[3] + self._joint_increment_value < 1.5
-        elif action == 7: #Decrement coxa_r1
-            rospy.logdebug("Action Decided:Decrement coxa_r1_joint>>>")
-            return -1.5 < self.current_joint_pose[3] - self._joint_increment_value < 1.5
-        elif action == 8: #Increment coxa_r2
-            rospy.logdebug("Action Decided:Increment coxa_r2_joint>>>")
-            return -1.5 < self.current_joint_pose[4] + self._joint_increment_value < 1.5
-        elif action == 9: #Decrement coxa_r2
-            rospy.logdebug("Action Decided:Decrement coxa_r2_joint>>>")
-            return -1.5 < self.current_joint_pose[4] - self._joint_increment_value < 1.5
-        elif action == 10: #Decrement coxa_r3
-            rospy.logdebug("Action Decided:Decrement coxa_r3_joint>>>")
-            return -1.5 < self.current_joint_pose[5] + self._joint_increment_value < 1.5
-        elif action == 11: #Decrement coxa_r3
-            rospy.logdebug("Action Decided:Decrement coxa_r3_joint>>>")
-            return -1.5 < self.current_joint_pose[5] - self._joint_increment_value < 1.5
-
-# TIBIA
-        if action == 12: #Increment tibia_l1
-            rospy.logdebug("Action Decided:Increment haa_joint>>>")
-            return -1.5 < self.current_joint_pose[6] + self._joint_increment_value < 1.5
-        elif action == 13: #Decrement tibia_l1
-            rospy.logdebug("Action Decided:Decrement haa_joint>>>")
-            return -1.5 < self.current_joint_pose[6] - self._joint_increment_value < 1.5
-        elif action == 14: #Increment tibia_l2
-            rospy.logdebug("Action Decided:Increment hfe_joint>>>")
-            return -1.5 < self.current_joint_pose[7] + self._joint_increment_value < 1.5
-        elif action == 15: #Decrement tibia_l2
-            rospy.logdebug("Action Decided:Decrement hfe_joint>>>")
-            return -1.5 < self.current_joint_pose[7] - self._joint_increment_value < 1.5
-        elif action == 16: #Increment tibia_l3
-            rospy.logdebug("Action Decided:Increment hfe_joint>>>")
-            return -1.5 < self.current_joint_pose[8] + self._joint_increment_value < 1.5
-        elif action == 17: #Decrement tibia_l3
-            rospy.logdebug("Action Decided:Decrement hfe_joint>>>")
-            return -1.5 < self.current_joint_pose[8] - self._joint_increment_value < 1.5
-        elif action == 18: #Increment tibia_r1
-            rospy.logdebug("Action Decided:Increment hfe_joint>>>")
-            return -1.5 < self.current_joint_pose[9] + self._joint_increment_value < 1.5
-        elif action == 19: #Decrement tibia_r1
-            rospy.logdebug("Action Decided:Decrement hfe_joint>>>")
-            return -1.5 < self.current_joint_pose[9] - self._joint_increment_value < 1.5
-        elif action == 20: #Increment tibia_r2
-            rospy.logdebug("Action Decided:Increment hfe_joint>>>")
-            return -1.5 < self.current_joint_pose[10] + self._joint_increment_value < 1.5
-        elif action == 21: #Decrement tibia_r2
-            rospy.logdebug("Action Decided:Decrement hfe_joint>>>")
-            return -1.5 < self.current_joint_pose[10] - self._joint_increment_value < 1.5
-        elif action == 22: #Decrement tibia_r3
-            rospy.logdebug("Action Decided:Decrement hfe_joint>>>")
-            return -1.5 < self.current_joint_pose[11] + self._joint_increment_value < 1.5
-        elif action == 23: #Decrement tibia_r3
-            rospy.logdebug("Action Decided:Decrement hfe_joint>>>")
-            return -1.5 < self.current_joint_pose[11] - self._joint_increment_value < 1.5
-
-# FEMUR
-        if action == 24: #Increment femur_l1
-            rospy.logdebug("Action Decided:Increment haa_joint>>>")
-            return -1.5 < self.current_joint_pose[12] + self._joint_increment_value < 1.5
-        elif action == 25: #Decrement femur_l1
-            rospy.logdebug("Action Decided:Decrement haa_joint>>>")
-            return -1.5 < self.current_joint_pose[12] - self._joint_increment_value < 1.5
-        elif action == 26: #Increment femur_l2
-            rospy.logdebug("Action Decided:Increment hfe_joint>>>")
-            return -1.5 < self.current_joint_pose[13] + self._joint_increment_value < 1.5
-        elif action == 27: #Decrement femur_l2
-            rospy.logdebug("Action Decided:Decrement hfe_joint>>>")
-            return -1.5 < self.current_joint_pose[13] - self._joint_increment_value < 1.5
-        elif action == 28: #Increment femur_l3
-            rospy.logdebug("Action Decided:Increment hfe_joint>>>")
-            return -1.5 < self.current_joint_pose[14] + self._joint_increment_value < 1.5
-        elif action == 29: #Decrement femur_l3
-            rospy.logdebug("Action Decided:Decrement hfe_joint>>>")
-            return -1.5 < self.current_joint_pose[14] - self._joint_increment_value < 1.5
-        elif action == 30: #Increment femur_r1
-            rospy.logdebug("Action Decided:Increment hfe_joint>>>")
-            return -1.5 < self.current_joint_pose[15] + self._joint_increment_value < 1.5
-        elif action == 31: #Decrement femur_r1
-            rospy.logdebug("Action Decided:Decrement hfe_joint>>>")
-            return -1.5 < self.current_joint_pose[15] - self._joint_increment_value < 1.5
-        elif action == 32: #Increment femur_r2
-            rospy.logdebug("Action Decided:Increment hfe_joint>>>")
-            return -1.5 < self.current_joint_pose[16] + self._joint_increment_value < 1.5
-        elif action == 33: #Decrement femur_r2
-            rospy.logdebug("Action Decided:Decrement hfe_joint>>>")
-            return -1.5 < self.current_joint_pose[16] - self._joint_increment_value < 1.5
-        elif action == 34: #Decrement femur_r3
-            rospy.logdebug("Action Decided:Decrement hfe_joint>>>")
-            return -1.5 < self.current_joint_pose[17] + self._joint_increment_value < 1.5
-        elif action == 35: #Decrement femur_r3
-            rospy.logdebug("Action Decided:Decrement hfe_joint>>>")
-            return -1.5 < self.current_joint_pose[17] - self._joint_increment_value < 1.5
-
+        for i in range(action):
+            if abs(action[i]) > 1.5:
+                return False
+        return True
 
     def process_data(self):
         """
@@ -970,13 +735,15 @@ class HexapodState(object):
         rospy.logdebug("hexapod_orientation_ok=" + str(hexapod_orientation_ok))
 
         done = False
-        if (not hexapod_orientation_ok) or less_exceeded_joint_position or is_standing_up:
+        if (not hexapod_orientation_ok) or less_exceeded_joint_position or self.reached_goal_times > 20:
             done = True
         
+        if is_standing_up:
+            total_reward = self._done_reward
+
         if done:
-            if is_standing_up:
-                # TODO add to config done reward
-                total_reward = self._done_reward
+            if self.reached_goal_times > 20:
+                total_reward = 10 * self._done_reward
             else:
                 rospy.logerr("It fell, so the reward has to be very low")
                 total_reward = -self._done_reward
