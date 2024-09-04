@@ -735,14 +735,14 @@ class HexapodState(object):
         rospy.logdebug("hexapod_orientation_ok=" + str(hexapod_orientation_ok))
 
         done = False
-        if (not hexapod_orientation_ok) or less_exceeded_joint_position or self.reached_goal_times > 20:
+        if (not hexapod_orientation_ok) or less_exceeded_joint_position or self.reached_goal_times > 100:
             done = True
         
         if is_standing_up:
             total_reward = self._done_reward
 
         if done:
-            if self.reached_goal_times > 20:
+            if self.reached_goal_times > 100:
                 total_reward = 10 * self._done_reward
             else:
                 rospy.logerr("It fell, so the reward has to be very low")

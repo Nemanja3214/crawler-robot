@@ -12,6 +12,8 @@ import torch.optim as optim
 from torch.distributions.normal import Normal
 from tensorboardX import SummaryWriter
 
+import rospy
+
 
 # def parse_args():
 #     # fmt: off
@@ -131,13 +133,21 @@ class Agent(nn.Module):
             action = probs.sample()
         return action, probs.log_prob(action).sum(1), probs.entropy().sum(1), self.critic(x)
 
+def save():
+    global agent
+    dir = rospy.get_param("result_dir")
+    torch.save(agent, dir + '/Hexapod-v0.pth')
+
 import hexapod_env
-def run():
+global agent
+def run(log_dir):
+    global agent
+    rospy.on_shutdown(save)
     gym_id = 'Hexapod-v0'
     exp_name = "def params"
     seed = int(time.time())
     run_name = f"{gym_id}__{exp_name}__{seed}__{int(time.time())}"
-    writer = SummaryWriter(f"runs/{run_name}")
+    writer = SummaryWriter(f"{log_dir}{run_name}")
    
     anneal_lr = True
     gae = True
@@ -198,7 +208,6 @@ def run():
         [make_env(gym_id, seed)]
     )
     assert isinstance(envs.single_action_space, gym.spaces.Box), "only continuous action space is supported"
-
     agent = Agent(envs).to(device)
 
     optimizer = optim.Adam(agent.parameters(), lr=lr, eps=1e-5)

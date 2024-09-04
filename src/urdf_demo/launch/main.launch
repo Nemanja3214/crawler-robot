@@ -7,7 +7,7 @@
     <arg name="world_name" value="worlds/emtpy_world.world"/> 
     <arg name="paused" value="false"/>
     <arg name="use_sim_time" value="true"/>
-    <arg name="gui" value="true"/>
+    <arg name="gui" value="false"/>
     <arg name="recording" value="false"/>
     <arg name="debug" value="false"/>
   </include>
@@ -26,7 +26,7 @@
   </node>
 
      <!-- Spawn marker -->
-<arg name="pose_z" default="0.1"/>
+<arg name="pose_z" default="0.09"/>
 
   <node name="spawn_marker" pkg="gazebo_ros" type="spawn_model" args="
     -file $(find urdf_demo)/urdf/marker.sdf

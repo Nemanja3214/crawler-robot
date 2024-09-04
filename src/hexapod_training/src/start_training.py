@@ -476,4 +476,14 @@ if __name__ == '__main__':
     # rospy.init_node('hexapod_gym', anonymous=True, log_level=rospy.DEBUG)
     # ppo_main()
     # qlearn_main()
-    continous_ppo.run()
+    # rospy.on_shutdown(save)
+    rospack = rospkg.RosPack()
+    pkg_path = rospack.get_path('hexapod_training')
+    log_dir = pkg_path + "/tmp/"
+    os.makedirs(log_dir, exist_ok=True)
+    name = str(datetime.datetime.now())
+    tensorboard_callback = TensorBoardCallback(log_dir=log_dir, name=name, n_eval_freq=1000)
+
+    # Create log dir
+    log_dir = pkg_path + "/tmp/"
+    continous_ppo.run(log_dir)
