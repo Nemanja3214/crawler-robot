@@ -5,6 +5,7 @@ import rospy
 import numpy
 import rospkg
 import gym
+
 import os
 import hexapod_env
 
@@ -27,9 +28,11 @@ if __name__ == "__main__":
     while not rospy.is_shutdown():
         state = env.reset()
         done = False
+        rew = 0
       
         while not done:
             action_masks = env.action_masks()
             action, _ = model.predict(state, deterministic=True, action_masks=action_masks)
-            _, _, done, _ = env.step(action)
+            _, rew, done, _ = env.step(action)
+        rospy.loginfo(rew)
         
