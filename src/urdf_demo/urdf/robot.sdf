@@ -2,22 +2,22 @@
   <model name='hexapod'>
     <link name='base_link'>
       <inertial>
-        <pose>0 0 0 0 -0 0</pose>
-        <mass>0.036</mass>
+        <pose>0 -0 0 0 -0 0</pose>
+        <mass>0.0306</mass>
         <inertia>
-          <ixx>0.00226437</ixx>
-          <ixy>-1.35525e-19</ixy>
-          <ixz>-2.63359e-19</ixz>
-          <iyy>0.00178594</iyy>
-          <iyz>6.8585e-35</iyz>
-          <izz>0.00379469</izz>
+          <ixx>5.74625e-05</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>7.4745e-05</iyy>
+          <iyz>0</iyz>
+          <izz>0.000122072</izz>
         </inertia>
       </inertial>
       <collision name='base_link_collision'>
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
           <box>
-            <size>0.775 0.65 0.225</size>
+            <size>0.155 0.13 0.045</size>
           </box>
         </geometry>
         <surface>
@@ -39,7 +39,7 @@
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
           <box>
-            <size>0.775 0.65 0.225</size>
+            <size>0.155 0.13 0.045</size>
           </box>
         </geometry>
       </collision>
@@ -47,14 +47,14 @@
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
           <box>
-            <size>0.775 0.65 0.225</size>
+            <size>0.155 0.13 0.045</size>
           </box>
         </geometry>
       </visual>
       <sensor name='contactsensor_sensor' type='contact'>
         <always_on>1</always_on>
         <contact>
-          <collision>contactsensor_sensor</collision>
+          <collision>base_link_fixed_joint_lump__thorax_collision_1</collision>
           <topic>__default_topic__</topic>
         </contact>
         <plugin name='bumper0_plugin' filename='libgazebo_ros_bumper.so'>
@@ -64,7 +64,7 @@
       </sensor>
     </link>
     <joint name='coxa_joint_l1' type='revolute'>
-      <pose relative_to='base_link'>0.3875 0.325 0 0 -0 1.0472</pose>
+      <pose relative_to='base_link'>0.0775 0.065 0 0 -0 1.0472</pose>
       <parent>base_link</parent>
       <child>coxa_l1</child>
       <axis>
@@ -72,8 +72,8 @@
         <limit>
           <lower>-1.5</lower>
           <upper>1.5</upper>
-          <effort>10000</effort>
-          <velocity>100</velocity>
+          <effort>0.274586</effort>
+          <velocity>3.1998e-05</velocity>
         </limit>
         <dynamics>
           <spring_reference>0</spring_reference>
@@ -84,36 +84,36 @@
     <link name='coxa_l1'>
       <pose relative_to='coxa_joint_l1'>0 0 0 0 -0 0</pose>
       <inertial>
-        <pose>0 0 0 1.5708 -0 1.5708</pose>
+        <pose>0.008 0.005 0 0 -0 0</pose>
         <mass>0.01</mass>
         <inertia>
-          <ixx>4.5375e-05</ixx>
+          <ixx>1.815e-06</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>4.5375e-05</iyy>
+          <iyy>1.815e-06</iyy>
           <iyz>0</iyz>
-          <izz>4.5375e-05</izz>
+          <izz>1.815e-06</izz>
         </inertia>
       </inertial>
       <collision name='coxa_l1_collision'>
-        <pose>0.04 0.025 0 0 -0 0</pose>
+        <pose>0.008 0.005 0 0 -0 0</pose>
         <geometry>
           <box>
-            <size>0.165 0.165 0.165</size>
+            <size>0.033 0.033 0.033</size>
           </box>
         </geometry>
       </collision>
       <visual name='coxa_l1_visual'>
-        <pose>0.04 0.025 0 0 -0 0</pose>
+        <pose>0.008 0.005 0 0 -0 0</pose>
         <geometry>
           <box>
-            <size>0.165 0.165 0.165</size>
+            <size>0.033 0.033 0.033</size>
           </box>
         </geometry>
       </visual>
     </link>
     <joint name='femur_joint_l1' type='revolute'>
-      <pose relative_to='coxa_l1'>0.05 0 -0.05 -1.5708 0 0</pose>
+      <pose relative_to='coxa_l1'>0.01 0 -0.01 -1.5708 0 0</pose>
       <parent>coxa_l1</parent>
       <child>femur_l1</child>
       <axis>
@@ -121,8 +121,8 @@
         <limit>
           <lower>-1.5</lower>
           <upper>1.5</upper>
-          <effort>10000</effort>
-          <velocity>100</velocity>
+          <effort>0.274586</effort>
+          <velocity>3.1998e-05</velocity>
         </limit>
         <dynamics>
           <spring_reference>0</spring_reference>
@@ -133,22 +133,22 @@
     <link name='femur_l1'>
       <pose relative_to='femur_joint_l1'>0 0 0 0 -0 0</pose>
       <inertial>
-        <pose>0 0 0 1.5708 -0 1.5708</pose>
+        <pose>0.035 0 0 0 -0 0</pose>
         <mass>0.01</mass>
         <inertia>
-          <ixx>5.02083e-06</ixx>
+          <ixx>1.22167e-06</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>0.000106771</iyy>
+          <iyy>5.1175e-06</iyy>
           <iyz>0</iyz>
-          <izz>0.000102417</izz>
+          <izz>5.29167e-06</izz>
         </inertia>
       </inertial>
       <collision name='femur_l1_collision'>
-        <pose>0.175 0 0 0 -0 0</pose>
+        <pose>0.035 0 0 0 -0 0</pose>
         <geometry>
           <box>
-            <size>0.35 0.075 0.02</size>
+            <size>0.07 0.015 0.004</size>
           </box>
         </geometry>
         <surface>
@@ -168,16 +168,16 @@
         </surface>
       </collision>
       <visual name='femur_l1_visual'>
-        <pose>0.175 0 0 0 -0 0</pose>
+        <pose>0.035 0 0 0 -0 0</pose>
         <geometry>
           <box>
-            <size>0.35 0.075 0.02</size>
+            <size>0.07 0.015 0.004</size>
           </box>
         </geometry>
       </visual>
     </link>
     <joint name='tibia_joint_l1' type='revolute'>
-      <pose relative_to='femur_l1'>0.33 0 0 3.14159 -0 1.5708</pose>
+      <pose relative_to='femur_l1'>0.066 0 0 3.14159 -0 1.5708</pose>
       <parent>femur_l1</parent>
       <child>tibia_l1</child>
       <axis>
@@ -185,8 +185,8 @@
         <limit>
           <lower>-1.5</lower>
           <upper>1.5</upper>
-          <effort>10000</effort>
-          <velocity>100</velocity>
+          <effort>0.274586</effort>
+          <velocity>3.1998e-05</velocity>
         </limit>
         <dynamics>
           <spring_reference>0</spring_reference>
@@ -197,36 +197,36 @@
     <link name='tibia_l1'>
       <pose relative_to='tibia_joint_l1'>0 0 0 0 -0 0</pose>
       <inertial>
-        <pose>0 0 0 1.5708 -0 1.5708</pose>
+        <pose>0.038 0 0.02 0 -0 0.06</pose>
         <mass>0.01</mass>
         <inertia>
-          <ixx>8.85417e-06</ixx>
+          <ixx>2.04167e-06</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>0.000177083</iyy>
+          <iyy>8.45833e-06</iyy>
           <iyz>0</iyz>
-          <izz>0.000169271</izz>
+          <izz>8.77083e-06</izz>
         </inertia>
       </inertial>
-      <collision name='tibia_l1_collision'>
-        <pose>0.19 0 0.1 0 -0 0.06</pose>
+      <collision name='tibia_l1_collision_collision'>
+        <pose>0.038 0 0.02 0 -0 0.06</pose>
         <geometry>
           <box>
-            <size>0.45 0.1 0.025</size>
+            <size>0.09 0.02 0.005</size>
           </box>
         </geometry>
       </collision>
       <visual name='tibia_l1_visual'>
-        <pose>0.19 0 0.1 0 -0 0.06</pose>
+        <pose>0.038 0 0.02 0 -0 0.06</pose>
         <geometry>
           <box>
-            <size>0.45 0.1 0.025</size>
+            <size>0.09 0.02 0.005</size>
           </box>
         </geometry>
       </visual>
     </link>
     <joint name='coxa_joint_l2' type='revolute'>
-      <pose relative_to='base_link'>0 0.325 0 0 -0 1.5708</pose>
+      <pose relative_to='base_link'>0 0.065 0 0 -0 1.5708</pose>
       <parent>base_link</parent>
       <child>coxa_l2</child>
       <axis>
@@ -234,8 +234,8 @@
         <limit>
           <lower>-1.5</lower>
           <upper>1.5</upper>
-          <effort>10000</effort>
-          <velocity>100</velocity>
+          <effort>0.274586</effort>
+          <velocity>3.1998e-05</velocity>
         </limit>
         <dynamics>
           <spring_reference>0</spring_reference>
@@ -246,36 +246,36 @@
     <link name='coxa_l2'>
       <pose relative_to='coxa_joint_l2'>0 0 0 0 -0 0</pose>
       <inertial>
-        <pose>0 0 0 1.5708 -0 1.5708</pose>
+        <pose>0.008 0.005 0 0 -0 0</pose>
         <mass>0.01</mass>
         <inertia>
-          <ixx>4.5375e-05</ixx>
+          <ixx>1.815e-06</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>4.5375e-05</iyy>
+          <iyy>1.815e-06</iyy>
           <iyz>0</iyz>
-          <izz>4.5375e-05</izz>
+          <izz>1.815e-06</izz>
         </inertia>
       </inertial>
       <collision name='coxa_l2_collision'>
-        <pose>0.04 0.025 0 0 -0 0</pose>
+        <pose>0.008 0.005 0 0 -0 0</pose>
         <geometry>
           <box>
-            <size>0.165 0.165 0.165</size>
+            <size>0.033 0.033 0.033</size>
           </box>
         </geometry>
       </collision>
       <visual name='coxa_l2_visual'>
-        <pose>0.04 0.025 0 0 -0 0</pose>
+        <pose>0.008 0.005 0 0 -0 0</pose>
         <geometry>
           <box>
-            <size>0.165 0.165 0.165</size>
+            <size>0.033 0.033 0.033</size>
           </box>
         </geometry>
       </visual>
     </link>
     <joint name='femur_joint_l2' type='revolute'>
-      <pose relative_to='coxa_l2'>0.05 0 -0.05 -1.5708 0 0</pose>
+      <pose relative_to='coxa_l2'>0.01 0 -0.01 -1.5708 0 0</pose>
       <parent>coxa_l2</parent>
       <child>femur_l2</child>
       <axis>
@@ -283,8 +283,8 @@
         <limit>
           <lower>-1.5</lower>
           <upper>1.5</upper>
-          <effort>10000</effort>
-          <velocity>100</velocity>
+          <effort>0.274586</effort>
+          <velocity>3.1998e-05</velocity>
         </limit>
         <dynamics>
           <spring_reference>0</spring_reference>
@@ -295,22 +295,22 @@
     <link name='femur_l2'>
       <pose relative_to='femur_joint_l2'>0 0 0 0 -0 0</pose>
       <inertial>
-        <pose>0 0 0 1.5708 -0 1.5708</pose>
+        <pose>0.035 0 0 0 -0 0</pose>
         <mass>0.01</mass>
         <inertia>
-          <ixx>5.02083e-06</ixx>
+          <ixx>1.22167e-06</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>0.000106771</iyy>
+          <iyy>5.1175e-06</iyy>
           <iyz>0</iyz>
-          <izz>0.000102417</izz>
+          <izz>5.29167e-06</izz>
         </inertia>
       </inertial>
       <collision name='femur_l2_collision'>
-        <pose>0.175 0 0 0 -0 0</pose>
+        <pose>0.035 0 0 0 -0 0</pose>
         <geometry>
           <box>
-            <size>0.35 0.075 0.02</size>
+            <size>0.07 0.015 0.004</size>
           </box>
         </geometry>
         <surface>
@@ -330,16 +330,16 @@
         </surface>
       </collision>
       <visual name='femur_l2_visual'>
-        <pose>0.175 0 0 0 -0 0</pose>
+        <pose>0.035 0 0 0 -0 0</pose>
         <geometry>
           <box>
-            <size>0.35 0.075 0.02</size>
+            <size>0.07 0.015 0.004</size>
           </box>
         </geometry>
       </visual>
     </link>
     <joint name='tibia_joint_l2' type='revolute'>
-      <pose relative_to='femur_l2'>0.33 0 0 3.14159 -0 1.5708</pose>
+      <pose relative_to='femur_l2'>0.066 0 0 3.14159 -0 1.5708</pose>
       <parent>femur_l2</parent>
       <child>tibia_l2</child>
       <axis>
@@ -347,8 +347,8 @@
         <limit>
           <lower>-1.5</lower>
           <upper>1.5</upper>
-          <effort>10000</effort>
-          <velocity>100</velocity>
+          <effort>0.274586</effort>
+          <velocity>3.1998e-05</velocity>
         </limit>
         <dynamics>
           <spring_reference>0</spring_reference>
@@ -359,36 +359,36 @@
     <link name='tibia_l2'>
       <pose relative_to='tibia_joint_l2'>0 0 0 0 -0 0</pose>
       <inertial>
-        <pose>0 0 0 1.5708 -0 1.5708</pose>
+        <pose>0.038 0 0.02 0 -0 0.06</pose>
         <mass>0.01</mass>
         <inertia>
-          <ixx>8.85417e-06</ixx>
+          <ixx>2.04167e-06</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>0.000177083</iyy>
+          <iyy>8.45833e-06</iyy>
           <iyz>0</iyz>
-          <izz>0.000169271</izz>
+          <izz>8.77083e-06</izz>
         </inertia>
       </inertial>
-      <collision name='tibia_l2_collision'>
-        <pose>0.19 0 0.1 0 -0 0.06</pose>
+      <collision name='tibia_l2_collision_collision'>
+        <pose>0.038 0 0.02 0 -0 0.06</pose>
         <geometry>
           <box>
-            <size>0.45 0.1 0.025</size>
+            <size>0.09 0.02 0.005</size>
           </box>
         </geometry>
       </collision>
       <visual name='tibia_l2_visual'>
-        <pose>0.19 0 0.1 0 -0 0.06</pose>
+        <pose>0.038 0 0.02 0 -0 0.06</pose>
         <geometry>
           <box>
-            <size>0.45 0.1 0.025</size>
+            <size>0.09 0.02 0.005</size>
           </box>
         </geometry>
       </visual>
     </link>
     <joint name='coxa_joint_l3' type='revolute'>
-      <pose relative_to='base_link'>-0.3875 0.325 0 0 -0 2.0944</pose>
+      <pose relative_to='base_link'>-0.0775 0.065 0 0 -0 2.0944</pose>
       <parent>base_link</parent>
       <child>coxa_l3</child>
       <axis>
@@ -396,8 +396,8 @@
         <limit>
           <lower>-1.5</lower>
           <upper>1.5</upper>
-          <effort>10000</effort>
-          <velocity>100</velocity>
+          <effort>0.274586</effort>
+          <velocity>3.1998e-05</velocity>
         </limit>
         <dynamics>
           <spring_reference>0</spring_reference>
@@ -408,36 +408,36 @@
     <link name='coxa_l3'>
       <pose relative_to='coxa_joint_l3'>0 0 0 0 -0 0</pose>
       <inertial>
-        <pose>0 0 0 1.5708 -0 1.5708</pose>
+        <pose>0.008 0.005 0 0 -0 0</pose>
         <mass>0.01</mass>
         <inertia>
-          <ixx>4.5375e-05</ixx>
+          <ixx>1.815e-06</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>4.5375e-05</iyy>
+          <iyy>1.815e-06</iyy>
           <iyz>0</iyz>
-          <izz>4.5375e-05</izz>
+          <izz>1.815e-06</izz>
         </inertia>
       </inertial>
       <collision name='coxa_l3_collision'>
-        <pose>0.04 0.025 0 0 -0 0</pose>
+        <pose>0.008 0.005 0 0 -0 0</pose>
         <geometry>
           <box>
-            <size>0.165 0.165 0.165</size>
+            <size>0.033 0.033 0.033</size>
           </box>
         </geometry>
       </collision>
       <visual name='coxa_l3_visual'>
-        <pose>0.04 0.025 0 0 -0 0</pose>
+        <pose>0.008 0.005 0 0 -0 0</pose>
         <geometry>
           <box>
-            <size>0.165 0.165 0.165</size>
+            <size>0.033 0.033 0.033</size>
           </box>
         </geometry>
       </visual>
     </link>
     <joint name='femur_joint_l3' type='revolute'>
-      <pose relative_to='coxa_l3'>0.05 0 -0.05 -1.5708 0 0</pose>
+      <pose relative_to='coxa_l3'>0.01 0 -0.01 -1.5708 0 0</pose>
       <parent>coxa_l3</parent>
       <child>femur_l3</child>
       <axis>
@@ -445,8 +445,8 @@
         <limit>
           <lower>-1.5</lower>
           <upper>1.5</upper>
-          <effort>10000</effort>
-          <velocity>100</velocity>
+          <effort>0.274586</effort>
+          <velocity>3.1998e-05</velocity>
         </limit>
         <dynamics>
           <spring_reference>0</spring_reference>
@@ -457,22 +457,22 @@
     <link name='femur_l3'>
       <pose relative_to='femur_joint_l3'>0 0 0 0 -0 0</pose>
       <inertial>
-        <pose>0 0 0 1.5708 -0 1.5708</pose>
+        <pose>0.035 0 0 0 -0 0</pose>
         <mass>0.01</mass>
         <inertia>
-          <ixx>5.02083e-06</ixx>
+          <ixx>1.22167e-06</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>0.000106771</iyy>
+          <iyy>5.1175e-06</iyy>
           <iyz>0</iyz>
-          <izz>0.000102417</izz>
+          <izz>5.29167e-06</izz>
         </inertia>
       </inertial>
       <collision name='femur_l3_collision'>
-        <pose>0.175 0 0 0 -0 0</pose>
+        <pose>0.035 0 0 0 -0 0</pose>
         <geometry>
           <box>
-            <size>0.35 0.075 0.02</size>
+            <size>0.07 0.015 0.004</size>
           </box>
         </geometry>
         <surface>
@@ -492,16 +492,16 @@
         </surface>
       </collision>
       <visual name='femur_l3_visual'>
-        <pose>0.175 0 0 0 -0 0</pose>
+        <pose>0.035 0 0 0 -0 0</pose>
         <geometry>
           <box>
-            <size>0.35 0.075 0.02</size>
+            <size>0.07 0.015 0.004</size>
           </box>
         </geometry>
       </visual>
     </link>
     <joint name='tibia_joint_l3' type='revolute'>
-      <pose relative_to='femur_l3'>0.33 0 0 3.14159 -0 1.5708</pose>
+      <pose relative_to='femur_l3'>0.066 0 0 3.14159 -0 1.5708</pose>
       <parent>femur_l3</parent>
       <child>tibia_l3</child>
       <axis>
@@ -509,8 +509,8 @@
         <limit>
           <lower>-1.5</lower>
           <upper>1.5</upper>
-          <effort>10000</effort>
-          <velocity>100</velocity>
+          <effort>0.274586</effort>
+          <velocity>3.1998e-05</velocity>
         </limit>
         <dynamics>
           <spring_reference>0</spring_reference>
@@ -521,36 +521,36 @@
     <link name='tibia_l3'>
       <pose relative_to='tibia_joint_l3'>0 0 0 0 -0 0</pose>
       <inertial>
-        <pose>0 0 0 1.5708 -0 1.5708</pose>
+        <pose>0.038 0 0.02 0 -0 0.06</pose>
         <mass>0.01</mass>
         <inertia>
-          <ixx>8.85417e-06</ixx>
+          <ixx>2.04167e-06</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>0.000177083</iyy>
+          <iyy>8.45833e-06</iyy>
           <iyz>0</iyz>
-          <izz>0.000169271</izz>
+          <izz>8.77083e-06</izz>
         </inertia>
       </inertial>
-      <collision name='tibia_l3_collision'>
-        <pose>0.19 0 0.1 0 -0 0.06</pose>
+      <collision name='tibia_l3_collision_collision'>
+        <pose>0.038 0 0.02 0 -0 0.06</pose>
         <geometry>
           <box>
-            <size>0.45 0.1 0.025</size>
+            <size>0.09 0.02 0.005</size>
           </box>
         </geometry>
       </collision>
       <visual name='tibia_l3_visual'>
-        <pose>0.19 0 0.1 0 -0 0.06</pose>
+        <pose>0.038 0 0.02 0 -0 0.06</pose>
         <geometry>
           <box>
-            <size>0.45 0.1 0.025</size>
+            <size>0.09 0.02 0.005</size>
           </box>
         </geometry>
       </visual>
     </link>
     <joint name='coxa_joint_r1' type='revolute'>
-      <pose relative_to='base_link'>0.3875 -0.325 0 0 0 -1.0472</pose>
+      <pose relative_to='base_link'>0.0775 -0.065 0 0 0 -1.0472</pose>
       <parent>base_link</parent>
       <child>coxa_r1</child>
       <axis>
@@ -558,8 +558,8 @@
         <limit>
           <lower>-1.5</lower>
           <upper>1.5</upper>
-          <effort>10000</effort>
-          <velocity>100</velocity>
+          <effort>0.274586</effort>
+          <velocity>3.1998e-05</velocity>
         </limit>
         <dynamics>
           <spring_reference>0</spring_reference>
@@ -570,36 +570,36 @@
     <link name='coxa_r1'>
       <pose relative_to='coxa_joint_r1'>0 0 0 0 -0 0</pose>
       <inertial>
-        <pose>0 0 0 1.5708 -0 1.5708</pose>
+        <pose>0.008 -0.005 0 0 -0 0</pose>
         <mass>0.01</mass>
         <inertia>
-          <ixx>4.5375e-05</ixx>
+          <ixx>1.815e-06</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>4.5375e-05</iyy>
+          <iyy>1.815e-06</iyy>
           <iyz>0</iyz>
-          <izz>4.5375e-05</izz>
+          <izz>1.815e-06</izz>
         </inertia>
       </inertial>
       <collision name='coxa_r1_collision'>
-        <pose>0.04 -0.025 0 0 -0 0</pose>
+        <pose>0.008 -0.005 0 0 -0 0</pose>
         <geometry>
           <box>
-            <size>0.165 0.165 0.165</size>
+            <size>0.033 0.033 0.033</size>
           </box>
         </geometry>
       </collision>
       <visual name='coxa_r1_visual'>
-        <pose>0.04 -0.025 0 0 -0 0</pose>
+        <pose>0.008 -0.005 0 0 -0 0</pose>
         <geometry>
           <box>
-            <size>0.165 0.165 0.165</size>
+            <size>0.033 0.033 0.033</size>
           </box>
         </geometry>
       </visual>
     </link>
     <joint name='femur_joint_r1' type='revolute'>
-      <pose relative_to='coxa_r1'>0.05 0 -0.05 -1.5708 0 0</pose>
+      <pose relative_to='coxa_r1'>0.01 0 -0.01 -1.5708 0 0</pose>
       <parent>coxa_r1</parent>
       <child>femur_r1</child>
       <axis>
@@ -607,8 +607,8 @@
         <limit>
           <lower>-1.5</lower>
           <upper>1.5</upper>
-          <effort>10000</effort>
-          <velocity>100</velocity>
+          <effort>0.274586</effort>
+          <velocity>3.1998e-05</velocity>
         </limit>
         <dynamics>
           <spring_reference>0</spring_reference>
@@ -619,22 +619,22 @@
     <link name='femur_r1'>
       <pose relative_to='femur_joint_r1'>0 0 0 0 -0 0</pose>
       <inertial>
-        <pose>0 0 0 1.5708 -0 1.5708</pose>
+        <pose>0.035 0 0 0 -0 0</pose>
         <mass>0.01</mass>
         <inertia>
-          <ixx>5.02083e-06</ixx>
+          <ixx>1.22167e-06</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>0.000106771</iyy>
+          <iyy>5.1175e-06</iyy>
           <iyz>0</iyz>
-          <izz>0.000102417</izz>
+          <izz>5.29167e-06</izz>
         </inertia>
       </inertial>
       <collision name='femur_r1_collision'>
-        <pose>0.175 0 0 0 -0 0</pose>
+        <pose>0.035 0 0 0 -0 0</pose>
         <geometry>
           <box>
-            <size>0.35 0.075 0.02</size>
+            <size>0.07 0.015 0.004</size>
           </box>
         </geometry>
         <surface>
@@ -654,16 +654,16 @@
         </surface>
       </collision>
       <visual name='femur_r1_visual'>
-        <pose>0.175 0 0 0 -0 0</pose>
+        <pose>0.035 0 0 0 -0 0</pose>
         <geometry>
           <box>
-            <size>0.35 0.075 0.02</size>
+            <size>0.07 0.015 0.004</size>
           </box>
         </geometry>
       </visual>
     </link>
     <joint name='tibia_joint_r1' type='revolute'>
-      <pose relative_to='femur_r1'>0.33 0 0 3.14159 -0 1.5708</pose>
+      <pose relative_to='femur_r1'>0.066 0 0 3.14159 -0 1.5708</pose>
       <parent>femur_r1</parent>
       <child>tibia_r1</child>
       <axis>
@@ -671,8 +671,8 @@
         <limit>
           <lower>-1.5</lower>
           <upper>1.5</upper>
-          <effort>10000</effort>
-          <velocity>100</velocity>
+          <effort>0.274586</effort>
+          <velocity>3.1998e-05</velocity>
         </limit>
         <dynamics>
           <spring_reference>0</spring_reference>
@@ -683,36 +683,36 @@
     <link name='tibia_r1'>
       <pose relative_to='tibia_joint_r1'>0 0 0 0 -0 0</pose>
       <inertial>
-        <pose>0 0 0 1.5708 -0 1.5708</pose>
+        <pose>0.038 0 0.02 0 -0 0.06</pose>
         <mass>0.01</mass>
         <inertia>
-          <ixx>8.85417e-06</ixx>
+          <ixx>2.04167e-06</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>0.000177083</iyy>
+          <iyy>8.45833e-06</iyy>
           <iyz>0</iyz>
-          <izz>0.000169271</izz>
+          <izz>8.77083e-06</izz>
         </inertia>
       </inertial>
-      <collision name='tibia_r1_collision'>
-        <pose>0.19 0 0.1 0 -0 0.06</pose>
+      <collision name='tibia_r1_collision_collision'>
+        <pose>0.038 0 0.02 0 -0 0.06</pose>
         <geometry>
           <box>
-            <size>0.45 0.1 0.025</size>
+            <size>0.09 0.02 0.005</size>
           </box>
         </geometry>
       </collision>
       <visual name='tibia_r1_visual'>
-        <pose>0.19 0 0.1 0 -0 0.06</pose>
+        <pose>0.038 0 0.02 0 -0 0.06</pose>
         <geometry>
           <box>
-            <size>0.45 0.1 0.025</size>
+            <size>0.09 0.02 0.005</size>
           </box>
         </geometry>
       </visual>
     </link>
     <joint name='coxa_joint_r2' type='revolute'>
-      <pose relative_to='base_link'>0 -0.325 0 0 0 -1.5708</pose>
+      <pose relative_to='base_link'>0 -0.065 0 0 0 -1.5708</pose>
       <parent>base_link</parent>
       <child>coxa_r2</child>
       <axis>
@@ -720,8 +720,8 @@
         <limit>
           <lower>-1.5</lower>
           <upper>1.5</upper>
-          <effort>10000</effort>
-          <velocity>100</velocity>
+          <effort>0.274586</effort>
+          <velocity>3.1998e-05</velocity>
         </limit>
         <dynamics>
           <spring_reference>0</spring_reference>
@@ -732,36 +732,36 @@
     <link name='coxa_r2'>
       <pose relative_to='coxa_joint_r2'>0 0 0 0 -0 0</pose>
       <inertial>
-        <pose>0 0 0 1.5708 -0 1.5708</pose>
+        <pose>0.008 -0.005 0 0 -0 0</pose>
         <mass>0.01</mass>
         <inertia>
-          <ixx>4.5375e-05</ixx>
+          <ixx>1.815e-06</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>4.5375e-05</iyy>
+          <iyy>1.815e-06</iyy>
           <iyz>0</iyz>
-          <izz>4.5375e-05</izz>
+          <izz>1.815e-06</izz>
         </inertia>
       </inertial>
       <collision name='coxa_r2_collision'>
-        <pose>0.04 -0.025 0 0 -0 0</pose>
+        <pose>0.008 -0.005 0 0 -0 0</pose>
         <geometry>
           <box>
-            <size>0.165 0.165 0.165</size>
+            <size>0.033 0.033 0.033</size>
           </box>
         </geometry>
       </collision>
       <visual name='coxa_r2_visual'>
-        <pose>0.04 -0.025 0 0 -0 0</pose>
+        <pose>0.008 -0.005 0 0 -0 0</pose>
         <geometry>
           <box>
-            <size>0.165 0.165 0.165</size>
+            <size>0.033 0.033 0.033</size>
           </box>
         </geometry>
       </visual>
     </link>
     <joint name='femur_joint_r2' type='revolute'>
-      <pose relative_to='coxa_r2'>0.05 0 -0.05 -1.5708 0 0</pose>
+      <pose relative_to='coxa_r2'>0.01 0 -0.01 -1.5708 0 0</pose>
       <parent>coxa_r2</parent>
       <child>femur_r2</child>
       <axis>
@@ -769,8 +769,8 @@
         <limit>
           <lower>-1.5</lower>
           <upper>1.5</upper>
-          <effort>10000</effort>
-          <velocity>100</velocity>
+          <effort>0.274586</effort>
+          <velocity>3.1998e-05</velocity>
         </limit>
         <dynamics>
           <spring_reference>0</spring_reference>
@@ -781,22 +781,22 @@
     <link name='femur_r2'>
       <pose relative_to='femur_joint_r2'>0 0 0 0 -0 0</pose>
       <inertial>
-        <pose>0 0 0 1.5708 -0 1.5708</pose>
+        <pose>0.035 0 0 0 -0 0</pose>
         <mass>0.01</mass>
         <inertia>
-          <ixx>5.02083e-06</ixx>
+          <ixx>1.22167e-06</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>0.000106771</iyy>
+          <iyy>5.1175e-06</iyy>
           <iyz>0</iyz>
-          <izz>0.000102417</izz>
+          <izz>5.29167e-06</izz>
         </inertia>
       </inertial>
       <collision name='femur_r2_collision'>
-        <pose>0.175 0 0 0 -0 0</pose>
+        <pose>0.035 0 0 0 -0 0</pose>
         <geometry>
           <box>
-            <size>0.35 0.075 0.02</size>
+            <size>0.07 0.015 0.004</size>
           </box>
         </geometry>
         <surface>
@@ -816,16 +816,16 @@
         </surface>
       </collision>
       <visual name='femur_r2_visual'>
-        <pose>0.175 0 0 0 -0 0</pose>
+        <pose>0.035 0 0 0 -0 0</pose>
         <geometry>
           <box>
-            <size>0.35 0.075 0.02</size>
+            <size>0.07 0.015 0.004</size>
           </box>
         </geometry>
       </visual>
     </link>
     <joint name='tibia_joint_r2' type='revolute'>
-      <pose relative_to='femur_r2'>0.33 0 0 3.14159 -0 1.5708</pose>
+      <pose relative_to='femur_r2'>0.066 0 0 3.14159 -0 1.5708</pose>
       <parent>femur_r2</parent>
       <child>tibia_r2</child>
       <axis>
@@ -833,8 +833,8 @@
         <limit>
           <lower>-1.5</lower>
           <upper>1.5</upper>
-          <effort>10000</effort>
-          <velocity>100</velocity>
+          <effort>0.274586</effort>
+          <velocity>3.1998e-05</velocity>
         </limit>
         <dynamics>
           <spring_reference>0</spring_reference>
@@ -845,36 +845,36 @@
     <link name='tibia_r2'>
       <pose relative_to='tibia_joint_r2'>0 0 0 0 -0 0</pose>
       <inertial>
-        <pose>0 0 0 1.5708 -0 1.5708</pose>
+        <pose>0.038 0 0.02 0 -0 0.06</pose>
         <mass>0.01</mass>
         <inertia>
-          <ixx>8.85417e-06</ixx>
+          <ixx>2.04167e-06</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>0.000177083</iyy>
+          <iyy>8.45833e-06</iyy>
           <iyz>0</iyz>
-          <izz>0.000169271</izz>
+          <izz>8.77083e-06</izz>
         </inertia>
       </inertial>
-      <collision name='tibia_r2_collision'>
-        <pose>0.19 0 0.1 0 -0 0.06</pose>
+      <collision name='tibia_r2_collision_collision'>
+        <pose>0.038 0 0.02 0 -0 0.06</pose>
         <geometry>
           <box>
-            <size>0.45 0.1 0.025</size>
+            <size>0.09 0.02 0.005</size>
           </box>
         </geometry>
       </collision>
       <visual name='tibia_r2_visual'>
-        <pose>0.19 0 0.1 0 -0 0.06</pose>
+        <pose>0.038 0 0.02 0 -0 0.06</pose>
         <geometry>
           <box>
-            <size>0.45 0.1 0.025</size>
+            <size>0.09 0.02 0.005</size>
           </box>
         </geometry>
       </visual>
     </link>
     <joint name='coxa_joint_r3' type='revolute'>
-      <pose relative_to='base_link'>-0.3875 -0.325 0 0 0 -2.0944</pose>
+      <pose relative_to='base_link'>-0.0775 -0.065 0 0 0 -2.0944</pose>
       <parent>base_link</parent>
       <child>coxa_r3</child>
       <axis>
@@ -882,8 +882,8 @@
         <limit>
           <lower>-1.5</lower>
           <upper>1.5</upper>
-          <effort>10000</effort>
-          <velocity>100</velocity>
+          <effort>0.274586</effort>
+          <velocity>3.1998e-05</velocity>
         </limit>
         <dynamics>
           <spring_reference>0</spring_reference>
@@ -894,36 +894,36 @@
     <link name='coxa_r3'>
       <pose relative_to='coxa_joint_r3'>0 0 0 0 -0 0</pose>
       <inertial>
-        <pose>0 0 0 1.5708 -0 1.5708</pose>
+        <pose>0.008 -0.005 0 0 -0 0</pose>
         <mass>0.01</mass>
         <inertia>
-          <ixx>4.5375e-05</ixx>
+          <ixx>1.815e-06</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>4.5375e-05</iyy>
+          <iyy>1.815e-06</iyy>
           <iyz>0</iyz>
-          <izz>4.5375e-05</izz>
+          <izz>1.815e-06</izz>
         </inertia>
       </inertial>
       <collision name='coxa_r3_collision'>
-        <pose>0.04 -0.025 0 0 -0 0</pose>
+        <pose>0.008 -0.005 0 0 -0 0</pose>
         <geometry>
           <box>
-            <size>0.165 0.165 0.165</size>
+            <size>0.033 0.033 0.033</size>
           </box>
         </geometry>
       </collision>
       <visual name='coxa_r3_visual'>
-        <pose>0.04 -0.025 0 0 -0 0</pose>
+        <pose>0.008 -0.005 0 0 -0 0</pose>
         <geometry>
           <box>
-            <size>0.165 0.165 0.165</size>
+            <size>0.033 0.033 0.033</size>
           </box>
         </geometry>
       </visual>
     </link>
     <joint name='femur_joint_r3' type='revolute'>
-      <pose relative_to='coxa_r3'>0.05 0 -0.05 -1.5708 0 0</pose>
+      <pose relative_to='coxa_r3'>0.01 0 -0.01 -1.5708 0 0</pose>
       <parent>coxa_r3</parent>
       <child>femur_r3</child>
       <axis>
@@ -931,8 +931,8 @@
         <limit>
           <lower>-1.5</lower>
           <upper>1.5</upper>
-          <effort>10000</effort>
-          <velocity>100</velocity>
+          <effort>0.274586</effort>
+          <velocity>3.1998e-05</velocity>
         </limit>
         <dynamics>
           <spring_reference>0</spring_reference>
@@ -943,22 +943,22 @@
     <link name='femur_r3'>
       <pose relative_to='femur_joint_r3'>0 0 0 0 -0 0</pose>
       <inertial>
-        <pose>0 0 0 1.5708 -0 1.5708</pose>
+        <pose>0.035 0 0 0 -0 0</pose>
         <mass>0.01</mass>
         <inertia>
-          <ixx>5.02083e-06</ixx>
+          <ixx>1.22167e-06</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>0.000106771</iyy>
+          <iyy>5.1175e-06</iyy>
           <iyz>0</iyz>
-          <izz>0.000102417</izz>
+          <izz>5.29167e-06</izz>
         </inertia>
       </inertial>
       <collision name='femur_r3_collision'>
-        <pose>0.175 0 0 0 -0 0</pose>
+        <pose>0.035 0 0 0 -0 0</pose>
         <geometry>
           <box>
-            <size>0.35 0.075 0.02</size>
+            <size>0.07 0.015 0.004</size>
           </box>
         </geometry>
         <surface>
@@ -978,16 +978,16 @@
         </surface>
       </collision>
       <visual name='femur_r3_visual'>
-        <pose>0.175 0 0 0 -0 0</pose>
+        <pose>0.035 0 0 0 -0 0</pose>
         <geometry>
           <box>
-            <size>0.35 0.075 0.02</size>
+            <size>0.07 0.015 0.004</size>
           </box>
         </geometry>
       </visual>
     </link>
     <joint name='tibia_joint_r3' type='revolute'>
-      <pose relative_to='femur_r3'>0.33 0 0 3.14159 -0 1.5708</pose>
+      <pose relative_to='femur_r3'>0.066 0 0 3.14159 -0 1.5708</pose>
       <parent>femur_r3</parent>
       <child>tibia_r3</child>
       <axis>
@@ -995,8 +995,8 @@
         <limit>
           <lower>-1.5</lower>
           <upper>1.5</upper>
-          <effort>10000</effort>
-          <velocity>100</velocity>
+          <effort>0.274586</effort>
+          <velocity>3.1998e-05</velocity>
         </limit>
         <dynamics>
           <spring_reference>0</spring_reference>
@@ -1007,30 +1007,30 @@
     <link name='tibia_r3'>
       <pose relative_to='tibia_joint_r3'>0 0 0 0 -0 0</pose>
       <inertial>
-        <pose>0 0 0 1.5708 -0 1.5708</pose>
+        <pose>0.038 0 0.02 0 -0 0.06</pose>
         <mass>0.01</mass>
         <inertia>
-          <ixx>8.85417e-06</ixx>
+          <ixx>2.04167e-06</ixx>
           <ixy>0</ixy>
           <ixz>0</ixz>
-          <iyy>0.000177083</iyy>
+          <iyy>8.45833e-06</iyy>
           <iyz>0</iyz>
-          <izz>0.000169271</izz>
+          <izz>8.77083e-06</izz>
         </inertia>
       </inertial>
-      <collision name='tibia_r3_collision'>
-        <pose>0.19 0 0.1 0 -0 0.06</pose>
+      <collision name='tibia_r3_collision_collision'>
+        <pose>0.038 0 0.02 0 -0 0.06</pose>
         <geometry>
           <box>
-            <size>0.45 0.1 0.025</size>
+            <size>0.09 0.02 0.005</size>
           </box>
         </geometry>
       </collision>
       <visual name='tibia_r3_visual'>
-        <pose>0.19 0 0.1 0 -0 0.06</pose>
+        <pose>0.038 0 0.02 0 -0 0.06</pose>
         <geometry>
           <box>
-            <size>0.45 0.1 0.025</size>
+            <size>0.09 0.02 0.005</size>
           </box>
         </geometry>
       </visual>
