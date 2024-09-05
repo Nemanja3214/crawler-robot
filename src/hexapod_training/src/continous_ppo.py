@@ -139,7 +139,7 @@ class Agent(nn.Module):
 def save():
     global agent
     dir = rospy.get_param("result_dir")
-    torch.save(agent, dir + '/Hexapod-v0.pth')
+    torch.save(agent.state_dict(), dir + '/Hexapod-v0.pth')
 
 import hexapod_env
 global agent
