@@ -1,15 +1,18 @@
+#!/usr/bin/python3.8
+
 import math
 import gym
 import serial
 import time
 import rospy
 import torch
+import hexapod_env
 import numpy as np
 
-ssc32 = serial.Serial(
-  port='/dev/ttyUSB',
-  baudrate=9600
-)
+# ssc32 = serial.Serial(
+#   port='/dev/ttyUSB',
+#   baudrate=9600
+# )
 
 servo_pins = [31, 27, 23, 15, 11, 7, 30, 26, 22, 14, 10, 6, 29, 25, 21, 13, 9, 5]
 is_mirrored = [False, False, False, True, True, True, False, False, False, True, True, True, False, False, False, True, True, True]
@@ -45,33 +48,50 @@ def angle_rad_to_pwm(angle_rad, mirrored=False):
     return pulse_width
 
 def set_joint_states(joints_states):
+    command = b""
     for i in range(joints_states):
-        run_command(servo_num=servo_pins[i], angle=angle_rad_to_pwm(joints_states[i], is_mirrored[i]))
+        if i != 0:
+            command += b" "
+        command += b"#{0} P{1}".format(servo_pins[i], angle_rad_to_pwm(joints_states[i], is_mirrored[i]))
+    command += "\r"
+    rospy.loginfo(command)
+    # ssc32.write(command)
 
-def run_command(servo_num, angle):
-    ssc32.write(b"#{0} P{1}\r".format(servo_num, angle_rad_to_pwm(angle)))
+
+from continous_ppo import Agent, make_env
 
 if __name__ == "__main__":
-    print(angle_rad_to_pwm(1, True))
     rospy.loginfo("STARTED REAL ROBOT EXECUTIONER")
     rospy.init_node("real_robot_executioner", anonymous=True)
-    env = gym.make('Hexapod-v0')
     dir = rospy.get_param("result_dir")
-    model = torch.load('model.pth')
+    device = torch.device("cpu")
+    gym_id = 'Hexapod-v0'
+    seed = int(time.time())
+    envs = gym.vector.SyncVectorEnv(
+        [make_env(gym_id, seed)]
+    )
+    model = Agent(envs).to(device)
+    model = torch.load(dir + '/konacan model.pth')
 
     # Set the model to evaluation mode
     model.eval()
 
-    state = env.reset()
+    state = torch.Tensor(envs.reset()).to(device)
     done = False
     rew = 0
+
       
     while not done:
-        action, _ = model.predict(state, deterministic=True)
-        _, rew, done, _ = env.step(action)
-        print(env.hexapod_state_object.current_joint_pose)
+        state = torch.Tensor(state).to(device)
+        with torch.no_grad():
+            # WARNING action may be normalized
+            action, _, _, _ = model.get_action_and_value(state)
+            # set_joint_states(action)
+        state, rew, done, _ = envs.step(action)
+        # rospy.loginfo(env.hexapod_state_object.current_joint_pose)
+        rospy.loginfo("REWARD>>>>" + str(rew))
     rospy.loginfo(rew)
         
 
 
-    ssc32.close()
+    # ssc32.close()

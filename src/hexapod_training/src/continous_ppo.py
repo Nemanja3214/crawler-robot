@@ -125,7 +125,10 @@ class Agent(nn.Module):
         return self.critic(x)
 
     def get_action_and_value(self, x, action=None):
+        # rospy.loginfo("X>>>>>"+str(x))
         action_mean = self.actor_mean(x)
+        # rospy.loginfo("ACTOR MEAN" + str(action_mean))
+        # rospy.loginfo("LOG STD" +str(self.actor_logstd))
         action_logstd = self.actor_logstd.expand_as(action_mean)
         action_std = torch.exp(action_logstd)
         probs = Normal(action_mean, action_std)
@@ -154,7 +157,7 @@ def run(log_dir):
     target_kl = None
     ent_coef = 0.0
     lr = 3e-4
-    total_timesteps = 250000
+    total_timesteps = 700000
     num_steps = 2048
     gamma = 0.99
     num_minibatches = 32
@@ -225,6 +228,7 @@ def run(log_dir):
     global_step = 0
     start_time = time.time()
     next_obs = torch.Tensor(envs.reset()).to(device)
+    # rospy.loginfo("NEXT OBS>>>"+ str(next_obs))
     next_done = torch.zeros(1).to(device)
     num_updates = total_timesteps // batch_size
 
