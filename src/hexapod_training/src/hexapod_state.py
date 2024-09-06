@@ -407,8 +407,8 @@ class HexapodState(object):
         coef = coef1 + coef2 + coef3 + coef4 + coef5 + coef6
 
         if self.is_all_tibia_touching():
-            return -10 * weight
-        return coef * weight
+            return -100 * weight
+        return  - coef * weight
     
     def is_all_tibia_touching(self):
         return self.tibia_l1_touching and self.tibia_l2_touching and self.tibia_l3_touching and \
@@ -435,6 +435,10 @@ class HexapodState(object):
             
 
     def calculate_total_reward(self):
+
+        if self.is_stand_up():
+            return self._done_reward
+        
         r1 = self.calculate_reward_joint_position(self._weight_r1)
         r2 = self.calculate_reward_joint_effort(self._weight_r2)
         # Desired Force in Newtons, taken form idle contact with 9.81 gravity.
@@ -816,9 +820,9 @@ class HexapodState(object):
             rospy.logdebug("exceeded_joint_position NOT TAKEN INTO ACCOUNT")
             less_exceeded_joint_position = False
 
-        is_standing_up = False
-        if "stand_up" in self._episode_done_criteria:
-            is_standing_up = self.is_stand_up()
+        # is_standing_up = False
+        # if "stand_up" in self._episode_done_criteria:
+        #     is_standing_up = self.is_stand_up()
 
         # rospy.logdebug("hexapod_height_ok="+str(hexapod_height_ok))
         rospy.logdebug("hexapod_orientation_ok=" + str(hexapod_orientation_ok))
@@ -826,13 +830,10 @@ class HexapodState(object):
         done = False
         if (not hexapod_orientation_ok) or less_exceeded_joint_position or self.reached_goal_times > 10:
             done = True
-        
-        if is_standing_up:
-            total_reward = self._done_reward
 
         if done:
             if self.reached_goal_times > 10:
-                total_reward = 10 * self._done_reward
+                total_reward = 100 * self._done_reward
             else:
                 rospy.logerr("It fell, so the reward has to be very low")
                 total_reward = -self._done_reward
