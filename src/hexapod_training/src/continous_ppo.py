@@ -87,7 +87,7 @@ def make_env(gym_id, seed):
         env = gym.wrappers.NormalizeObservation(env)
         env = gym.wrappers.TransformObservation(env, lambda obs: np.clip(obs, -10, 10))
         env = gym.wrappers.NormalizeReward(env)
-        env = gym.wrappers.TransformReward(env, lambda reward: np.clip(reward, -10, 10))
+        env = gym.wrappers.TransformReward(env, lambda reward: np.clip(reward, -50, 50))
         env.seed(seed)
         env.action_space.seed(seed)
         env.observation_space.seed(seed)

@@ -42,6 +42,7 @@ list_of_observations: # Observations you want to use for the learning
   - joint_states
   # - joint_effort
   - touching_ground
+  - tibia_touching
 
 discrete_division: 30 # Parts in which we divide each of the observations sensory range
 
@@ -51,7 +52,8 @@ weight_r3: 0.0 # Weight for contact force similar to desired ( weight of hexapod
 weight_r4: 100.0 # Weight for orientation ( vertical is perfect )
 weight_r5: 10000.0 # Weight for distance from desired point ( on the point is perfect )
 weight_r6: 20.0 # Weight for not touching floor
-weight_r7: 30.0 # Weight for not synchronisation
+weight_r7: 0.0 # Weight for not synchronisation
+weight_r8: 10.0 # Weight for tibia touching floor
 # Tibia is furthest from the body
 init_joint_pose:
   coxa_l1: 0

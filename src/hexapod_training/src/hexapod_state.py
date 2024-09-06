@@ -12,9 +12,10 @@ import numpy
 import math
 
 
+
 class HexapodState(object):
 
-    def __init__(self, max_height, min_height, abs_max_roll, abs_max_pitch, list_of_observations, joint_limits, episode_done_criteria, joint_increment_value = 0.05, done_reward = -1000.0, alive_reward=10.0, desired_force=7.08, desired_roll=0.0, desired_pitch=0.0, desired_yaw=0.0, weight_r1=1.0, weight_r2=1.0, weight_r3=1.0, weight_r4=1.0, weight_r5=1.0, weight_r6=1.0,weight_r7=1.0, discrete_division=10, maximum_base_linear_acceleration=3000.0, maximum_base_angular_velocity=20.0, maximum_joint_effort=10.0):
+    def __init__(self, max_height, min_height, abs_max_roll, abs_max_pitch, list_of_observations, joint_limits, episode_done_criteria, joint_increment_value = 0.05, done_reward = -1000.0, alive_reward=10.0, desired_force=7.08, desired_roll=0.0, desired_pitch=0.0, desired_yaw=0.0, weight_r1=1.0, weight_r2=1.0, weight_r3=1.0, weight_r4=1.0, weight_r5=1.0, weight_r6=1.0,weight_r7=1.0, weight_r8=1.0, discrete_division=10, maximum_base_linear_acceleration=3000.0, maximum_base_angular_velocity=20.0, maximum_joint_effort=10.0):
         rospy.logdebug("Starting HexapodState Class object...")
        
         self.desired_world_point = Vector3(0.0, 0.0, 0.0)
@@ -37,12 +38,22 @@ class HexapodState(object):
         self._weight_r5 = weight_r5
         self._weight_r6 = weight_r6
         self._weight_r7 = weight_r7
+        self._weight_r8 = weight_r8
 
         self._list_of_observations = list_of_observations
 
         # Dictionary with the max and min of each of the joints
         self._joint_limits = joint_limits
         self.touching = False
+
+
+        self.tibia_l1_touching = False
+        self.tibia_l2_touching = False
+        self.tibia_l3_touching = False
+        self.tibia_r1_touching = False
+        self.tibia_r2_touching = False
+        self.tibia_r3_touching = False
+
         self.reached_goal_times = 0
 
         # Maximum base linear acceleration values
@@ -78,8 +89,41 @@ class HexapodState(object):
         rospy.Subscriber("/hexapod/imu/data", Imu, self.imu_callback)
         # We use it to get the contact force, to know if its in the air or stumping too hard.
         rospy.Subscriber("/contactsensor_state", ContactsState, self.contact_callback)
+
+        rospy.Subscriber("/tibia_l1_collision", ContactsState, self.tibia_l1_contact_callback)
+        rospy.Subscriber("/tibia_l2_collision", ContactsState, self.tibia_l2_contact_callback)
+        rospy.Subscriber("/tibia_l3_collision", ContactsState, self.tibia_l3_contact_callback)
+        rospy.Subscriber("/tibia_r1_collision", ContactsState, self.tibia_r1_contact_callback)
+        rospy.Subscriber("/tibia_r2_collision", ContactsState, self.tibia_r2_contact_callback)
+        rospy.Subscriber("/tibia_r3_collision", ContactsState, self.tibia_r3_contact_callback)
         # We use it to get the joints positions and calculate the reward associated to it
         rospy.Subscriber("/hexapod/joint_states", JointState, self.joints_state_callback)
+
+
+    def tibia_l1_contact_callback(self, msg):
+        is_touching = len(msg.states) != 0 
+        self.tibia_l1_touching = is_touching
+
+    def tibia_l2_contact_callback(self, msg):
+        is_touching = len(msg.states) != 0 
+        self.tibia_l2_touching = is_touching
+
+    def tibia_l3_contact_callback(self, msg):
+        is_touching = len(msg.states) != 0 
+        self.tibia_l3_touching = is_touching
+
+    def tibia_r1_contact_callback(self, msg):
+        is_touching = len(msg.states) != 0 
+        self.tibia_r1_touching = is_touching
+
+    def tibia_r2_contact_callback(self, msg):
+        is_touching = len(msg.states) != 0 
+        self.tibia_r2_touching = is_touching
+
+    def tibia_r3_contact_callback(self, msg):
+        is_touching = len(msg.states) != 0 
+        self.tibia_r3_touching = is_touching
+    
 
     def check_all_systems_ready(self):
         """
@@ -223,7 +267,9 @@ class HexapodState(object):
             self.touching = False
         for state in msg.states:
             self.contact_force = state.total_wrench.force
-        
+    
+    
+ 
 
     def joints_state_callback(self,msg):
         self.joints_state = msg
@@ -237,7 +283,8 @@ class HexapodState(object):
         orientation_rpy = self.get_base_rpy()
         pitch_ok = abs(orientation_rpy.y ) < self._desired_pitch #~15 deg
         rospy.logdebug("DISTANCE FROM Z >>>>" + str(abs(self.get_base_height() - self.desired_world_point.z)))
-        is_standing = self.get_base_height() > self.desired_world_point.z and pitch_ok
+        is_standing = self.get_base_height() > self.desired_world_point.z \
+        and pitch_ok and self.is_all_tibia_touching()
         if is_standing:
             self.reached_goal_times += 1
         return is_standing
@@ -343,6 +390,29 @@ class HexapodState(object):
         if self.touching:
             return 100 * weight
         return -100.0 * weight
+    
+    def calculate_tibia_touching_reward(self, weight=1.0):
+        """
+        We calculate the reward based on tibias touching ground
+        If they are touching that is better.
+        :param weight:
+        :return:reward
+        """
+        coef1 = self.tibia_l1_touching if 1 else -1
+        coef2 = self.tibia_l2_touching if 1 else -1
+        coef3 = self.tibia_l3_touching if 1 else -1
+        coef4 = self.tibia_r1_touching if 1 else -1
+        coef5 = self.tibia_r2_touching if 1 else -1
+        coef6 = self.tibia_r3_touching if 1 else -1
+        coef = coef1 + coef2 + coef3 + coef4 + coef5 + coef6
+
+        if self.is_all_tibia_touching():
+            return -10 * weight
+        return coef * weight
+    
+    def is_all_tibia_touching(self):
+        return self.tibia_l1_touching and self.tibia_l2_touching and self.tibia_l3_touching and \
+        self.tibia_r1_touching and self.tibia_r2_touching and self.tibia_r3_touching
 
     def calculate_synchro_reward(self, weight=1.0):
         """
@@ -374,10 +444,11 @@ class HexapodState(object):
         r5 = self.calculate_reward_distance_from_des_point(self._weight_r5)
         r6 = self.calculate_touching_reward(self._weight_r6)
         r7 = self.calculate_synchro_reward(self._weight_r7)
+        r8 = self.calculate_tibia_touching_reward(self._weight_r8)
         if self.touching:
             return self._alive_reward - r6
         else:
-            total_reward = self._alive_reward - r1 - r2 - r3 - r4 - r5 - r6 - r7
+            total_reward = self._alive_reward - r1 - r2 - r3 - r4 - r5 - r6 - r7 - r8
         # The sign depend on its function.
     
         rospy.logdebug("###############")
@@ -450,6 +521,13 @@ class HexapodState(object):
         efforts = [effort for effort in joint_states.effort]
         touching_ground = 1.0 if self.touching else 0.0
 
+        tibia_l1_touching = 1.0 if self.tibia_l1_touching else 0.0
+        tibia_l2_touching = 1.0 if self.tibia_l2_touching else 0.0
+        tibia_l3_touching = 1.0 if self.tibia_l2_touching else 0.0
+        tibia_r1_touching = 1.0 if self.tibia_r1_touching else 0.0
+        tibia_r2_touching = 1.0 if self.tibia_r2_touching else 0.0
+        tibia_r3_touching = 1.0 if self.tibia_r3_touching else 0.0
+
         observation = []
         rospy.logdebug("List of Observations==>"+str(self._list_of_observations))
         # if scalar simply append, if list extend so that list is flat
@@ -493,6 +571,14 @@ class HexapodState(object):
             elif obs_name == "base_z":
                 rospy.logdebug("BASE Z==>"+str(z))
                 observation.append(z)
+            elif obs_name == "tibia_touching":
+                rospy.logdebug("TIBIA TOUCHING GROUND==>"+str(""))
+                observation.append(tibia_l1_touching)
+                observation.append(tibia_l2_touching)
+                observation.append(tibia_l3_touching)
+                observation.append(tibia_r1_touching)
+                observation.append(tibia_r2_touching)
+                observation.append(tibia_r3_touching)
             else:
                 raise NameError('Observation Asked does not exist=='+str(obs_name))
             
@@ -612,6 +698,9 @@ class HexapodState(object):
                 min_value = 0
             elif obs_name == "base_z":
                 max_value = 2
+                min_value = 0
+            elif obs_name == "tibia_touching":
+                max_value = 1
                 min_value = 0
 
             else:
@@ -735,14 +824,14 @@ class HexapodState(object):
         rospy.logdebug("hexapod_orientation_ok=" + str(hexapod_orientation_ok))
 
         done = False
-        if (not hexapod_orientation_ok) or less_exceeded_joint_position or self.reached_goal_times > 100:
+        if (not hexapod_orientation_ok) or less_exceeded_joint_position or self.reached_goal_times > 10:
             done = True
         
         if is_standing_up:
             total_reward = self._done_reward
 
         if done:
-            if self.reached_goal_times > 100:
+            if self.reached_goal_times > 10:
                 total_reward = 10 * self._done_reward
             else:
                 rospy.logerr("It fell, so the reward has to be very low")

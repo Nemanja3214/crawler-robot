@@ -75,6 +75,7 @@ class HexapodEnv(gym.Env):
         self.weight_r5 = rospy.get_param("/weight_r5")
         self.weight_r6 = rospy.get_param("/weight_r6")
         self.weight_r7 = rospy.get_param("/weight_r7")
+        self.weight_r8 = rospy.get_param("/weight_r8")
 
         def make_init_name(part, side, num):
             return "/init_joint_pose/" + part + "_" + side + str(num)
@@ -122,6 +123,7 @@ class HexapodEnv(gym.Env):
                                                     weight_r5=self.weight_r5,
                                                     weight_r6=self.weight_r6,
                                                     weight_r7=self.weight_r7,
+                                                    weight_r8=self.weight_r8,
                                                     discrete_division=self.discrete_division,
                                                     maximum_base_linear_acceleration=self.maximum_base_linear_acceleration,
                                                     maximum_base_angular_velocity=self.maximum_base_angular_velocity,
@@ -200,6 +202,12 @@ class HexapodEnv(gym.Env):
 
         # reset standing variable
         self.hexapod_state_object.touching = False
+        self.tibia_l1_touching = False
+        self.tibia_l2_touching = False
+        self.tibia_l3_touching = False
+        self.tibia_r1_touching = False
+        self.tibia_r2_touching = False
+        self.tibia_r3_touching = False
         self.hexapod_state_object.reached_goal_times = 0
 
         # 4th: We Set the init pose to the jump topic so that the jump control can update
@@ -284,6 +292,12 @@ class HexapodEnv(gym.Env):
 
         # reset standing variable
         self.hexapod_state_object.touching = False
+        self.tibia_l1_touching = False
+        self.tibia_l2_touching = False
+        self.tibia_l3_touching = False
+        self.tibia_r1_touching = False
+        self.tibia_r2_touching = False
+        self.tibia_r3_touching = False
         self.hexapod_state_object.reached_goal_times = 0
 
         # 4th: We Set the init pose to the jump topic so that the jump control can update
@@ -369,6 +383,7 @@ class HexapodEnv(gym.Env):
 
         # Get the State Discrete Stringuified version of the observations
         state = self.get_state(observation)
+        # rospy.loginfo(state)
 
         return state, reward, done, {}
     

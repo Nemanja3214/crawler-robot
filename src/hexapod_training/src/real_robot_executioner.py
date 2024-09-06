@@ -48,12 +48,13 @@ def angle_rad_to_pwm(angle_rad, mirrored=False):
     return pulse_width
 
 def set_joint_states(joints_states):
-    command = b""
+    command = ""
     for i in range(joints_states):
         if i != 0:
-            command += b" "
-        command += b"#{0} P{1}".format(servo_pins[i], angle_rad_to_pwm(joints_states[i], is_mirrored[i]))
+            command += " "
+        command += "#{0} P{1}".format(servo_pins[i], angle_rad_to_pwm(joints_states[i], is_mirrored[i]))
     command += "\r"
+    command_bytes = command.encode("ascii")
     rospy.loginfo(command)
     # ssc32.write(command)
 
@@ -71,7 +72,7 @@ if __name__ == "__main__":
         [make_env(gym_id, seed)]
     )
     model = Agent(envs).to(device)
-    model.load_state_dict(torch.load(dir + '/Hexapod-v0.pth'))
+    model.load_state_dict(torch.load(dir + '/no_sync.pth'))
 
     # Set the model to evaluation mode
     model.eval()
