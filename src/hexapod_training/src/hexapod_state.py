@@ -284,7 +284,7 @@ class HexapodState(object):
         pitch_ok = abs(orientation_rpy.y ) < self._desired_pitch #~15 deg
         rospy.logdebug("DISTANCE FROM Z >>>>" + str(abs(self.get_base_height() - self.desired_world_point.z)))
         is_standing = self.get_base_height() > self.desired_world_point.z \
-        and pitch_ok and self.is_all_tibia_touching()
+        and pitch_ok
         if is_standing:
             self.reached_goal_times += 1
         return is_standing
@@ -795,6 +795,9 @@ class HexapodState(object):
                 return False
         return True
 
+    def is_success(self):
+        return self.reached_goal_times > 10
+
     def process_data(self):
         """
         We return the total reward based on the state in which we are in and if its done or not
@@ -827,16 +830,20 @@ class HexapodState(object):
         # rospy.logdebug("hexapod_height_ok="+str(hexapod_height_ok))
         rospy.logdebug("hexapod_orientation_ok=" + str(hexapod_orientation_ok))
 
+        if not self.is_success() and self.reached_goal_times != 0:
+            self.reached_goal_times = 0
+
+
         done = False
-        if (not hexapod_orientation_ok) or less_exceeded_joint_position or self.reached_goal_times > 10:
+        if (not hexapod_orientation_ok) or less_exceeded_joint_position or self.is_success():
             done = True
 
         if done:
-            if self.reached_goal_times > 10:
+            if self.is_success():
                 total_reward = 100 * self._done_reward
             else:
                 rospy.logerr("It fell, so the reward has to be very low")
-                total_reward = -self._done_reward
+                total_reward = - 10 * self._done_reward
         else:
             rospy.logdebug("Calculate normal reward because it didn't fall.")
             total_reward = self.calculate_total_reward()

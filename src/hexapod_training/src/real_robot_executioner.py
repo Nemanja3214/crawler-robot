@@ -110,12 +110,12 @@ if __name__ == "__main__":
     dir = rospy.get_param("result_dir")
     device = torch.device("cpu")
     gym_id = 'Hexapod-v0'
-    seed = int(time.time())
+    seed = 3214111
     envs = gym.vector.SyncVectorEnv(
         [make_env(gym_id, seed)]
     )
     model = Agent(envs).to(device)
-    model.load_state_dict(torch.load(dir + '/nove_nagrade.pth'))
+    model.load_state_dict(torch.load(dir + '/bigger_punishment.pth'))
 
     # Set the model to evaluation mode
     model.eval()
@@ -123,18 +123,38 @@ if __name__ == "__main__":
     state = torch.Tensor(envs.reset()).to(device)
     done = False
     rew = 0
+    success_counter = 0
+    step_counter = 0
+    num_of_episodes = 100
+    steps_sum = 0
 
-      
-    while not done:
-        state = torch.Tensor(state).to(device)
-        with torch.no_grad():
-            # WARNING action may be normalized
-            action, _, _, _ = model.get_action_and_value(state)
-            # set_joint_states(action)
-        state, rew, done, _ = envs.step(action)
-        # rospy.loginfo(env.hexapod_state_object.current_joint_pose)
-        rospy.loginfo("REWARD>>>>" + str(rew))
+    for i in range(num_of_episodes):
+        while not done:
+            state = torch.Tensor(state).to(device)
+            with torch.no_grad():
+                # WARNING action may be normalized
+                action, _, _, _ = model.get_action_and_value(state)
+                # set_joint_states(action)
+            state, rew, done, info = envs.step(action)
+            
+            if info[0]["success"] and done:
+                success_counter+=1
+                rospy.loginfo("SUCCESS")
+            elif done:
+                rospy.loginfo("FAIL")
+
+            if done:
+                steps_sum += step_counter
+                state = torch.Tensor(envs.reset()).to(device)
+                step_counter = 0
+            # rospy.loginfo(env.hexapod_state_object.current_joint_pose)
+            # rospy.loginfo("REWARD>>>>" + str(rew))
+            step_counter += 1
+        done = False
+        rospy.loginfo("EPISODE>>>>" + str(i))
+    rospy.loginfo("AVG STEPS OF EPISODES>>>" + str(steps_sum/1000))
     rospy.loginfo(rew)
+
         
 
 
