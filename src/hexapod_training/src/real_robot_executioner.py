@@ -115,7 +115,7 @@ if __name__ == "__main__":
         [make_env(gym_id, seed)]
     )
     model = Agent(envs).to(device)
-    model.load_state_dict(torch.load(dir + '/bigger_punishment.pth'))
+    model.load_state_dict(torch.load(dir + '/moguci konacni.pth'))
 
     # Set the model to evaluation mode
     model.eval()

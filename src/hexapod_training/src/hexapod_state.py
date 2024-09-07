@@ -285,8 +285,6 @@ class HexapodState(object):
         rospy.logdebug("DISTANCE FROM Z >>>>" + str(abs(self.get_base_height() - self.desired_world_point.z)))
         is_standing = self.get_base_height() > self.desired_world_point.z \
         and pitch_ok
-        if is_standing:
-            self.reached_goal_times += 1
         return is_standing
 
     def hexapod_orientation_ok(self):
@@ -437,7 +435,7 @@ class HexapodState(object):
     def calculate_total_reward(self):
 
         if self.is_stand_up():
-            return self._done_reward
+            return (self._done_reward / 1000) * self.reached_goal_times
         
         r1 = self.calculate_reward_joint_position(self._weight_r1)
         r2 = self.calculate_reward_joint_effort(self._weight_r2)
@@ -822,6 +820,8 @@ class HexapodState(object):
         else:
             rospy.logdebug("exceeded_joint_position NOT TAKEN INTO ACCOUNT")
             less_exceeded_joint_position = False
+        
+
 
         # is_standing_up = False
         # if "stand_up" in self._episode_done_criteria:
@@ -830,8 +830,11 @@ class HexapodState(object):
         # rospy.logdebug("hexapod_height_ok="+str(hexapod_height_ok))
         rospy.logdebug("hexapod_orientation_ok=" + str(hexapod_orientation_ok))
 
-        if not self.is_success() and self.reached_goal_times != 0:
+        if not self.is_stand_up() and self.reached_goal_times != 0:
             self.reached_goal_times = 0
+
+        if self.is_stand_up():
+            self.reached_goal_times += 1
 
 
         done = False
@@ -840,7 +843,7 @@ class HexapodState(object):
 
         if done:
             if self.is_success():
-                total_reward = 100 * self._done_reward
+                total_reward = 1000 * self._done_reward
             else:
                 rospy.logerr("It fell, so the reward has to be very low")
                 total_reward = - 10 * self._done_reward
