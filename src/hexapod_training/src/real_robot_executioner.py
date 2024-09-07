@@ -130,12 +130,12 @@ if __name__ == "__main__":
 
     for i in range(num_of_episodes):
         while not done:
-            state = torch.Tensor(state).to(device)
+
             with torch.no_grad():
-                # WARNING action may be normalized
                 action, _, _, _ = model.get_action_and_value(state)
                 # set_joint_states(action)
             state, rew, done, info = envs.step(action)
+            state = torch.Tensor(state).to(device)
             
             if info[0]["success"] and done:
                 success_counter+=1
