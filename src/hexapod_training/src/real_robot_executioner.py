@@ -52,12 +52,13 @@ def angle_rad_to_pwm(angle_rad, mirrored=False):
 def set_joint_states(joints_states):
     command = ""
     for i in range(18):
+        # rospy.loginfo(joints_states)
         if i != 0:
             command += " "
-        command += "#{0} P{1}".format(servo_pins[i], float(angle_rad_to_pwm(joints_states[i]), is_mirrored[i]))
+        command += "#{0} P{1}".format(servo_pins[i], angle_rad_to_pwm(float(joints_states[i])), is_mirrored[i])
     command += "\r"
     command_bytes = str.encode(command)
-    rospy.loginfo(command)
+    # rospy.loginfo(command)
     try:
         ssc32.write(command_bytes)
     except Exception as e:
@@ -73,7 +74,7 @@ def cleanup():
         ssc32.reset_output_buffer()
         rospy.loginfo("CLEANUP OUTPUT")
         rospy.loginfo("CLOSING")
-        # ssc32.close()
+        ssc32.close()
     except Exception as e:
         rospy.loginfo(e)
 
@@ -111,25 +112,26 @@ if __name__ == "__main__":
 
             with torch.no_grad():
                 action, _, _, _ = model.get_action_and_value(state)
-                set_joint_states(action)
-            state, rew, done, info = envs.step(action)
-            state = torch.Tensor(state).to(device)
-            
-            if info[0]["success"] and done:
-                success_counter+=1
-                rospy.loginfo("SUCCESS")
-            elif done:
-                rospy.loginfo("FAIL")
+                set_joint_states(torch.flatten(action))
+                state, rew, done, info = envs.step(action)
+                state = torch.Tensor(state).to(device)
+                
+                if info[0]["success"] and done:
+                    success_counter+=1
+                    rospy.loginfo("SUCCESS")
+                elif done:
+                    rospy.loginfo("FAIL")
 
-            if done:
-                steps_sum += step_counter
-                rospy.loginfo("STEPS>>>>" + str(step_counter))
-                state = torch.Tensor(envs.reset()).to(device)
-                step_counter = 0
-            # rospy.loginfo(env.hexapod_state_object.current_joint_pose)
-            # rospy.loginfo("REWARD>>>>" + str(rew))
-            rospy.loginfo("STEP>>>>" + str(step_counter))
-            step_counter += 1
+                if done:
+                    steps_sum += step_counter
+                    rospy.loginfo("STEPS>>>>" + str(step_counter))
+                    state = torch.Tensor(envs.reset()).to(device)
+                    step_counter = 0
+                # rospy.loginfo(env.hexapod_state_object.current_joint_pose)
+                # rospy.loginfo("REWARD>>>>" + str(rew))
+                if step_counter % 10 == 0:
+                    rospy.loginfo("STEP>>>>" + str(step_counter))
+                step_counter += 1
         done = False
       
         rospy.loginfo("EPISODE>>>>" + str(i))
