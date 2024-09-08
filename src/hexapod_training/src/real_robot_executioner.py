@@ -1,20 +1,13 @@
 #!/usr/bin/python3.8
 
 import math
-import gym
 import serial
 import time
-import rospy
-import torch
-import hexapod_env
-import numpy as np
 
-# ssc32 = serial.Serial(
-#   port='/dev/ttyUSB0',
-#   baudrate=9600,
-#   write_timeout=1,
-#   timeout=1
-# )
+import rospy
+import numpy as np
+ssc32 = serial.Serial('/dev/ttyS0', 9600, timeout=1)
+
 
 servo_pins = [31, 27, 23, 15, 11, 7, 30, 26, 22, 14, 10, 6, 29, 25, 21, 13, 9, 5]
 is_mirrored = [False, False, False, True, True, True, False, False, False, True, True, True, False, False, False, True, True, True]
@@ -63,48 +56,72 @@ def set_joint_states(joints_states):
         command += "#{0} P{1}".format(servo_pins[i], angle_rad_to_pwm(joints_states[i], is_mirrored[i]))
     command += "\r"
     command_bytes = str.encode(command)
-    # rospy.loginfo(command)
-    # try:
-    #     # ssc32.write(command_bytes)
-    # except Exception as e:
-    #     rospy.logerror("Failure>>"+str(e))
-    #     exit()
+    rospy.loginfo(command)
+    try:
+        ssc32.write(command_bytes)
+    except Exception as e:
+        rospy.logerr("Failure>>"+str(e))
+        exit()
 
 # def cleanup():
 #     rospy.loginfo("CLEANUP")
 
-#     try:
-#         ssc32.reset_input_buffer()
-#         rospy.loginfo("CLEANUP INPUT")
-#         ssc32.reset_output_buffer()
-#         rospy.loginfo("CLEANUP OUTPUT")
-#         rospy.loginfo("CLOSING")
-#         ssc32.close()
-#     except Exception as e:
-#         rospy.loginfo(e)
+    try:
+        ssc32.reset_input_buffer()
+        rospy.loginfo("CLEANUP INPUT")
+        ssc32.reset_output_buffer()
+        rospy.loginfo("CLEANUP OUTPUT")
+        rospy.loginfo("CLOSING")
+        # ssc32.close()
+    except Exception as e:
+        rospy.loginfo(e)
+
 
 def test():
     pos = 0.0
     rate = rospy.Rate(1)
     addition = 0.01
-    rospy.loginfo("STARTING")
+    print("STARTING")
     while not rospy.is_shutdown():
         if abs(pos + addition) > 1.5:
             addition = addition * -1
         pos += addition
-    #     joint_states = 18*[pos]
+        joint_states = 18*[pos]
 
-    #     set_joint_states(joint_states)
-    #     rospy.loginfo(joint_states)
-    #     rate.sleep()
+        set_joint_states(joint_states)
+        rospy.loginfo(joint_states)
+        rate.sleep()
+    if ssc32.is_open:
+      ssc32.close()
 
 
-from continous_ppo import Agent, make_env
+from continous_ppo import Agent, make_env, gym
 
 if __name__ == "__main__":
 
     rospy.loginfo("STARTED REAL ROBOT EXECUTIONER")
     rospy.init_node("real_robot_executioner", anonymous=True)
+    rospy.on_shutdown(cleanup)
+    test()
+     
+
+    # dir = rospy.get_param("result_dir")
+    # device = torch.device("cpu")
+    # gym_id = 'Hexapod-v0'
+    # seed = int(time.time())
+    # envs = gym.vector.SyncVectorEnv(
+    #     [make_env(gym_id, seed)]
+    # )
+    # model = Agent(envs).to(device)
+    # model.load_state_dict(torch.load(dir + '/no_sync.pth'))
+
+    # # Set the model to evaluation mode
+    # model.eval()
+
+    # state = torch.Tensor(envs.reset()).to(device)
+    # done = False
+    # rew = 0
+
     # rospy.on_shutdown(cleanup)
     # test()
     dir = rospy.get_param("result_dir")
