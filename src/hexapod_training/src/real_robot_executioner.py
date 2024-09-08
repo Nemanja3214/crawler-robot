@@ -3,6 +3,7 @@
 import math
 import serial
 import time
+import torch
 
 import rospy
 import numpy as np
@@ -53,7 +54,7 @@ def set_joint_states(joints_states):
     for i in range(18):
         if i != 0:
             command += " "
-        command += "#{0} P{1}".format(servo_pins[i], angle_rad_to_pwm(joints_states[i], is_mirrored[i]))
+        command += "#{0} P{1}".format(servo_pins[i], float(angle_rad_to_pwm(joints_states[i]), is_mirrored[i]))
     command += "\r"
     command_bytes = str.encode(command)
     rospy.loginfo(command)
@@ -63,8 +64,8 @@ def set_joint_states(joints_states):
         rospy.logerr("Failure>>"+str(e))
         exit()
 
-# def cleanup():
-#     rospy.loginfo("CLEANUP")
+def cleanup():
+    rospy.loginfo("CLEANUP")
 
     try:
         ssc32.reset_input_buffer()
@@ -76,25 +77,6 @@ def set_joint_states(joints_states):
     except Exception as e:
         rospy.loginfo(e)
 
-
-def test():
-    pos = 0.0
-    rate = rospy.Rate(1)
-    addition = 0.01
-    print("STARTING")
-    while not rospy.is_shutdown():
-        if abs(pos + addition) > 1.5:
-            addition = addition * -1
-        pos += addition
-        joint_states = 18*[pos]
-
-        set_joint_states(joint_states)
-        rospy.loginfo(joint_states)
-        rate.sleep()
-    if ssc32.is_open:
-      ssc32.close()
-
-
 from continous_ppo import Agent, make_env, gym
 
 if __name__ == "__main__":
@@ -102,28 +84,7 @@ if __name__ == "__main__":
     rospy.loginfo("STARTED REAL ROBOT EXECUTIONER")
     rospy.init_node("real_robot_executioner", anonymous=True)
     rospy.on_shutdown(cleanup)
-    test()
-     
 
-    # dir = rospy.get_param("result_dir")
-    # device = torch.device("cpu")
-    # gym_id = 'Hexapod-v0'
-    # seed = int(time.time())
-    # envs = gym.vector.SyncVectorEnv(
-    #     [make_env(gym_id, seed)]
-    # )
-    # model = Agent(envs).to(device)
-    # model.load_state_dict(torch.load(dir + '/no_sync.pth'))
-
-    # # Set the model to evaluation mode
-    # model.eval()
-
-    # state = torch.Tensor(envs.reset()).to(device)
-    # done = False
-    # rew = 0
-
-    # rospy.on_shutdown(cleanup)
-    # test()
     dir = rospy.get_param("result_dir")
     device = torch.device("cpu")
     gym_id = 'Hexapod-v0'
@@ -150,7 +111,7 @@ if __name__ == "__main__":
 
             with torch.no_grad():
                 action, _, _, _ = model.get_action_and_value(state)
-                # set_joint_states(action)
+                set_joint_states(action)
             state, rew, done, info = envs.step(action)
             state = torch.Tensor(state).to(device)
             
@@ -167,6 +128,7 @@ if __name__ == "__main__":
                 step_counter = 0
             # rospy.loginfo(env.hexapod_state_object.current_joint_pose)
             # rospy.loginfo("REWARD>>>>" + str(rew))
+            rospy.loginfo("STEP>>>>" + str(step_counter))
             step_counter += 1
         done = False
       
