@@ -794,7 +794,7 @@ class HexapodState(object):
         return True
 
     def is_success(self):
-        return self.reached_goal_times > 10
+        return self.reached_goal_times > 50
 
     def process_data(self):
         """

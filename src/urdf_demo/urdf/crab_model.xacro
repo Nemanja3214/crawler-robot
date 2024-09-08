@@ -288,12 +288,30 @@
 		</link>
 
 		<joint name="tibia_foot_joint_${side}${num}" type="fixed">
-			<origin xyz="0.117 0 0" rpy="0 0 0" />
+			<origin xyz="${((9-1.4)/2)/norm} 0 0" rpy="0 0 0" />
 			<parent link="tibia_${side}${num}" />
 			<child link="tibia_foot_${side}${num}" />
 		</joint>
 
-		<link name="tibia_foot_${side}${num}" />
+		<link name="tibia_foot_${side}${num}">
+			<collision name='tibia_foot${side}${num}_collision'>
+				<origin xyz="0 0 0" rpy="0 0 0" />
+				<geometry>
+					<box size="${0.01/norm} ${0.01/norm} ${0.01/norm}" />
+				</geometry>
+				<surface>
+					<friction>
+					<ode>
+						<mu>10000.01</mu>
+						<mu2>10000.01</mu2>
+					</ode>
+					</friction>
+				</surface>
+				<material name="">
+					<color rgba="0.7 0 0.7 1" />
+				</material>
+			</collision>
+		</link>
 	</xacro:macro>
 
 	<xacro:property name="x_far_offset" value="${(15.5/2)/norm}" />
@@ -368,7 +386,7 @@
    </gazebo>
 
 
-	    <gazebo reference="tibia_l1">
+	    <gazebo reference="tibia_foot_l1">
 			<material>Gazebo/Blue</material>
 			<kp>1000.0</kp>
 			<kd>1000.0</kd>
@@ -379,7 +397,7 @@
 			<sensor name="new_contactsensor_sensor" type="contact">
 				<always_on>true</always_on>
 				<contact>
-					<collision>tibia_l1_collision_collision</collision>
+					<collision>tibia_foot_l1_collision_collision</collision>
 				</contact>
 				<plugin name="bumper0_plugin" filename="libgazebo_ros_bumper.so">
 					<bumperTopicName>tibia_l1_collision</bumperTopicName>
@@ -388,7 +406,7 @@
 			</sensor>
 
     	</gazebo>
-		   <gazebo reference="tibia_l2">
+		   <gazebo reference="tibia_foot_l2">
 			<material>Gazebo/Blue</material>
 			<kp>1000.0</kp>
 			<kd>1000.0</kd>
@@ -399,7 +417,7 @@
 			<sensor name="new_contactsensor_sensor" type="contact">
 				<always_on>true</always_on>
 					<contact>
-					<collision>tibia_l2_collision_collision</collision>
+					<collision>tibia_foot_l2_collision_collision</collision>
 				</contact>
 				<plugin name="bumper0_plugin" filename="libgazebo_ros_bumper.so">
 					<bumperTopicName>tibia_l2_collision</bumperTopicName>
@@ -408,7 +426,7 @@
 			</sensor>
 
     	</gazebo>
-		   <gazebo reference="tibia_l3">
+		   <gazebo reference="tibia_foot_l3">
 			<material>Gazebo/Blue</material>
 			<kp>1000.0</kp>
 			<kd>1000.0</kd>
@@ -419,7 +437,7 @@
 			<sensor name="new_contactsensor_sensor" type="contact">
 				<always_on>true</always_on>
 					<contact>
-					<collision>tibia_l3_collision_collision</collision>
+					<collision>tibia_foot_l3_collision_collision</collision>
 				</contact>
 				<plugin name="bumper0_plugin" filename="libgazebo_ros_bumper.so">
 					<bumperTopicName>tibia_l3_collision</bumperTopicName>
@@ -428,7 +446,7 @@
 			</sensor>
 
     	</gazebo>
-		   <gazebo reference="tibia_r1">
+		   <gazebo reference="tibia_foot_r1">
 			<material>Gazebo/Blue</material>
 			<kp>1000.0</kp>
 			<kd>1000.0</kd>
@@ -439,7 +457,7 @@
 			<sensor name="new_contactsensor_sensor" type="contact">
 				<always_on>true</always_on>
 					<contact>
-					<collision>tibia_r1_collision_collision</collision>
+					<collision>tibia_foot_r1_collision_collision</collision>
 				</contact>
 				<plugin name="bumper0_plugin" filename="libgazebo_ros_bumper.so">
 					<bumperTopicName>tibia_r1_collision</bumperTopicName>
@@ -448,7 +466,7 @@
 			</sensor>
 
     	</gazebo>
-		   <gazebo reference="tibia_r2">
+		   <gazebo reference="tibia_foot_r2">
 			<material>Gazebo/Blue</material>
 			<kp>1000.0</kp>
 			<kd>1000.0</kd>
@@ -459,7 +477,7 @@
 			<sensor name="new_contactsensor_sensor" type="contact">
 				<always_on>true</always_on>
 					<contact>
-					<collision>tibia_r2_collision_collision</collision>
+					<collision>tibia_foot_r2_collision_collision</collision>
 				</contact>
 				<plugin name="bumper0_plugin" filename="libgazebo_ros_bumper.so">
 					<bumperTopicName>tibia_r2_collision</bumperTopicName>
@@ -468,7 +486,7 @@
 			</sensor>
 
     	</gazebo>
-		   <gazebo reference="tibia_r3">
+		   <gazebo reference="tibia_foot_r3">
 			<material>Gazebo/Blue</material>
 			<kp>1000.0</kp>
 			<kd>1000.0</kd>
@@ -479,7 +497,7 @@
 			<sensor name="new_contactsensor_sensor" type="contact">
 				<always_on>true</always_on>
 					<contact>
-					<collision>tibia_r3_collision_collision</collision>
+					<collision>tibia_foot_r3_collision_collision</collision>
 				</contact>
 				<plugin name="bumper0_plugin" filename="libgazebo_ros_bumper.so">
 					<bumperTopicName>tibia_r3_collision</bumperTopicName>

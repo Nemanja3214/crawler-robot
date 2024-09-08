@@ -115,7 +115,7 @@ if __name__ == "__main__":
         [make_env(gym_id, seed)]
     )
     model = Agent(envs).to(device)
-    model.load_state_dict(torch.load(dir + '/moguci konacni.pth'))
+    model.load_state_dict(torch.load(dir + '/570k_nov.pth'))
 
     # Set the model to evaluation mode
     model.eval()
@@ -145,12 +145,14 @@ if __name__ == "__main__":
 
             if done:
                 steps_sum += step_counter
+                rospy.loginfo("STEPS>>>>" + str(step_counter))
                 state = torch.Tensor(envs.reset()).to(device)
                 step_counter = 0
             # rospy.loginfo(env.hexapod_state_object.current_joint_pose)
             # rospy.loginfo("REWARD>>>>" + str(rew))
             step_counter += 1
         done = False
+      
         rospy.loginfo("EPISODE>>>>" + str(i))
     rospy.loginfo("AVG STEPS OF EPISODES>>>" + str(steps_sum/1000))
     rospy.loginfo(rew)
