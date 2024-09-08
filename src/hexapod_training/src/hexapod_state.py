@@ -794,7 +794,7 @@ class HexapodState(object):
         return True
 
     def is_success(self):
-        return self.reached_goal_times > 50
+        return self.reached_goal_times > 5000
 
     def process_data(self):
         """
@@ -843,7 +843,7 @@ class HexapodState(object):
 
         if done:
             if self.is_success():
-                total_reward = 1000 * self._done_reward
+                total_reward = 50000 * self._done_reward
             else:
                 rospy.logerr("It fell, so the reward has to be very low")
                 total_reward = - 10 * self._done_reward
