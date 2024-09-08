@@ -11,7 +11,7 @@ nsteps: 500
 desired_pose:
   x: 0.0
   y: 0.0
-  z: 0.09 # 0.13 m
+  z: 0.08 # 0.13 m
 desired_force: 7.08 # In Newtons, normal contact force when stanting still with 9.81 gravity
 desired_yaw: 0.0 # Desired yaw in radians for the robot to stay
 desired_roll: 0.0 # Desired yaw in radians for the robot to stay
@@ -47,9 +47,9 @@ list_of_observations: # Observations you want to use for the learning
 discrete_division: 30 # Parts in which we divide each of the observations sensory range
 
 weight_r1: 3.0 # Weight for joint positions ( joints in the zero is perfect )
-weight_r2: 1.0 # Weight for joint efforts ( no efforts is perfect )
+weight_r2: 0.0 # Weight for joint efforts ( no efforts is perfect )
 weight_r3: 0.0 # Weight for contact force similar to desired ( weight of hexapod )
-weight_r4: 100.0 # Weight for orientation ( vertical is perfect )
+weight_r4: 1000.0 # Weight for orientation ( vertical is perfect )
 weight_r5: 10000.0 # Weight for distance from desired point ( on the point is perfect )
 weight_r6: 20.0 # Weight for not touching floor
 weight_r7: 0.0 # Weight for not synchronisation

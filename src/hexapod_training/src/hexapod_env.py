@@ -3,6 +3,7 @@
     By Miguel Angel Rodriguez <duckfrost@theconstructsim.com>
     Visit our website at www.theconstructsim.com
 '''
+import random
 import gym
 import rospy
 import numpy as np
@@ -351,7 +352,7 @@ class HexapodEnv(gym.Env):
             past_time = self.timestamps[0]
             diff = now - past_time
             rospy.loginfo("DIFF>>>" + str(diff))
-            if diff < 4:
+            if diff < 4 or random.random() < 0.1:
                 rospy.loginfo("HARD RESETING")
                 return self.hard_reset()
         return self.soft_reset()
@@ -385,7 +386,7 @@ class HexapodEnv(gym.Env):
         state = self.get_state(observation)
         # rospy.loginfo(state)
 
-        return state, reward, done, {}
+        return state, reward, done, {"success": self.hexapod_state_object.is_success()}
     
     def is_valid_action(self, action):
         return self.hexapod_state_object.is_valid_action(action)

@@ -148,7 +148,7 @@ def run(log_dir):
     rospy.on_shutdown(save)
     gym_id = 'Hexapod-v0'
     exp_name = "def params"
-    seed = int(time.time())
+    seed = 3214111
     run_name = f"{gym_id}__{exp_name}__{seed}__{int(time.time())}"
     writer = SummaryWriter(f"{log_dir}{run_name}")
    
