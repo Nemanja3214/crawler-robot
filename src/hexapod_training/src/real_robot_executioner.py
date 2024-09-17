@@ -67,6 +67,7 @@ def set_joint_states(joints_states):
 
 def cleanup():
     rospy.loginfo("CLEANUP")
+    set_joint_states(18*[0.0])
 
     try:
         ssc32.reset_input_buffer()
@@ -106,6 +107,7 @@ if __name__ == "__main__":
     step_counter = 0
     num_of_episodes = 100
     steps_sum = 0
+    set_joint_states(18*[0.0])
 
     for i in range(num_of_episodes):
         while not done:
